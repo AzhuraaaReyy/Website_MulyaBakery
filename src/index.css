@@ -1,0 +1,101 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    scroll-behavior: smooth;
+  }
+
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    @apply bg-cream text-brown-deep font-body antialiased;
+    overflow-x: hidden;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-display text-brown-dark;
+    text-wrap: balance;
+  }
+
+  /* Keyboard focus terlihat jelas (aksesibilitas) */
+  :focus-visible {
+    outline: 3px solid #d97a46;
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  /* Hormati preferensi reduced-motion */
+  @media (prefers-reduced-motion: reduce) {
+    :root {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+    }
+  }
+}
+
+@layer components {
+  .container-warm {
+    @apply mx-auto w-full max-w-6xl px-5 sm:px-8;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-full bg-terracotta px-7 py-3.5
+      text-base font-semibold text-cream shadow-warm transition-all duration-300
+      hover:-translate-y-0.5 hover:bg-[#c96a38] hover:shadow-warm-lg active:translate-y-0;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 rounded-full border-2 border-brown-medium
+      bg-transparent px-7 py-3.5 text-base font-semibold text-brown-dark transition-all duration-300
+      hover:-translate-y-0.5 hover:bg-brown-medium hover:text-cream active:translate-y-0;
+  }
+
+  .eyebrow {
+    @apply inline-flex items-center gap-2 rounded-full bg-brown-medium/10 px-4 py-1.5
+      text-sm font-semibold uppercase tracking-widest text-brown-medium;
+  }
+
+  /* Bentuk organik "blob" ala referensi (untuk foto/plate) */
+  .blob-shape {
+    border-radius: 42% 58% 63% 37% / 45% 44% 56% 55%;
+  }
+  .blob-shape-2 {
+    border-radius: 58% 42% 38% 62% / 56% 51% 49% 44%;
+  }
+  .blob-shape-3 {
+    border-radius: 63% 37% 55% 45% / 38% 62% 38% 62%;
+  }
+
+  /* Titik-titik dekoratif lembut (aksen latar section) */
+  .dot-grid {
+    background-image: radial-gradient(rgba(139, 94, 60, 0.14) 1.6px, transparent 1.6px);
+    background-size: 22px 22px;
+  }
+}
+
+/* Scrollbar hangat */
+::-webkit-scrollbar {
+  width: 12px;
+}
+::-webkit-scrollbar-track {
+  background: #efe0c9;
+}
+::-webkit-scrollbar-thumb {
+  background: #8b5e3c;
+  border-radius: 999px;
+  border: 3px solid #efe0c9;
+}
