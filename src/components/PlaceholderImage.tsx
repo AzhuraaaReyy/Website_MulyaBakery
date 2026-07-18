@@ -15,14 +15,14 @@ interface PlaceholderImageProps {
   rounded?: string
 }
 
-// Palet gradient hangat coklat-krem untuk placeholder foto produk.
+// Palet gradient placeholder — mengikuti sistem cokelat + cream yang baru.
 const GRADIENTS: [string, string][] = [
-  ['#EFE0C9', '#D9B892'],
-  ['#E7CBA9', '#C08A5B'],
-  ['#F0D9B8', '#D97A46'],
-  ['#E3C9A6', '#8B5E3C'],
-  ['#F5EDE1', '#C99B6E'],
-  ['#EAD3AE', '#A9713F'],
+  ['#F7F0E1', '#D9BE93'],
+  ['#EFE3CD', '#C09A63'],
+  ['#F6E7C6', '#B07A4A'],
+  ['#E9D9BC', '#96603A'],
+  ['#FCF8F0', '#C8873F'],
+  ['#EDD9B4', '#7A4A2B'],
 ]
 
 function hashString(s: string): number {
@@ -81,9 +81,9 @@ export default function PlaceholderImage({
         }}
         aria-hidden
       />
-      <div className="relative flex flex-col items-center gap-2 px-4 text-center text-brown-deep/70">
+      <div className="relative flex flex-col items-center gap-2 px-4 text-center text-cocoa-800/70">
         <Croissant className="h-8 w-8" strokeWidth={1.6} aria-hidden />
-        {label && <span className="text-sm font-semibold tracking-wide">{label}</span>}
+        {label && <span className="font-text text-sm font-bold tracking-wide">{label}</span>}
       </div>
     </div>
   )

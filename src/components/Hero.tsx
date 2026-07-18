@@ -1,11 +1,12 @@
 import { useRef } from 'react'
 import { motion, useReducedMotion } from 'framer-motion'
-import { MessageCircle, ArrowRight, Star, Wheat } from 'lucide-react'
+import { MessageCircle, ArrowRight, Star } from 'lucide-react'
 import { BRAND } from '../config/contact'
 import { generalOrderUrl } from '../lib/whatsapp'
 import { useScrolly } from '../hooks/useScrolly'
 import PlaceholderImage from './PlaceholderImage'
-import WheatSprig from './WheatSprig'
+import TornPaper from './TornPaper'
+import Decor from './Decor'
 import { products } from '../data/products'
 
 // Foto produk untuk visual Hero (produk pertama).
@@ -13,13 +14,13 @@ const heroProduct = products[0]
 
 const container = {
   hidden: {},
-  show: { transition: { staggerChildren: 0.12, delayChildren: 0.1 } },
+  show: { transition: { staggerChildren: 0.11, delayChildren: 0.08 } },
 }
 
 function itemVariants(reduce: boolean | null) {
   return {
-    hidden: { opacity: 0, y: reduce ? 0 : 24 },
-    show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] as const } },
+    hidden: { opacity: 0, y: reduce ? 0 : 26 },
+    show: { opacity: 1, y: 0, transition: { duration: 0.65, ease: [0.22, 1, 0.36, 1] as const } },
   }
 }
 
@@ -33,172 +34,153 @@ export default function Hero() {
     <section
       ref={sectionRef}
       id="hero"
-      className="relative overflow-hidden bg-gradient-to-b from-cream/70 to-cream-dark/60 pt-28 pb-32 sm:pt-32"
+      className="relative overflow-hidden pb-40 pt-32 sm:pt-36 lg:pb-48 lg:pt-40"
+      style={{
+        // Gradasi hangat cokelat–cream: terang di kiri-atas, mengarah ke caramel.
+        background:
+          'radial-gradient(125% 95% at 14% 8%, #FDFAF3 0%, #F6E7C6 34%, #EDCB92 62%, #DFAA63 100%)',
+      }}
     >
-      {/* Shape organik besar di belakang foto (kanan atas) — mengecil di mobile */}
-      <div
-        data-parallax="0.12"
-        className="blob-shape-2 pointer-events-none absolute -right-20 -top-16 h-[300px] w-[300px] bg-gradient-to-br from-[#EAD6B0]/80 to-terracotta/25 sm:-right-28 sm:-top-24 sm:h-[460px] sm:w-[460px] lg:-right-32 lg:-top-28 lg:h-[560px] lg:w-[560px]"
-        aria-hidden
-      />
-      <div
-        data-parallax="0.28"
-        className="dot-grid pointer-events-none absolute right-10 top-44 hidden h-32 w-32 opacity-60 lg:block"
-        aria-hidden
-      />
+      {/* Tekstur kertas halus di atas gradasi */}
+      <div className="paper-grain pointer-events-none absolute inset-0 opacity-70" aria-hidden />
 
-      <div className="container-warm relative grid items-center gap-12 lg:grid-cols-2">
-        {/* Teks */}
+      {/* ── Aksen bahan cut-out (kolase ala referensi) ──────────────────────
+          Taruh PNG transparan di public/images/decor/. Selama file belum ada,
+          elemen ini otomatis tidak dirender sama sekali. */}
+      <Decor src="/images/decor/jeruk.png" parallax={0.18} rotate={-12}
+        className="-right-10 top-16 w-28 sm:w-36 lg:right-4 lg:w-44" />
+      <Decor src="/images/decor/daun.png" parallax={-0.22} rotate={18}
+        className="-left-8 top-40 hidden w-24 sm:block sm:w-32 lg:left-6" />
+      <Decor src="/images/decor/beri.png" parallax={0.26} rotate={8}
+        className="bottom-44 left-4 hidden w-20 lg:block lg:w-28" />
+      <Decor src="/images/decor/bunga.png" parallax={-0.16} rotate={-20}
+        className="right-24 top-6 hidden w-20 lg:block lg:w-24" />
+
+      <div className="container-wide relative grid items-center gap-14 lg:grid-cols-[1.05fr_1fr] lg:gap-10">
+        {/* ── Kolom kiri: teks ─────────────────────────────────────────── */}
         <motion.div
           variants={container}
           initial="hidden"
           animate="show"
           className="relative z-10 text-center lg:text-left"
         >
-          <motion.span variants={item} className="eyebrow mb-5">
-            <Wheat className="h-4 w-4" aria-hidden /> Bakery Rumahan · Est. {BRAND.established}
+          <motion.span variants={item} className="eyebrow-script">
+            Bakery rumahan · sejak {BRAND.established}
           </motion.span>
 
-          <motion.h1 variants={item} className="text-display-xl">
+          <motion.h1 variants={item} className="title-hero mt-3">
             <span className="block">Roti Hangat,</span>
-            <span className="mt-1 block text-terracotta">Bikin Bahagia</span>
+            <span className="relative block text-cocoa-600">
+              Bikin Bahagia
+              {/* Coretan tangan di bawah kata — aksen ekspresif */}
+              <svg
+                viewBox="0 0 300 14"
+                preserveAspectRatio="none"
+                className="mx-auto mt-1 block h-3 w-[min(100%,18rem)] text-caramel lg:mx-0"
+                aria-hidden
+              >
+                <path
+                  d="M3 9c48-5 96-7 145-6 44 1 88 3 149 8"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="5"
+                  strokeLinecap="round"
+                />
+              </svg>
+            </span>
           </motion.h1>
 
-          <motion.p variants={item} className="mx-auto mt-6 max-w-lg text-lg text-brown-deep/80 lg:mx-0">
-            {BRAND.name} membuat roti fresh setiap hari dari dapur kecil kami — bahan pilihan, tanpa
+          <motion.p
+            variants={item}
+            className="mx-auto mt-7 max-w-lg font-text text-lg leading-relaxed text-cocoa-700/90 lg:mx-0"
+          >
+            {BRAND.name} membuat roti fresh setiap hari dari dapur kecil kami bahan pilihan, tanpa
             pengawet. Setiap gigitan terasa seperti buatan rumah.
           </motion.p>
 
           <motion.div
             variants={item}
-            className="mt-8 flex flex-col items-center gap-3 sm:flex-row lg:justify-start"
+            className="mt-9 flex flex-col items-center gap-3 sm:flex-row lg:justify-start"
           >
+            {/* CTA WhatsApp — fungsi dipertahankan persis */}
             <a
               href={generalOrderUrl()}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-brown-dark px-8 py-4 text-base font-semibold text-cream shadow-warm transition-all duration-300 hover:-translate-y-0.5 hover:bg-brown-deep hover:shadow-warm-lg sm:w-auto"
+              className="btn-cocoa w-full sm:w-auto"
             >
               <MessageCircle className="h-5 w-5" aria-hidden />
               Pesan Sekarang
             </a>
             <a
               href="#menu"
-              className="inline-flex w-full items-center justify-center gap-2 rounded-full px-6 py-4 text-base font-semibold text-brown-dark transition-colors hover:text-terracotta sm:w-auto"
+              className="group inline-flex w-full items-center justify-center gap-2 rounded-full px-6 py-4 font-text text-base font-bold text-cocoa-800 transition-colors hover:text-cocoa-600 sm:w-auto"
             >
               Lihat Menu
-              <ArrowRight className="h-5 w-5" aria-hidden />
+              <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" aria-hidden />
             </a>
           </motion.div>
 
-          {/* Social proof + flourish gandum */}
+          {/* Social proof */}
           <motion.div
             variants={item}
-            className="mt-8 flex items-center justify-center gap-3 lg:justify-start"
+            className="mt-9 flex items-center justify-center gap-3 lg:justify-start"
           >
-            <WheatSprig className="hidden h-8 w-8 text-brown-medium/70 sm:block" />
             <div className="flex" aria-hidden>
               {[0, 1, 2, 3, 4].map((i) => (
-                <Star key={i} className="h-5 w-5 fill-terracotta text-terracotta" />
+                <Star key={i} className="h-5 w-5 fill-caramel text-caramel" />
               ))}
             </div>
-            <p className="text-sm font-medium text-brown-deep/70">
-              <span className="font-bold text-brown-dark">4.9/5</span> dari 200+ pelanggan senang
+            <p className="font-text text-sm font-semibold text-cocoa-700/80">
+              <span className="font-extrabold text-cocoa-800">4.9/5</span> dari 200+ pelanggan senang
             </p>
           </motion.div>
         </motion.div>
 
-        {/* Visual: foto dalam bentuk organik + shape berlapis */}
+        {/* ── Kolom kanan: foto besar ──────────────────────────────────── */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.8, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
-          className="relative mx-auto aspect-square w-full max-w-[17rem] sm:max-w-md lg:max-w-lg"
+          initial={{ opacity: 0, scale: 0.94, rotate: reduce ? 0 : -3 }}
+          animate={{ opacity: 1, scale: 1, rotate: reduce ? 0 : -2.5 }}
+          transition={{ duration: 0.85, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
+          className="relative mx-auto w-full max-w-md lg:max-w-lg"
         >
-          {/* Shape aksen berlapis di belakang foto */}
-          <div className="blob-shape absolute -right-3 -top-3 h-[88%] w-[88%] bg-terracotta/20" aria-hidden />
-          <div className="blob-shape-3 absolute -left-5 bottom-1 h-[55%] w-[55%] bg-brown-medium/15" aria-hidden />
-
-          {/* Foto utama (mengambang lembut) */}
           <motion.div
-            className="relative h-full w-full"
-            animate={reduce ? {} : { y: [0, -14, 0] }}
-            transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
+            animate={reduce ? {} : { y: [0, -12, 0] }}
+            transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut' }}
+            className="relative"
           >
-            <div className="blob-shape-3 h-full w-full overflow-hidden shadow-warm-lg ring-[6px] ring-cream sm:ring-[10px]">
+            {/* Foto utama — bingkai kertas tebal ala foto tempelan */}
+            <div className="overflow-hidden rounded-[2rem] bg-paper-50 p-3 shadow-cocoa-lg ring-1 ring-cocoa-700/10">
               <PlaceholderImage
                 alt={`Foto ${heroProduct.name}`}
                 src={heroProduct.image}
                 label={heroProduct.name}
                 seed={heroProduct.id}
-                rounded="blob-shape-3"
-                className="h-full w-full"
+                rounded="rounded-[1.4rem]"
+                className="aspect-[4/5] w-full"
               />
             </div>
-          </motion.div>
 
-          {/* Taburan tepung mengelilingi */}
-          {!reduce &&
-            [0, 1, 2, 3, 4].map((i) => (
-              <motion.span
-                key={i}
-                className="absolute h-2.5 w-2.5 rounded-full bg-cream shadow"
-                style={{
-                  top: `${16 + Math.sin(i) * 30 + i * 7}%`,
-                  left: `${10 + Math.cos(i * 1.6) * 30 + i * 3}%`,
-                }}
-                animate={{ y: [0, -10, 0], opacity: [0.4, 1, 0.4] }}
-                transition={{ duration: 3 + i * 0.4, repeat: Infinity, ease: 'easeInOut', delay: i * 0.3 }}
-                aria-hidden
-              />
-            ))}
-
-          {/* Badge mengambang */}
-          <motion.div
-            className="absolute -bottom-2 -left-2 flex items-center gap-2 rounded-2xl bg-cream px-4 py-3 shadow-warm sm:-left-5"
-            animate={reduce ? {} : { y: [0, -8, 0] }}
-            transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-          >
-            <span className="text-2xl" aria-hidden>
-              🍞
-            </span>
-            <div className="text-left">
-              <p className="text-sm font-bold text-brown-dark">Fresh Harian</p>
-              <p className="text-xs text-brown-deep/70">Dipanggang tiap pagi</p>
-            </div>
+            {/* Badge mengambang */}
+            <motion.div
+              animate={reduce ? {} : { y: [0, -9, 0] }}
+              transition={{ duration: 4.5, repeat: Infinity, ease: 'easeInOut' }}
+              className="absolute -bottom-5 -left-4 flex items-center gap-2.5 rounded-2xl bg-cocoa-800 px-5 py-3.5 shadow-cocoa sm:-left-8"
+            >
+              <span className="text-2xl" aria-hidden>
+                🍞
+              </span>
+              <div className="text-left">
+                <p className="font-heading text-base text-paper-50">Fresh Harian</p>
+                <p className="font-text text-xs text-paper-200/80">Dipanggang tiap pagi</p>
+              </div>
+            </motion.div>
           </motion.div>
         </motion.div>
       </div>
 
-      {/* Dekorasi bawah: gelombang + siluet gandum (versi bakery dari referensi) */}
-      <BottomWave />
+      {/* Pemisah kertas sobek → section berikutnya (paper-100) */}
+      <TornPaper fill="#F7F0E1" core="#FCF8F0" seed="hero-tear" height={84} />
     </section>
-  )
-}
-
-/** Gelombang dekoratif di bawah hero + siluet gandum di kiri (ala referensi). */
-function BottomWave() {
-  return (
-    <div className="pointer-events-none absolute inset-x-0 bottom-0 leading-[0]" aria-hidden>
-      <svg viewBox="0 0 1440 140" preserveAspectRatio="none" className="block h-24 w-full sm:h-32">
-        <path
-          d="M0 70 C240 20 480 20 720 60 C960 100 1200 120 1440 70 L1440 140 L0 140 Z"
-          fill="#8B5E3C"
-          fillOpacity="0.16"
-        />
-        <path
-          d="M0 100 C300 60 560 70 720 92 C980 128 1200 130 1440 96 L1440 140 L0 140 Z"
-          fill="#5C3A21"
-          fillOpacity="0.16"
-        />
-        {/* siluet tangkai gandum */}
-        <g stroke="#5C3A21" strokeOpacity="0.22" strokeWidth="3" strokeLinecap="round" fill="none">
-          <path d="M120 138 V96" />
-          <path d="M120 104c-8-2-13-7-13-13 7 0 13 5 13 12M120 104c8-2 13-7 13-13-7 0-13 5-13 12" />
-          <path d="M150 138 V104" />
-          <path d="M150 110c-6-1-10-5-10-10 5 0 10 4 10 9M150 110c6-1 10-5 10-10-5 0-10 4-10 9" />
-        </g>
-      </svg>
-    </div>
   )
 }

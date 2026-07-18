@@ -13,7 +13,14 @@ type ExtraBuilder = (ctx: { el: HTMLElement }) => void
  *  - `data-reveal`            → muncul (fade + naik) saat masuk viewport.
  *      `data-reveal-x="60"`   → geser dari samping (mis. dari kanan) alih-alih bawah.
  *  - `data-stagger`           → anak-anaknya muncul bergiliran (stagger).
- *  - `data-parallax="0.15"`   → parallax terikat scroll (scrub); nilai = kecepatan.
+ *  - `data-parallax="0.15"`   → parallax terikat scroll (scrub); nilai = kecepatan,
+ *                               negatif = arah berlawanan. Bisa dikombinasi dengan:
+ *      `data-parallax-x="20"`      → ikut menyamping (persen lebar elemen).
+ *      `data-parallax-rotate="8"`  → ikut berputar (derajat).
+ *      `data-parallax-scale="0.2"` → ikut mengecil→membesar.
+ *
+ * Gerakan parallax dibuat simetris terhadap posisi netral: elemen ada di posisi
+ * aslinya saat section persis di tengah viewport, lalu menyimpang ke dua arah.
  *
  * `extra` opsional untuk animasi khusus section (mis. garis timeline scrub).
  * Semua dinonaktifkan bila pengguna memilih prefers-reduced-motion.
@@ -57,16 +64,28 @@ export function useScrolly(scopeRef: React.RefObject<HTMLElement>, extra?: Extra
       // Parallax terikat scroll
       gsap.utils.toArray<HTMLElement>('[data-parallax]').forEach((t) => {
         const speed = parseFloat(t.dataset.parallax || '0.15')
-        gsap.to(t, {
-          yPercent: -speed * 100,
-          ease: 'none',
-          scrollTrigger: {
-            trigger: el,
-            start: 'top bottom',
-            end: 'bottom top',
-            scrub: true,
+        const x = parseFloat(t.dataset.parallaxX || '0')
+        const rotate = parseFloat(t.dataset.parallaxRotate || '0')
+        const scale = parseFloat(t.dataset.parallaxScale || '0')
+        const y = speed * 60
+
+        gsap.fromTo(
+          t,
+          { yPercent: y, xPercent: -x / 2, rotate: -rotate / 2, scale: 1 - scale / 2 },
+          {
+            yPercent: -y,
+            xPercent: x / 2,
+            rotate: rotate / 2,
+            scale: 1 + scale / 2,
+            ease: 'none',
+            scrollTrigger: {
+              trigger: el,
+              start: 'top bottom',
+              end: 'bottom top',
+              scrub: 0.6,
+            },
           },
-        })
+        )
       })
 
       extra?.({ el })

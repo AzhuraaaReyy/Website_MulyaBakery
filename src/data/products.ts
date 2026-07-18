@@ -35,6 +35,27 @@ export function formatPrice(value: number): string {
   }).format(value);
 }
 
+/* ─────────────────────────────────────────────────────────────────────────────
+ * VIDEO DEMO (sementara)
+ *
+ * File video asli belum ada di `public/videos/` (baru berisi README), sehingga
+ * showcase selalu jatuh ke poster foto. Agar fiturnya bisa dilihat berfungsi,
+ * sementara ini dipakai klip sampel publik (MDN, W3Schools, Blender) — isinya
+ * BUKAN roti, murni untuk demo. Butuh koneksi internet.
+ *
+ * CARA MENGEMBALIKAN: ganti nilai `video:` tiap produk di bawah dengan path
+ * lokalnya (sudah ditulis sebagai komentar di sebelahnya), lalu taruh file
+ * .mp4 di `public/videos/`. Tidak ada perubahan kode lain yang diperlukan.
+ * ─────────────────────────────────────────────────────────────────────────── */
+const TV = "https://test-videos.co.uk/vids";
+const DEMO = {
+  a: "https://mdn.github.io/shared-assets/videos/flower.mp4",
+  b: `${TV}/jellyfish/mp4/h264/720/Jellyfish_720_10s_1MB.mp4`,
+  c: `${TV}/sintel/mp4/h264/720/Sintel_720_10s_1MB.mp4`,
+  d: `${TV}/bigbuckbunny/mp4/h264/720/Big_Buck_Bunny_720_10s_1MB.mp4`,
+  e: "https://www.w3schools.com/html/mov_bbb.mp4",
+};
+
 export const products: Product[] = [
   {
     id: "roti-coklat-keju",
@@ -46,7 +67,7 @@ export const products: Product[] = [
     image: "/images/roti-coklat-keju.jpg",
     bestSeller: true,
     featured: true,
-    video: "/videos/roti-coklat-keju.mp4",
+    video: DEMO.a, // asli: "/videos/roti-coklat-keju.mp4"
   },
   {
     id: "roti-tawar-gandum",
@@ -57,7 +78,7 @@ export const products: Product[] = [
       "Roti tawar gandum utuh, lembut dan mengenyangkan untuk sarapan sehat.",
     image: "/images/roti-tawar-gandum.jpg",
     featured: true,
-    video: "/videos/roti-tawar-gandum.mp4",
+    video: DEMO.b, // asli: "/videos/roti-tawar-gandum.mp4"
   },
   {
     id: "roti-sobek-pandan",
@@ -68,7 +89,7 @@ export const products: Product[] = [
     image: "/images/roti-sobek-pandan.jpg",
     bestSeller: true,
     featured: true,
-    video: "/videos/roti-sobek-pandan.mp4",
+    video: DEMO.c, // asli: "/videos/roti-sobek-pandan.mp4"
   },
   {
     id: "croissant-butter",
@@ -79,7 +100,7 @@ export const products: Product[] = [
       "Pastry berlapis renyah dengan butter premium, gurih dan buttery.",
     image: "/images/croissant-butter.jpg",
     featured: true,
-    video: "/videos/croissant-butter.mp4",
+    video: DEMO.d, // asli: "/videos/croissant-butter.mp4"
   },
   {
     id: "nastar-premium",
@@ -91,7 +112,7 @@ export const products: Product[] = [
     image: "/images/nastar-premium.jpg",
     bestSeller: true,
     featured: true,
-    video: "/videos/nastar-premium.mp4",
+    video: DEMO.e, // asli: "/videos/nastar-premium.mp4"
   },
   {
     id: "kue-ulang-tahun",

@@ -4,27 +4,35 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Palet dasar coklat & krem — warm & homey bakery
-        cream: {
-          DEFAULT: '#F5EDE1', // krem lembut (background utama)
-          dark: '#EFE0C9', // krem gelap (background section alternatif)
+        /* ── SISTEM BARU: cokelat + cream (redesign) ───────────────────────
+         * Cream dinaikkan kehangatannya, cokelat dibuat lebih pekat & kaya
+         * dibanding palet lama supaya karakternya ekspresif, bukan kalem. */
+        paper: {
+          50: '#FCF8F0', // paling terang — serat kertas di tepi robek
+          100: '#F7F0E1', // background utama
+          200: '#EFE3CD', // background alternatif / kartu
+          300: '#E2D0B4', // border halus / sand
         },
-        brown: {
-          medium: '#8B5E3C', // coklat medium (aksen, tombol, ikon)
-          dark: '#5C3A21', // coklat tua (teks heading, elemen kuat)
-          deep: '#3A2317', // coklat sangat gelap (teks body, footer)
+        cocoa: {
+          400: '#B07A4A', // caramel terang
+          500: '#96603A', // cokelat medium
+          600: '#7A4A2B', // cokelat
+          700: '#5C3520', // cokelat tua — heading
+          800: '#412415', // espresso — band & footer
+          900: '#2C170D', // paling gelap
         },
-        terracotta: '#D97A46', // terracotta hangat (aksen CTA/highlight)
+        caramel: '#C8873F', // aksen hangat (eyebrow, harga, highlight)
+        butter: '#E9C07A', // highlight lembut untuk gradasi hero
       },
       fontFamily: {
-        display: ['Fraunces', 'Playfair Display', 'Georgia', 'serif'],
-        body: ['Manrope', 'Inter', 'system-ui', 'sans-serif'],
+        heading: ['Caprasimo', 'Georgia', 'serif'], // display playful
+        script: ['Caveat', 'cursive'], // eyebrow tulisan tangan
+        text: ['"Nunito Sans"', 'system-ui', 'sans-serif'], // body netral hangat
       },
       fontSize: {
-        // Skala tipografi dengan hierarki tegas
-        'display-xl': ['clamp(2.75rem, 6vw, 5rem)', { lineHeight: '1.05', letterSpacing: '-0.02em' }],
-        'display-lg': ['clamp(2.25rem, 4.5vw, 3.5rem)', { lineHeight: '1.1', letterSpacing: '-0.015em' }],
-        'display-md': ['clamp(1.75rem, 3vw, 2.5rem)', { lineHeight: '1.15', letterSpacing: '-0.01em' }],
+        hero: ['clamp(2.75rem, 7vw, 5.5rem)', { lineHeight: '0.98', letterSpacing: '-0.02em' }],
+        h1: ['clamp(2rem, 4.5vw, 3.25rem)', { lineHeight: '1.08', letterSpacing: '-0.015em' }],
+        h2: ['clamp(1.6rem, 3vw, 2.4rem)', { lineHeight: '1.15', letterSpacing: '-0.01em' }],
       },
       keyframes: {
         'float-slow': {
@@ -41,8 +49,9 @@ export default {
         shimmer: 'shimmer 2.5s linear infinite',
       },
       boxShadow: {
-        warm: '0 18px 40px -18px rgba(92, 58, 33, 0.45)',
-        'warm-lg': '0 30px 60px -24px rgba(92, 58, 33, 0.5)',
+        cocoa: '0 20px 45px -20px rgba(65, 36, 21, 0.5)',
+        'cocoa-lg': '0 34px 70px -26px rgba(65, 36, 21, 0.55)',
+        lift: '0 10px 24px -12px rgba(65, 36, 21, 0.45)',
       },
     },
   },

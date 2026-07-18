@@ -38,19 +38,19 @@ export default function ScrollStoryBackground() {
     <div ref={ref} aria-hidden className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
       <div
         data-blob="1"
-        className="absolute left-[4%] top-[8%] h-[45vh] w-[45vh] rounded-full bg-terracotta/25 blur-[90px]"
+        className="absolute left-[4%] top-[8%] h-[45vh] w-[45vh] rounded-full bg-caramel/20 blur-[90px]"
       />
       <div
         data-blob="2"
-        className="absolute right-[6%] top-[34%] h-[52vh] w-[52vh] rounded-full bg-brown-medium/25 blur-[100px]"
+        className="absolute right-[6%] top-[34%] h-[52vh] w-[52vh] rounded-full bg-cocoa-500/15 blur-[100px]"
       />
       <div
         data-blob="3"
-        className="absolute left-[14%] top-[64%] h-[42vh] w-[42vh] rounded-full bg-[#E7B36A]/25 blur-[90px]"
+        className="absolute left-[14%] top-[64%] h-[42vh] w-[42vh] rounded-full bg-butter/20 blur-[90px]"
       />
       <div
         data-blob="4"
-        className="absolute right-[14%] top-[86%] h-[48vh] w-[48vh] rounded-full bg-terracotta/20 blur-[100px]"
+        className="absolute right-[14%] top-[86%] h-[48vh] w-[48vh] rounded-full bg-caramel/15 blur-[100px]"
       />
     </div>
   )

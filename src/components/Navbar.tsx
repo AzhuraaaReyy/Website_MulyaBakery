@@ -27,15 +27,15 @@ export default function Navbar() {
   return (
     <header
       className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 ${
-        scrolled ? 'bg-cream/85 shadow-warm backdrop-blur-md' : 'bg-transparent'
+        scrolled ? 'bg-paper-100/90 shadow-cocoa backdrop-blur-md' : 'bg-transparent'
       }`}
     >
-      <nav className="container-warm flex items-center justify-between py-4">
-        <a href="#hero" className="flex items-center gap-2" aria-label={`${BRAND.name} beranda`}>
-          <span className="flex h-10 w-10 items-center justify-center rounded-full bg-terracotta text-cream">
+      <nav className="container-wide flex items-center justify-between py-4">
+        <a href="#hero" className="flex items-center gap-2.5" aria-label={`${BRAND.name} beranda`}>
+          <span className="flex h-10 w-10 items-center justify-center rounded-full bg-cocoa-800 text-paper-50">
             <Croissant className="h-5 w-5" aria-hidden />
           </span>
-          <span className="font-display text-xl font-semibold text-brown-dark">{BRAND.name}</span>
+          <span className="font-heading text-xl text-cocoa-800">{BRAND.name}</span>
         </a>
 
         {/* Desktop links */}
@@ -44,7 +44,7 @@ export default function Navbar() {
             <li key={link.href}>
               <a
                 href={link.href}
-                className="text-sm font-semibold text-brown-deep/80 transition-colors hover:text-terracotta"
+                className="font-text text-sm font-bold text-cocoa-700/85 transition-colors hover:text-caramel"
               >
                 {link.label}
               </a>
@@ -56,7 +56,7 @@ export default function Navbar() {
           href={generalOrderUrl()}
           target="_blank"
           rel="noopener noreferrer"
-          className="hidden items-center gap-2 rounded-full bg-brown-medium px-5 py-2.5 text-sm font-semibold text-cream transition-all hover:-translate-y-0.5 hover:bg-brown-dark lg:inline-flex"
+          className="hidden items-center gap-2 rounded-full bg-cocoa-800 px-5 py-2.5 font-text text-sm font-bold text-paper-50 transition-all hover:-translate-y-0.5 hover:bg-cocoa-900 lg:inline-flex"
         >
           <MessageCircle className="h-4 w-4" aria-hidden />
           Pesan Sekarang
@@ -66,7 +66,7 @@ export default function Navbar() {
         <button
           type="button"
           onClick={() => setOpen((v) => !v)}
-          className="rounded-full p-2 text-brown-dark lg:hidden"
+          className="rounded-full p-2 text-cocoa-800 lg:hidden"
           aria-label={open ? 'Tutup menu' : 'Buka menu'}
           aria-expanded={open}
         >
@@ -82,15 +82,15 @@ export default function Navbar() {
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.25 }}
-            className="overflow-hidden bg-cream/95 backdrop-blur-md lg:hidden"
+            className="overflow-hidden bg-paper-100/95 backdrop-blur-md lg:hidden"
           >
-            <ul className="container-warm flex flex-col gap-1 py-4">
+            <ul className="container-wide flex flex-col gap-1 py-4">
               {NAV_LINKS.map((link) => (
                 <li key={link.href}>
                   <a
                     href={link.href}
                     onClick={() => setOpen(false)}
-                    className="block rounded-xl px-3 py-3 text-base font-semibold text-brown-deep hover:bg-cream-dark"
+                    className="block rounded-xl px-3 py-3 font-text text-base font-bold text-cocoa-800 hover:bg-paper-200"
                   >
                     {link.label}
                   </a>
@@ -101,7 +101,7 @@ export default function Navbar() {
                   href={generalOrderUrl()}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="btn-primary w-full"
+                  className="btn-cocoa w-full"
                 >
                   <MessageCircle className="h-5 w-5" aria-hidden />
                   Pesan Sekarang

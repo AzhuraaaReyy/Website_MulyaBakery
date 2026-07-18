@@ -1,18 +1,21 @@
 import { useRef } from 'react'
 import { motion } from 'framer-motion'
 import PlaceholderImage from './PlaceholderImage'
+import TornPaper from './TornPaper'
+import Decor from './Decor'
 import { useScrolly } from '../hooks/useScrolly'
 
 // Item galeri (foto produk & proses).
 // Taruh foto di public/images/ dengan nama sesuai `image`; bila belum ada,
 // otomatis fallback ke placeholder gradient.
+// `tilt` = kemiringan tempelan, `tape` = ada selotip di ujung atas.
 const items = [
-  { id: 'g1', label: 'Adonan Segar', image: '/images/galeri-adonan.jpg', span: 'sm:col-span-2 sm:row-span-2' },
-  { id: 'g2', label: 'Roti Panggang', image: '/images/galeri-roti-panggang.jpg' },
-  { id: 'g3', label: 'Isian Coklat', image: '/images/galeri-isian-coklat.jpg' },
-  { id: 'g4', label: 'Croissant', image: '/images/galeri-croissant.jpg' },
-  { id: 'g5', label: 'Oven Hangat', image: '/images/galeri-oven.jpg' },
-  { id: 'g6', label: 'Siap Diantar', image: '/images/galeri-siap-diantar.jpg', span: 'sm:col-span-2' },
+  { id: 'g1', label: 'Adonan Segar', image: '/images/galeri-adonan.jpg', span: 'sm:col-span-2 sm:row-span-2', tilt: '-1.2deg', tape: true },
+  { id: 'g2', label: 'Roti Panggang', image: '/images/galeri-roti-panggang.jpg', tilt: '1.4deg', tape: false },
+  { id: 'g3', label: 'Isian Coklat', image: '/images/galeri-isian-coklat.jpg', tilt: '-1deg', tape: true },
+  { id: 'g4', label: 'Croissant', image: '/images/galeri-croissant.jpg', tilt: '1.1deg', tape: false },
+  { id: 'g5', label: 'Oven Hangat', image: '/images/galeri-oven.jpg', tilt: '-1.5deg', tape: false },
+  { id: 'g6', label: 'Siap Diantar', image: '/images/galeri-siap-diantar.jpg', span: 'sm:col-span-2', tilt: '0.9deg', tape: true },
 ]
 
 export default function Gallery() {
@@ -20,47 +23,75 @@ export default function Gallery() {
   useScrolly(sectionRef)
 
   return (
-    <section id="galeri" ref={sectionRef} className="relative overflow-hidden bg-cream-dark/70 py-20 lg:py-28">
-      {/* Dekorasi parallax latar */}
-      <div data-parallax="0.25" className="dot-grid pointer-events-none absolute right-8 top-10 hidden h-32 w-32 opacity-60 lg:block" aria-hidden />
-      <div data-parallax="-0.18" className="pointer-events-none absolute -left-10 bottom-10 hidden h-56 w-56 rounded-full bg-terracotta/10 blur-3xl lg:block" aria-hidden />
+    <section
+      id="galeri"
+      ref={sectionRef}
+      className="relative overflow-hidden bg-paper-200 pb-40 pt-24 lg:pb-48 lg:pt-32"
+    >
+      <div className="paper-grain pointer-events-none absolute inset-0 opacity-60" aria-hidden />
 
-      <div className="container-warm relative">
+      {/* Aksen bahan cut-out */}
+      <Decor src="/images/decor/jeruk.png" parallax={0.22} rotate={-16}
+        className="-left-12 top-24 hidden w-28 lg:block lg:w-36" />
+      <Decor src="/images/decor/gandum.png" parallax={-0.2} rotate={22}
+        className="-right-10 bottom-52 hidden w-28 lg:block lg:w-36" />
+
+      <div className="container-wide relative">
         <div className="mx-auto max-w-2xl text-center">
-          <span data-reveal className="eyebrow mb-4">
+          <span data-reveal className="eyebrow-script">
             Galeri
           </span>
-          <h2 data-reveal className="text-display-md">
+          <h2 data-reveal className="title-1 mt-2">
             Intip momen di dapur kami
           </h2>
         </div>
 
+        {/* Dinding foto — tiap foto dibingkai kertas & ditempel sedikit miring */}
         <div
           data-stagger
-          className="mt-12 grid auto-rows-[160px] grid-cols-2 gap-4 sm:auto-rows-[180px] sm:grid-cols-4"
+          className="mt-16 grid auto-rows-[170px] grid-cols-2 gap-5 sm:auto-rows-[190px] sm:grid-cols-4 sm:gap-6"
         >
+          {/* Pembungkus luar = anak langsung [data-stagger]; GSAP menghapus
+              transform-nya setelah reveal, jadi kemiringan diletakkan di DALAM. */}
           {items.map((item) => (
-            <motion.div
-              key={item.id}
-              whileHover={{ scale: 1.03 }}
-              transition={{ type: 'spring', stiffness: 260, damping: 20 }}
-              className={`group relative overflow-hidden rounded-2xl shadow-warm ${item.span ?? ''}`}
-            >
-              <PlaceholderImage
-                alt={item.label}
-                src={item.image}
-                label={item.label}
-                seed={item.id}
-                rounded="rounded-2xl"
-                className="h-full w-full"
-              />
-              <div className="absolute inset-0 flex items-end bg-gradient-to-t from-brown-deep/60 to-transparent p-4 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-                <span className="font-display text-lg font-semibold text-cream">{item.label}</span>
-              </div>
-            </motion.div>
+            <div key={item.id} className={item.span ?? ''}>
+              <motion.div
+                whileHover={{ scale: 1.04 }}
+                transition={{ type: 'spring', stiffness: 260, damping: 20 }}
+                style={{ rotate: item.tilt }}
+                className="group relative h-full w-full"
+              >
+                <div className="h-full w-full rounded-[1.4rem] bg-paper-50 p-2.5 shadow-lift ring-1 ring-cocoa-700/10 transition-shadow group-hover:shadow-cocoa">
+                  <div className="relative h-full w-full overflow-hidden rounded-[1rem]">
+                    <PlaceholderImage
+                      alt={item.label}
+                      src={item.image}
+                      label={item.label}
+                      seed={item.id}
+                      rounded="rounded-[1rem]"
+                      className="h-full w-full"
+                    />
+                    {/* Label muncul saat hover */}
+                    <div className="absolute inset-0 flex items-end bg-gradient-to-t from-cocoa-900/75 via-cocoa-900/10 to-transparent p-4 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                      <span className="font-heading text-lg text-paper-50">{item.label}</span>
+                    </div>
+                  </div>
+                </div>
+
+                {item.tape && (
+                  <span
+                    className="absolute -top-3 left-1/2 h-6 w-20 -translate-x-1/2 -rotate-3 rounded-[3px] bg-caramel/25 ring-1 ring-caramel/30"
+                    aria-hidden
+                  />
+                )}
+              </motion.div>
+            </div>
           ))}
         </div>
       </div>
+
+      {/* Sobekan ke Cara Pesan (paper-100) */}
+      <TornPaper fill="#F7F0E1" core="#FCF8F0" seed="galeri-tear" height={80} />
     </section>
   )
 }

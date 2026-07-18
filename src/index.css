@@ -13,7 +13,7 @@
   }
 
   body {
-    @apply bg-cream text-brown-deep font-body antialiased;
+    @apply bg-paper-100 text-cocoa-800 font-text antialiased;
     overflow-x: hidden;
   }
 
@@ -21,13 +21,13 @@
   h2,
   h3,
   h4 {
-    @apply font-display text-brown-dark;
+    @apply font-heading text-cocoa-800;
     text-wrap: balance;
   }
 
   /* Keyboard focus terlihat jelas (aksesibilitas) */
   :focus-visible {
-    outline: 3px solid #d97a46;
+    outline: 3px solid #c8873f;
     outline-offset: 3px;
     border-radius: 4px;
   }
@@ -48,43 +48,45 @@
 }
 
 @layer components {
-  .container-warm {
-    @apply mx-auto w-full max-w-6xl px-5 sm:px-8;
+  /* ══ SISTEM BARU (redesign cokelat + cream) ═══════════════════════════ */
+
+  .container-wide {
+    @apply mx-auto w-full max-w-[1200px] px-5 sm:px-8;
   }
 
-  .btn-primary {
-    @apply inline-flex items-center justify-center gap-2 rounded-full bg-terracotta px-7 py-3.5
-      text-base font-semibold text-cream shadow-warm transition-all duration-300
-      hover:-translate-y-0.5 hover:bg-[#c96a38] hover:shadow-warm-lg active:translate-y-0;
+  /* Tombol utama — pill cokelat pekat, ala referensi */
+  .btn-cocoa {
+    @apply inline-flex items-center justify-center gap-2.5 rounded-full bg-cocoa-800 px-8 py-4
+      font-text text-base font-bold text-paper-50 shadow-cocoa transition-all duration-300
+      hover:-translate-y-0.5 hover:bg-cocoa-900 hover:shadow-cocoa-lg active:translate-y-0;
   }
 
-  .btn-secondary {
-    @apply inline-flex items-center justify-center gap-2 rounded-full border-2 border-brown-medium
-      bg-transparent px-7 py-3.5 text-base font-semibold text-brown-dark transition-all duration-300
-      hover:-translate-y-0.5 hover:bg-brown-medium hover:text-cream active:translate-y-0;
+  /* Tombol sekunder — outline cokelat di atas kertas */
+  .btn-cocoa-outline {
+    @apply inline-flex items-center justify-center gap-2.5 rounded-full border-2 border-cocoa-700
+      bg-transparent px-7 py-3.5 font-text text-base font-bold text-cocoa-800 transition-all
+      duration-300 hover:-translate-y-0.5 hover:bg-cocoa-800 hover:text-paper-50;
   }
 
-  .eyebrow {
-    @apply inline-flex items-center gap-2 rounded-full bg-brown-medium/10 px-4 py-1.5
-      text-sm font-semibold uppercase tracking-widest text-brown-medium;
+  /* Eyebrow tulisan tangan — motif pengikat antar section */
+  .eyebrow-script {
+    @apply inline-block font-script text-2xl font-semibold text-caramel sm:text-3xl;
   }
 
-  /* Bentuk organik "blob" ala referensi (untuk foto/plate) */
-  .blob-shape {
-    border-radius: 42% 58% 63% 37% / 45% 44% 56% 55%;
+  /* Judul besar sistem baru */
+  .title-hero {
+    @apply font-heading text-hero text-cocoa-800;
   }
-  .blob-shape-2 {
-    border-radius: 58% 42% 38% 62% / 56% 51% 49% 44%;
-  }
-  .blob-shape-3 {
-    border-radius: 63% 37% 55% 45% / 38% 62% 38% 62%;
+  .title-1 {
+    @apply font-heading text-h1 text-cocoa-800;
   }
 
-  /* Titik-titik dekoratif lembut (aksen latar section) */
-  .dot-grid {
-    background-image: radial-gradient(rgba(139, 94, 60, 0.14) 1.6px, transparent 1.6px);
-    background-size: 22px 22px;
+  /* Tekstur kertas halus — dipakai di background section terang */
+  .paper-grain {
+    background-image: radial-gradient(rgba(92, 53, 32, 0.05) 1px, transparent 1.2px);
+    background-size: 16px 16px;
   }
+
 }
 
 /* Scrollbar hangat */
@@ -92,10 +94,10 @@
   width: 12px;
 }
 ::-webkit-scrollbar-track {
-  background: #efe0c9;
+  background: #efe3cd;
 }
 ::-webkit-scrollbar-thumb {
-  background: #8b5e3c;
+  background: #7a4a2b;
   border-radius: 999px;
-  border: 3px solid #efe0c9;
+  border: 3px solid #efe3cd;
 }
