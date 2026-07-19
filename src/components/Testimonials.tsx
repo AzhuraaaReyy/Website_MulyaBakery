@@ -50,9 +50,9 @@ export default function Testimonials() {
       <div className="paper-grain pointer-events-none absolute inset-0 opacity-50" aria-hidden />
 
       {/* Aksen bahan cut-out */}
-      <Decor src="/images/decor/daun.png" parallax={0.2} rotate={-24}
+      <Decor src="/images/decor/roti5.png" parallax={0.2} rotate={-24}
         className="-left-10 top-20 hidden w-24 lg:block lg:w-32" />
-      <Decor src="/images/decor/beri.png" parallax={-0.22} rotate={14}
+      <Decor src="/images/decor/roti4.png" parallax={-0.22} rotate={14}
         className="-right-6 bottom-48 hidden w-20 lg:block lg:w-28" />
 
       <div className="container-wide relative">

@@ -47,14 +47,16 @@ export default function Hero() {
       {/* ── Aksen bahan cut-out (kolase ala referensi) ──────────────────────
           Taruh PNG transparan di public/images/decor/. Selama file belum ada,
           elemen ini otomatis tidak dirender sama sekali. */}
-      <Decor src="/images/decor/jeruk.png" parallax={0.18} rotate={-12}
-        className="-right-10 top-16 w-28 sm:w-36 lg:right-4 lg:w-44" />
-      <Decor src="/images/decor/daun.png" parallax={-0.22} rotate={18}
-        className="-left-8 top-40 hidden w-24 sm:block sm:w-32 lg:left-6" />
-      <Decor src="/images/decor/beri.png" parallax={0.26} rotate={8}
-        className="bottom-44 left-4 hidden w-20 lg:block lg:w-28" />
-      <Decor src="/images/decor/bunga.png" parallax={-0.16} rotate={-20}
-        className="right-24 top-6 hidden w-20 lg:block lg:w-24" />
+      
+      <Decor src="/images/decor/roti4.png" parallax={0.26} rotate={8}
+        className="-bottom-[90px] -left-[25px] hidden w-20 lg:block lg:w-[300px] z-30" />
+     
+      <Decor src="/images/decor/roti4.png" parallax={0.26} rotate={8}
+        className="-bottom-[20px] left-[120px] hidden w-20 lg:block lg:w-[200px] z-20" />
+     
+      <Decor src="/images/decor/roti4.png" parallax={0.26} rotate={8}
+        className="bottom-[10px] right-[1360px] hidden w-20 lg:block lg:w-[200px] z-20" />
+     
 
       <div className="container-wide relative grid items-center gap-14 lg:grid-cols-[1.05fr_1fr] lg:gap-10">
         {/* ── Kolom kiri: teks ─────────────────────────────────────────── */}

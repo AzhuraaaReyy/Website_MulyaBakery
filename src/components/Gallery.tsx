@@ -31,9 +31,9 @@ export default function Gallery() {
       <div className="paper-grain pointer-events-none absolute inset-0 opacity-60" aria-hidden />
 
       {/* Aksen bahan cut-out */}
-      <Decor src="/images/decor/jeruk.png" parallax={0.22} rotate={-16}
+      <Decor src="/images/decor/roti4.png" parallax={0.22} rotate={-16}
         className="-left-12 top-24 hidden w-28 lg:block lg:w-36" />
-      <Decor src="/images/decor/gandum.png" parallax={-0.2} rotate={22}
+      <Decor src="/images/decor/roti.png" parallax={-0.2} rotate={22}
         className="-right-10 bottom-52 hidden w-28 lg:block lg:w-36" />
 
       <div className="container-wide relative">

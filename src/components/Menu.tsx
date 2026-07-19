@@ -26,12 +26,20 @@ const CATEGORIES: ("Semua" | ProductCategory)[] = [
   "Pesanan Custom",
 ];
 
+/**
+ * Kartu produk — tinggi mengikuti isi, teks tidak dipotong.
+ *
+ * Kartu dalam satu baris tetap sejajar karena CSS Grid meregangkannya ke kartu
+ * tertinggi di baris itu; tombol didorong ke dasar dengan `mt-auto` sehingga
+ * ikut sejajar. Foto memakai rasio tetap, dan tiap ukuran font dikunci bersama
+ * line-height-nya agar ritme barisnya konsisten antar kartu.
+ */
 function ProductCard({ product }: { product: Product }) {
   return (
     <motion.article
       whileHover={{ y: -6 }}
       transition={{ type: "spring", stiffness: 300, damping: 22 }}
-      className="group flex h-full flex-col overflow-hidden rounded-[1.6rem] bg-paper-50 shadow-lift ring-1 ring-cocoa-700/10 transition-shadow hover:shadow-cocoa"
+      className="group flex h-full flex-col overflow-hidden rounded-2xl bg-paper-50 shadow-lift ring-1 ring-cocoa-700/10 transition-shadow hover:shadow-cocoa sm:rounded-[1.6rem]"
     >
       <div className="relative">
         <PlaceholderImage
@@ -43,34 +51,47 @@ function ProductCard({ product }: { product: Product }) {
           className="aspect-[4/3] w-full"
         />
         {product.bestSeller && (
-          <span className="absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-full bg-caramel px-3 py-1 font-text text-xs font-extrabold text-cocoa-900 shadow">
-            <Star className="h-3 w-3 fill-cocoa-900" aria-hidden /> Best Seller
+          <span className="absolute left-2 top-2 inline-flex items-center gap-1 rounded-full bg-caramel px-2 py-0.5 font-text text-[10px] font-extrabold text-cocoa-900 shadow sm:left-3 sm:top-3 sm:gap-1.5 sm:px-3 sm:py-1 sm:text-xs">
+            <Star
+              className="h-2.5 w-2.5 fill-cocoa-900 sm:h-3 sm:w-3"
+              aria-hidden
+            />{" "}
+            Best Seller
           </span>
         )}
       </div>
 
-      <div className="flex flex-1 flex-col p-5">
-        <div className="mb-1 flex items-start justify-between gap-2">
-          <h3 className="font-heading text-lg text-cocoa-800">{product.name}</h3>
-          <span className="shrink-0 font-text font-extrabold text-caramel">
-            {formatPrice(product.price)}
-          </span>
-        </div>
-        <p className="font-text text-xs font-bold uppercase tracking-wider text-cocoa-500/70">
+      <div className="flex flex-1 flex-col p-3.5 sm:p-5">
+        {/* Judul tampil penuh (tidak dipotong).
+            Catatan: pakai sintaks `ukuran/leading` — `text-lg` polos membawa
+            line-height bawaannya sendiri yang menimpa `leading-tight`, sehingga
+            ritme baris antar kartu jadi tidak sama. */}
+        <h3 className="font-heading text-sm/[1.25] text-cocoa-800 sm:text-lg/[1.25]">
+          {product.name}
+        </h3>
+
+        <p className="mt-1.5 truncate font-text text-[10px] font-bold uppercase tracking-wider text-cocoa-500/70 sm:text-xs">
           {product.category}
         </p>
-        <p className="mt-2 flex-1 font-text text-sm leading-relaxed text-cocoa-700/80">
+
+        {/* Deskripsi tampil penuh — tinggi kartu mengikuti isi */}
+        <p className="mt-2 font-text text-xs/[1.625] text-cocoa-700/80 sm:text-sm/[1.625]">
           {product.description}
+        </p>
+
+        {/* Harga di baris sendiri — di kartu sempit, sebaris dengan judul jadi sesak */}
+        <p className="mt-auto pt-3 font-text text-sm font-extrabold text-caramel sm:text-base">
+          {formatPrice(product.price)}
         </p>
 
         <a
           href={productOrderUrl(product.name)}
           target="_blank"
           rel="noopener noreferrer"
-          className="mt-5 inline-flex items-center justify-center gap-2 rounded-full bg-cocoa-800 px-5 py-3 font-text text-sm font-bold text-paper-50 transition-all hover:bg-cocoa-900"
+          className="mt-3 inline-flex w-full items-center justify-center gap-1.5 rounded-full bg-cocoa-800 px-3 py-2.5 font-text text-xs font-bold text-paper-50 transition-all hover:bg-cocoa-900 sm:mt-4 sm:gap-2 sm:px-5 sm:py-3 sm:text-sm"
           aria-label={`Pesan ${product.name} via WhatsApp`}
         >
-          <MessageCircle className="h-4 w-4" aria-hidden />
+          <MessageCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4" aria-hidden />
           Pesan
         </a>
       </div>
@@ -106,15 +127,76 @@ export default function Menu() {
       ref={sectionRef}
       className="relative overflow-hidden bg-paper-50 pb-36 pt-24 lg:pb-44 lg:pt-32"
     >
-      <div className="paper-grain pointer-events-none absolute inset-0 opacity-40" aria-hidden />
+      <div
+        className="paper-grain pointer-events-none absolute inset-0 opacity-40"
+        aria-hidden
+      />
 
       {/* Aksen bahan cut-out */}
-      <Decor src="/images/decor/gandum.png" parallax={-0.18} rotate={16}
-        className="-right-12 top-1/3 hidden w-28 lg:block lg:w-36" />
-      <Decor src="/images/decor/bunga.png" parallax={0.22} rotate={-18}
-        className="bottom-56 -left-8 hidden w-24 lg:block lg:w-28" />
+      <Decor
+        src="/images/decor/roti5.png"
+        parallax={0.22}
+        rotate={-18}
+        className="top-[1630px] right-[120px] hidden w-20 lg:block lg:w-[100px] z-20"
+      />
+      <Decor
+        src="/images/decor/roti3.png"
+        parallax={0.22}
+        rotate={-18}
+        className="top-[1650px] right-[280px] hidden w-20 lg:block lg:w-[100px] z-20"
+      />
+      <Decor
+        src="/images/decor/selai2.png"
+        parallax={0.22}
+        rotate={-18}
+        className="top-[1600px] right-[70px] hidden w-20 lg:block lg:w-[320px] z-20"
+      />
+      <Decor
+        src="/images/decor/roti4.png"
+        parallax={0.22}
+        rotate={-18}
+        className="top-[1530px] right-[100px] hidden w-20 lg:block lg:w-[300px] z-20"
+      />
+      
+      <Decor
+        src="/images/decor/selai2.png"
+        parallax={0.22}
+        rotate={-18}
+        className="bottom-[20px] -left-[10px] hidden w-20 lg:block lg:w-[350px]"
+      />
+      <Decor
+        src="/images/decor/roti6.png"
+        parallax={0.22}
+        rotate={-18}
+        className="bottom-[20px] -left-[10px] hidden w-20 lg:block lg:w-[350px]"
+      />
 
+      <Decor
+        src="/images/decor/roti6.png"
+        parallax={0.22}
+        rotate={-18}
+        className="bottom-[40px] -left-[30px] hidden w-20 lg:block lg:w-[200px]"
+      />
       <div className="container-wide relative">
+        <Decor
+          src="/images/decor/roti6.png"
+          parallax={0.22}
+          rotate={-18}
+          className="bottom-[20px] -left-[30px] hidden w-20 lg:block lg:w-[350px] z-20"
+        />
+
+        <Decor
+          src="/images/decor/roti6.png"
+          parallax={0.22}
+          rotate={-18}
+          className="bottom-[40px] -left-[70px] hidden w-20 lg:block lg:w-[200px] z-30"
+        />
+        <Decor
+          src="/images/decor/roti6.png"
+          parallax={0.22}
+          rotate={-18}
+          className="bottom-[130px] left-[140px] hidden w-20 lg:block lg:w-[200px] z-10"
+        />
         {/* Header */}
         <div className="mx-auto max-w-2xl text-center">
           <span data-reveal className="eyebrow-script">
@@ -123,7 +205,10 @@ export default function Menu() {
           <h2 data-reveal className="title-1 mt-2">
             Roti pilihan, dibuat hangat-hangat
           </h2>
-          <p data-reveal className="mt-5 font-text text-lg leading-relaxed text-cocoa-700/85">
+          <p
+            data-reveal
+            className="mt-5 font-text text-lg leading-relaxed text-cocoa-700/85"
+          >
             Lihat produk andalan kami dalam video. Pilih produk di bawah video
             untuk menggantinya.
           </p>
@@ -138,11 +223,23 @@ export default function Menu() {
         className="relative mt-16 py-16 sm:py-20"
         style={{
           background:
-            'radial-gradient(120% 130% at 20% 0%, #F8EDD5 0%, #EFD3A0 45%, #DFAA63 100%)',
+            "radial-gradient(120% 130% at 20% 0%, #F8EDD5 0%, #EFD3A0 45%, #DFAA63 100%)",
         }}
       >
-        <TornPaper position="top" fill="#FCF8F0" core="#FFFFFF" seed="video-top" height={72} />
-        <TornPaper position="bottom" fill="#FCF8F0" core="#FFFFFF" seed="video-bottom" height={76} />
+        <TornPaper
+          position="top"
+          fill="#FCF8F0"
+          core="#FFFFFF"
+          seed="video-top"
+          height={72}
+        />
+        <TornPaper
+          position="bottom"
+          fill="#FCF8F0"
+          core="#FFFFFF"
+          seed="video-bottom"
+          height={76}
+        />
 
         <div className="container-wide relative">
           <FeaturedVideo />
@@ -198,7 +295,8 @@ export default function Menu() {
           <motion.div
             layout
             data-stagger
-            className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3"
+            // Mobile 2 kolom · tablet 3 · desktop 4
+            className="mt-10 grid grid-cols-2 gap-4 md:grid-cols-3 md:gap-5 lg:grid-cols-4 lg:gap-6"
           >
             {filtered.map((product) => (
               <ProductCard key={product.id} product={product} />

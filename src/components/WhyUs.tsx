@@ -47,10 +47,27 @@ export default function WhyUs() {
       <div className="paper-grain pointer-events-none absolute inset-0 opacity-60" aria-hidden />
 
       {/* Aksen bahan cut-out */}
-      <Decor src="/images/decor/gandum.png" parallax={0.2} rotate={-14}
-        className="-left-10 top-28 hidden w-28 lg:block lg:w-36" />
-      <Decor src="/images/decor/daun.png" parallax={-0.18} rotate={26}
-        className="-right-8 bottom-32 hidden w-24 lg:block lg:w-32" />
+      <Decor src="/images/decor/roti4.png" parallax={-0.18} rotate={26}
+        className="right-[140px] bottom-[110px] hidden w-24 lg:block lg:w-[130px] z-30" />
+      <Decor src="/images/decor/roti.png" parallax={-0.18} rotate={26}
+        className="right-[140px] bottom-[150px] hidden w-24 lg:block lg:w-[80px] z-20" />
+     
+      <Decor src="/images/decor/selai2.png" parallax={-0.18} rotate={26}
+        className="right-[100px] bottom-[120px] hidden w-24 lg:block lg:w-[160px] z-10" />
+     
+     
+      <Decor src="/images/decor/roti3.png" parallax={-0.18} rotate={26}
+        className="left-[130px] top-[380px] hidden w-20 lg:block lg:w-[90px] z-20"  />
+      <Decor src="/images/decor/roti3.png" parallax={-0.18} rotate={26}
+        className="left-[150px] top-[350px] hidden w-20 lg:block lg:w-[130px] z-20"  />
+
+
+      <Decor src="/images/decor/tawar.png" parallax={-0.18} rotate={26}
+        className="right-[605px] bottom-[647px] hidden w-[50px] lg:block lg:w-25" />
+      <Decor src="/images/decor/tawar.png" parallax={-0.18} rotate={26}
+        className="right-[530px] bottom-[640px] hidden w-[100px] lg:block lg:w-25 " />
+      <Decor src="/images/decor/tawar.png" parallax={-0.18} rotate={26}
+        className="right-[500px] bottom-[640px] hidden w-[70px] lg:block lg:w-25" />
 
       <div className="container-wide relative">
         <div className="mx-auto max-w-2xl text-center">

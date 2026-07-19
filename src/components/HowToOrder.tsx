@@ -61,9 +61,9 @@ export default function HowToOrder() {
       <div className="paper-grain pointer-events-none absolute inset-0 opacity-50" aria-hidden />
 
       {/* Aksen bahan cut-out */}
-      <Decor src="/images/decor/gandum.png" parallax={-0.22} rotate={-18}
+      <Decor src="/images/decor/roti5.png" parallax={-0.22} rotate={-18}
         className="-right-12 top-20 hidden w-28 lg:block lg:w-36" />
-      <Decor src="/images/decor/bunga.png" parallax={0.24} rotate={20}
+      <Decor src="/images/decor/roti5.png" parallax={0.24} rotate={20}
         className="-left-8 bottom-44 hidden w-20 lg:block lg:w-28" />
 
       <div className="container-wide relative">

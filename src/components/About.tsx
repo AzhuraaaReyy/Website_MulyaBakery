@@ -42,16 +42,23 @@ export default function About() {
 
       {/* Aksen bahan cut-out */}
       <Decor
-        src="/images/decor/jeruk.png"
+        src="/images/decor/roti.png"
         parallax={-0.2}
         rotate={22}
-        className="-right-10 top-24 hidden w-28 lg:block lg:w-36"
+        className="-right-[100px] top-[350px] hidden w-28 lg:block lg:w-[280px] z-30"
       />
       <Decor
-        src="/images/decor/beri.png"
+        src="/images/decor/roti.png"
+        parallax={-0.2}
+        rotate={22}
+        className="-right-[40px] top-[270px] hidden w-28 lg:block lg:w-[200px] "
+      />
+      
+      <Decor
+        src="/images/decor/selai2.png"
         parallax={0.24}
         rotate={-12}
-        className="bottom-40 right-16 hidden w-20 lg:block lg:w-24"
+        className="bottom-[480px] left-4 hidden w-20 lg:block lg:w-[180px]"
       />
 
       <div className="container-wide relative grid items-center gap-14 lg:grid-cols-2 lg:gap-16">
@@ -155,5 +162,6 @@ export default function About() {
       {/* Sobekan ke section Menu (paper-50) */}
       <TornPaper fill="#FCF8F0" core="#FFFFFF" seed="about-tear" height={82} />
     </section>
+    
   );
 }

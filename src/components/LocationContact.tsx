@@ -19,10 +19,10 @@ export default function LocationContact() {
       <div className="paper-grain pointer-events-none absolute inset-0 opacity-60" aria-hidden />
 
       {/* Aksen bahan cut-out */}
-      <Decor src="/images/decor/jeruk.png" parallax={0.2} rotate={18}
+      <Decor src="/images/decor/roti6.png" parallax={0.2} rotate={18}
         className="-left-10 bottom-40 hidden w-28 lg:block lg:w-36" />
-      <Decor src="/images/decor/daun.png" parallax={-0.2} rotate={-22}
-        className="-right-8 top-24 hidden w-24 lg:block lg:w-32" />
+      <Decor src="/images/decor/roti6.png" parallax={-0.2} rotate={-22}
+        className="-right-8 top-24 hidden w-30 lg:block lg:w-[200px]" />
 
       <div className="container-wide relative">
         <div className="mx-auto max-w-2xl text-center">
