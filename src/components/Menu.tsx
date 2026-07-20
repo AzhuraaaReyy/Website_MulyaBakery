@@ -133,53 +133,57 @@ export default function Menu() {
       />
 
       {/* Aksen bahan cut-out */}
+      {/* Decor bagian tengah*/}
       <Decor
         src="/images/decor/roti5.png"
         parallax={0.22}
         rotate={-18}
-        className="top-[1630px] right-[120px] hidden w-20 lg:block lg:w-[100px] z-20"
+        className="top-[1740px] right-[100px] hidden w-20 lg:block lg:w-[100px] -z-0"
       />
       <Decor
         src="/images/decor/roti3.png"
         parallax={0.22}
         rotate={-18}
-        className="top-[1650px] right-[280px] hidden w-20 lg:block lg:w-[100px] z-20"
+        className="top-[1740px] right-[245px] hidden w-20 lg:block lg:w-[130px] -z-0"
       />
       <Decor
         src="/images/decor/selai2.png"
         parallax={0.22}
         rotate={-18}
-        className="top-[1600px] right-[70px] hidden w-20 lg:block lg:w-[320px] z-20"
+        className="top-[1700px] right-[70px] hidden w-20 lg:block lg:w-[320px] -z-0"
       />
       <Decor
         src="/images/decor/roti4.png"
         parallax={0.22}
         rotate={-18}
-        className="top-[1530px] right-[100px] hidden w-20 lg:block lg:w-[300px] z-20"
+        className="top-[1630px] right-[80px] hidden w-20 lg:block lg:w-[300px] -z-0"
       />
-      
+
+      {/* Decor bagian bawah*/}
       <Decor
         src="/images/decor/selai2.png"
         parallax={0.22}
         rotate={-18}
-        className="bottom-[20px] -left-[10px] hidden w-20 lg:block lg:w-[350px]"
+        className="bottom-[150px] -left-[10px] hidden w-20 lg:block lg:w-[350px] -z-0"
       />
       <Decor
         src="/images/decor/roti6.png"
         parallax={0.22}
         rotate={-18}
-        className="bottom-[20px] -left-[10px] hidden w-20 lg:block lg:w-[350px]"
+        className="bottom-[150px] -left-[10px] hidden w-20 lg:block lg:w-[350px] -z-0"
       />
 
       <Decor
         src="/images/decor/roti6.png"
         parallax={0.22}
         rotate={-18}
-        className="bottom-[40px] -left-[30px] hidden w-20 lg:block lg:w-[200px]"
+        className="bottom-[180px] -left-[30px] hidden w-20 lg:block lg:w-[200px] -z-0"
       />
+
+      {/* Decor bagian atas*/}
       <div className="container-wide relative">
         <Decor
-          src="/images/decor/roti6.png"
+          src="/images/decor/roti4.png"
           parallax={0.22}
           rotate={-18}
           className="bottom-[20px] -left-[30px] hidden w-20 lg:block lg:w-[350px] z-20"

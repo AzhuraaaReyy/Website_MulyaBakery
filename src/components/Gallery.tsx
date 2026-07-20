@@ -32,9 +32,24 @@ export default function Gallery() {
 
       {/* Aksen bahan cut-out */}
       <Decor src="/images/decor/roti4.png" parallax={0.22} rotate={-16}
-        className="-left-12 top-24 hidden w-28 lg:block lg:w-36" />
+        className="left-10 top-[70px] hidden w-28 lg:block lg:w-[300px] z-20" />
+      <Decor src="/images/decor/roti3.png" parallax={0.22} rotate={-16}
+        className="left-4 top-[150px] hidden w-28 lg:block lg:w-[200px] z-10" />
+      <Decor src="/images/decor/rotirotate.png" parallax={0.22} rotate={-16}
+        className="left-[200px] top-[150px] hidden w-28 lg:block lg:w-[150px] z-10" />
+
+      <Decor src="/images/decor/roti6.png" parallax={-0.2} rotate={22}
+        className="right-[120px] bottom-20 hidden w-28 lg:block lg:w-[300px] z-30" />
       <Decor src="/images/decor/roti.png" parallax={-0.2} rotate={22}
-        className="-right-10 bottom-52 hidden w-28 lg:block lg:w-36" />
+        className="right-[300px] bottom-[120px] hidden w-28 lg:block lg:w-[150px] z-20" />
+      <Decor src="/images/decor/roti4.png" parallax={-0.2} rotate={22}
+        className="right-[300px] bottom-[120px] hidden w-28 lg:block lg:w-[170px] z-20" />
+      <Decor src="/images/decor/roti4.png" parallax={-0.2} rotate={22}
+        className="right-[240px] bottom-[100px] hidden w-28 lg:block lg:w-[170px] z-20" />
+      <Decor src="/images/decor/roti3.png" parallax={-0.2} rotate={22}
+        className="right-[100px] bottom-[120px] hidden w-28 lg:block lg:w-[180px] z-10" />
+      <Decor src="/images/decor/selai2.png" parallax={-0.2} rotate={22}
+        className="right-[120px] bottom-[90px] hidden w-28 lg:block lg:w-[300px] z-5" />
 
       <div className="container-wide relative">
         <div className="mx-auto max-w-2xl text-center">
@@ -59,7 +74,7 @@ export default function Gallery() {
                 whileHover={{ scale: 1.04 }}
                 transition={{ type: 'spring', stiffness: 260, damping: 20 }}
                 style={{ rotate: item.tilt }}
-                className="group relative h-full w-full"
+                className="group relative h-full w-full z-30"
               >
                 <div className="h-full w-full rounded-[1.4rem] bg-paper-50 p-2.5 shadow-lift ring-1 ring-cocoa-700/10 transition-shadow group-hover:shadow-cocoa">
                   <div className="relative h-full w-full overflow-hidden rounded-[1rem]">

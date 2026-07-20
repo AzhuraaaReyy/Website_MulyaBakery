@@ -54,12 +54,7 @@ export default function About() {
         className="-right-[40px] top-[270px] hidden w-28 lg:block lg:w-[200px] "
       />
       
-      <Decor
-        src="/images/decor/selai2.png"
-        parallax={0.24}
-        rotate={-12}
-        className="bottom-[480px] left-4 hidden w-20 lg:block lg:w-[180px]"
-      />
+     
 
       <div className="container-wide relative grid items-center gap-14 lg:grid-cols-2 lg:gap-16">
         {/* ── Kiri: tumpukan foto bergaya tempelan kertas ─────────────── */}

@@ -47,13 +47,59 @@ export default function Testimonials() {
       ref={sectionRef}
       className="relative overflow-hidden bg-paper-100 pb-40 pt-24 lg:pb-48 lg:pt-32"
     >
-      <div className="paper-grain pointer-events-none absolute inset-0 opacity-50" aria-hidden />
+      <div
+        className="paper-grain pointer-events-none absolute inset-0 opacity-50"
+        aria-hidden
+      />
+      {/* Decor bagian bawah*/}
+      <Decor
+        src="/images/decor/selai2.png"
+        parallax={0.22}
+        rotate={-18}
+        className="bottom-[150px] -left-[10px] hidden w-20 lg:block lg:w-[350px] -z-0"
+      />
+      <Decor
+        src="/images/decor/roti6.png"
+        parallax={0.22}
+        rotate={-18}
+        className="bottom-[150px] -left-[10px] hidden w-20 lg:block lg:w-[350px] -z-0"
+      />
 
+      <Decor
+        src="/images/decor/roti6.png"
+        parallax={0.22}
+        rotate={-18}
+        className="bottom-[180px] -left-[30px] hidden w-20 lg:block lg:w-[200px] -z-0"
+      />
+
+      {/*right decor*/}
+      <Decor
+        src="/images/decor/selai2.png"
+        parallax={0.22}
+        rotate={-18}
+        className="top-[10px] -right-[10px] hidden w-20 lg:block lg:w-[350px] -z-0"
+      />
+      <Decor
+        src="/images/decor/roti6.png"
+        parallax={0.22}
+        rotate={-18}
+        className="top-[10px] -right-[10px] hidden w-20 lg:block lg:w-[350px] -z-0"
+      />
+
+      <Decor
+        src="/images/decor/roti6.png"
+        parallax={0.22}
+        rotate={-18}
+        className="top-[10px] -right-[30px] hidden w-20 lg:block lg:w-[200px] -z-0"
+      />
       {/* Aksen bahan cut-out */}
-      <Decor src="/images/decor/roti5.png" parallax={0.2} rotate={-24}
-        className="-left-10 top-20 hidden w-24 lg:block lg:w-32" />
-      <Decor src="/images/decor/roti4.png" parallax={-0.22} rotate={14}
-        className="-right-6 bottom-48 hidden w-20 lg:block lg:w-28" />
+
+      <Decor
+        src="/images/decor/roti4.png"
+        parallax={-0.22}
+        rotate={14}
+        className="-right-6 bottom-[90px] hidden w-20 lg:block lg:w-[140px]"
+      />
 
       <div className="container-wide relative">
         <div className="grid items-center gap-14 lg:grid-cols-2 lg:gap-16">
@@ -159,7 +205,11 @@ export default function Testimonials() {
 
             {/* Kontrol carousel */}
             <div data-reveal className="mt-7 flex items-center justify-between">
-              <div className="flex gap-2" role="tablist" aria-label="Pilih testimoni">
+              <div
+                className="flex gap-2"
+                role="tablist"
+                aria-label="Pilih testimoni"
+              >
                 {testimonials.map((item, i) => (
                   <button
                     key={item.id}
