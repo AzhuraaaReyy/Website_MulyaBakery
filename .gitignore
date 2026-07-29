@@ -21,3 +21,14 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Environment — semua varian ditutup, kecuali contohnya
+.env
+.env.*
+!.env.example
+
+# Build artifact
+*.tsbuildinfo
+
+# Folder foto mentah (±300 MB) — jangan pernah masuk Git
+Foto/
