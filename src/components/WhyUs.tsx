@@ -1,7 +1,5 @@
 import { useRef } from "react";
 import { Croissant, Leaf, Wallet, Truck } from "lucide-react";
-import TornPaper from "./TornPaper";
-import Decor from "./Decor";
 import { useScrolly } from "../hooks/useScrolly";
 
 const reasons = [
@@ -38,108 +36,42 @@ export default function WhyUs() {
     <section
       id="keunggulan"
       ref={sectionRef}
-      className="relative overflow-hidden bg-paper-200 pb-36 pt-36 lg:pb-44 lg:pt-44"
+      className="relative w-full overflow-hidden bg-paper-200 py-12 sm:py-16 lg:py-20"
     >
-      {/* Kertas sobek di kedua tepi — section ini jadi "lembar" tersendiri */}
-      <TornPaper
-        position="top"
-        fill="#FCF8F0"
-        core="#FFFFFF"
-        seed="why-top"
-        height={76}
-      />
-      <TornPaper
-        position="bottom"
-        fill="#F7F0E1"
-        core="#FCF8F0"
-        seed="why-bottom"
-        height={80}
-      />
-
       <div
         className="paper-grain pointer-events-none absolute inset-0 opacity-60"
         aria-hidden
       />
 
-      {/* Aksen bahan cut-out */}
-      <Decor
-        src="/images/decor/roti4.png"
-        parallax={-0.18}
-        rotate={26}
-        className="right-[140px] bottom-[110px] hidden w-24 lg:block lg:w-[130px] z-30"
-      />
-      <Decor
-        src="/images/decor/roti.png"
-        parallax={-0.18}
-        rotate={26}
-        className="right-[140px] bottom-[150px] hidden w-24 lg:block lg:w-[80px] z-20"
-      />
-
-      <Decor
-        src="/images/decor/selai2.png"
-        parallax={-0.18}
-        rotate={26}
-        className="right-[100px] bottom-[120px] hidden w-24 lg:block lg:w-[160px] z-10"
-      />
-
-      <Decor
-        src="/images/decor/roti3.png"
-        parallax={-0.18}
-        rotate={26}
-        className="left-[130px] top-[380px] hidden w-20 lg:block lg:w-[90px] z-20"
-      />
-      <Decor
-        src="/images/decor/roti3.png"
-        parallax={-0.18}
-        rotate={26}
-        className="left-[150px] top-[350px] hidden w-20 lg:block lg:w-[130px] z-20"
-      />
-
-      {/* Decor bagian tengah*/}
-      <Decor
-        src="/images/decor/roti5.png"
-        parallax={0.22}
-        rotate={-18}
-        className="top-[100px] right-[100px] hidden w-20 lg:block lg:w-[130px] -z-0"
-      />
-      <Decor
-        src="/images/decor/roti3.png"
-        parallax={0.22}
-        rotate={-18}
-        className="top-[30px] right-[220px] hidden w-20 lg:block lg:w-[180px] -z-0"
-      />
-      <Decor
-        src="/images/decor/roti3.png"
-        parallax={0.22}
-        rotate={-18}
-        className="top-[100px] right-[220px] hidden w-20 lg:block lg:w-[180px] -z-0"
-      />
-      <Decor
-        src="/images/decor/selai2.png"
-        parallax={0.22}
-        rotate={-18}
-        className="top-[10px] right-[70px] hidden w-20 lg:block lg:w-[320px] -z-0"
-      />
-      <Decor
-        src="/images/decor/brownis.png"
-        parallax={0.22}
-        rotate={-18}
-        className="top-[70px] right-[150px] hidden w-20 lg:block lg:w-[200px] z-30"
-      />
-
-      <div className="container-wide relative">
+      <div className="container-wide relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        {/* Header Section */}
         <div className="mx-auto max-w-2xl text-center">
-          <span data-reveal className="eyebrow-script">
-            Kenapa pilih kami
-          </span>
-          <h2 data-reveal className="title-1 mt-2">
-            Alasan pelanggan kembali lagi &amp; lagi
+          {/* Badge Eyebrow */}
+          <div className="inline-flex items-center gap-2 rounded-full bg-caramel/20 px-3.5 py-1 text-xs font-semibold text-cocoa-800 sm:text-sm">
+            <span className="h-2 w-2 rounded-full bg-caramel"></span>
+            <span className="eyebrow-script !m-0">Kenapa Pilih Kami</span>
+          </div>
+
+          <h2
+            data-reveal
+            className="title-1 mt-2 text-2xl font-bold tracking-tight text-cocoa-900 sm:text-3xl lg:text-4xl"
+          >
+            Alasan Pelanggan Selalu Kembali Lagi
           </h2>
+
+          <p
+            data-reveal
+            className="font-section3-p mt-3 text-center text-base leading-relaxed text-cocoa-700/85 sm:text-lg lg:text-xl"
+          >
+            Dari bahan pilihan hingga rasa yang dibuat dengan penuh perhatian,
+            setiap roti hadir dengan cita rasa rumahan yang membuat ingin
+            mencoba lagi.
+          </p>
         </div>
 
         <div
           data-stagger
-          className="mt-16 grid gap-7 sm:grid-cols-2 lg:grid-cols-4"
+          className="mt-10 sm:mt-12 lg:mt-16 grid gap-6 sm:grid-cols-2 lg:grid-cols-4"
         >
           {/* Pembungkus luar = anak langsung [data-stagger]; GSAP menghapus
               transform-nya setelah reveal, jadi kemiringan diletakkan di DALAM. */}
@@ -147,7 +79,7 @@ export default function WhyUs() {
             <div key={r.title} className="h-full">
               <div
                 style={{ rotate: TILT[i % TILT.length] }}
-                className="group relative h-full rounded-[1.75rem] bg-paper-50 px-7 pb-8 pt-11 text-center shadow-lift ring-1 ring-cocoa-700/10 transition-transform duration-300 hover:-translate-y-2 hover:rotate-0"
+                className="group relative h-full rounded-[1.75rem] bg-paper-50 px-6 pb-8 pt-10 sm:px-7 text-center shadow-lift ring-1 ring-cocoa-700/10 transition-transform duration-300 hover:-translate-y-2 hover:rotate-0"
               >
                 {/* Selotip kertas di ujung atas kartu */}
                 <span
@@ -155,11 +87,15 @@ export default function WhyUs() {
                   aria-hidden
                 />
 
-                <span className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-caramel/15 text-caramel ring-1 ring-caramel/25 transition-colors duration-300 group-hover:bg-cocoa-800 group-hover:text-paper-50 group-hover:ring-cocoa-800">
-                  <r.icon className="h-9 w-9" strokeWidth={1.8} aria-hidden />
+                <span className="mx-auto mb-6 flex h-16 w-16 sm:h-20 sm:w-20 items-center justify-center rounded-full bg-caramel/15 text-caramel ring-1 ring-caramel/25 transition-colors duration-300 group-hover:bg-cocoa-800 group-hover:text-paper-50 group-hover:ring-cocoa-800">
+                  <r.icon
+                    className="h-8 w-8 sm:h-9 sm:w-9"
+                    strokeWidth={1.8}
+                    aria-hidden
+                  />
                 </span>
 
-                <h3 className="font-heading text-xl text-cocoa-800">
+                <h3 className="font-heading text-lg sm:text-xl text-cocoa-800">
                   {r.title}
                 </h3>
                 <p className="mt-2.5 font-text text-sm leading-relaxed text-cocoa-700/80">

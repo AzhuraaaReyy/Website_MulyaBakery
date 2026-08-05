@@ -13,10 +13,32 @@
     <!-- Fonts: Caprasimo (display playful) + Caveat (script) + Nunito Sans (body) -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!--
+      Font dimuat tanpa memblokir tampilan.
+
+      Sebuah <link rel="stylesheet"> biasa menghentikan peramban: tidak ada
+      satu piksel pun digambar sebelum berkas font selesai diunduh dari server
+      Google. Di jaringan seluler Indonesia jeda itu sering satu sampai dua
+      detik, dan selama itu pengunjung menatap layar kosong.
+
+      Trik media="print" membuat peramban mengunduhnya sebagai gaya cetak —
+      yang tidak memblokir tampilan — lalu onload mengubahnya menjadi gaya
+      layar begitu berkasnya siap. Halaman tampil lebih dulu dengan font
+      cadangan, lalu berganti mulus. <noscript> menjaga font tetap dimuat
+      untuk peramban yang JavaScript-nya dimatikan.
+    -->
     <link
       href="https://fonts.googleapis.com/css2?family=Caprasimo&family=Caveat:wght@500;600;700&family=Nunito+Sans:opsz,wght@6..12,400;6..12,500;6..12,600;6..12,700;6..12,800&display=swap"
       rel="stylesheet"
+      media="print"
+      onload="this.media = 'all'"
     />
+    <noscript>
+      <link
+        href="https://fonts.googleapis.com/css2?family=Caprasimo&family=Caveat:wght@500;600;700&family=Nunito+Sans:opsz,wght@6..12,400;6..12,500;6..12,600;6..12,700;6..12,800&display=swap"
+        rel="stylesheet"
+      />
+    </noscript>
 
     <title>Roti Bahagia — Roti Rumahan Dibuat dengan Cinta</title>
   </head>

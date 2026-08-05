@@ -25,6 +25,10 @@ export interface Product {
    * Bila file belum ada, otomatis fallback ke foto `image` sebagai poster.
    */
   video?: string;
+  /** Rating rata-rata (0–5) untuk kartu menu. */
+  rating?: number;
+  /** Jumlah terjual — teks siap tampil (mis. "500+"). */
+  sold?: string;
 }
 
 export function formatPrice(value: number): string {
@@ -68,6 +72,8 @@ export const products: Product[] = [
     bestSeller: true,
     featured: true,
     video: DEMO.a, // asli: "/videos/roti-coklat-keju.mp4"
+    rating: 4.9,
+    sold: "500+",
   },
   {
     id: "roti-tawar-gandum",
@@ -79,6 +85,8 @@ export const products: Product[] = [
     image: "/images/roti-tawar-gandum.jpg",
     featured: true,
     video: DEMO.b, // asli: "/videos/roti-tawar-gandum.mp4"
+    rating: 4.7,
+    sold: "220+",
   },
   {
     id: "roti-sobek-pandan",
@@ -90,6 +98,8 @@ export const products: Product[] = [
     bestSeller: true,
     featured: true,
     video: DEMO.c, // asli: "/videos/roti-sobek-pandan.mp4"
+    rating: 4.8,
+    sold: "310+",
   },
   {
     id: "croissant-butter",
@@ -101,6 +111,8 @@ export const products: Product[] = [
     image: "/images/croissant-butter.jpg",
     featured: true,
     video: DEMO.d, // asli: "/videos/croissant-butter.mp4"
+    rating: 4.8,
+    sold: "180+",
   },
   {
     id: "nastar-premium",
@@ -113,6 +125,8 @@ export const products: Product[] = [
     bestSeller: true,
     featured: true,
     video: DEMO.e, // asli: "/videos/nastar-premium.mp4"
+    rating: 4.9,
+    sold: "150+",
   },
   {
     id: "kue-ulang-tahun",
@@ -122,6 +136,8 @@ export const products: Product[] = [
     description:
       "Kue custom sesuai tema acara Anda. Harga mulai dari, sesuai desain.",
     image: "/images/kue-ulang-tahun.jpg",
+    rating: 5.0,
+    sold: "60+",
   },
 ];
 
