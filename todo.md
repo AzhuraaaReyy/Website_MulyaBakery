@@ -196,6 +196,16 @@ npm run lint       # tsc --noEmit
 
 ---
 
+### ✅ `vercel.json` — SPA Fallback untuk akses `/admin` di Vercel (SELESAI)
+
+**Perubahan file:** `vercel.json` (baru)
+
+**Masalah:** Admin panel diakses via URL `/admin` (lihat `main.tsx` yang merender AdminApp saat pathname diawali `/admin`). Saat dibuka langsung di Vercel, hosting statis bisa mengembalikan 404 karena tidak ada file `/admin`. Perlu SPA fallback.
+
+**Solusi:** Dibuat `vercel.json` dengan rewrite semua rute ke `index.html`, sehingga `/admin` (dan path lain) selalu memuat aplikasi, lalu React menentukan kontennya.
+
+---
+
 ### ✅ Footer — Kolom MENU diselaraskan dengan Navbar (SELESAI)
 
 **Perubahan file:** `src/components/Footer.tsx`
