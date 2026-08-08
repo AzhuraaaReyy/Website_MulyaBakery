@@ -137,9 +137,10 @@ export default function HowToOrder() {
 
           <h2
             data-reveal
-            className="title-1 mt-2 text-2xl font-bold tracking-tight text-cocoa-900 sm:text-3xl lg:text-4xl"
+            className="title-1 mt-2 text-2xl  tracking-tight text-cocoa-900 sm:text-3xl lg:text-4xl"
           >
-            Pesan Roti Favoritmu dengan Mudah
+            Pesan Roti Favoritmu <br/> 
+            dengan Mudah
           </h2>
 
           <p

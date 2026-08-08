@@ -1,30 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import {
-  X,
-  Check,
-  Sparkles,
-  Calendar,
-  Palette,
-  Wallet,
-  FileText,
-  MessageCircle,
-  Store,
-  Bike,
-  ChevronLeft,
-  Phone,
-  MapPin,
-  Upload,
-  Cake,
-  Gift,
-  UtensilsCrossed,
-  Users,
-  ArrowRight,
-} from "lucide-react";
 import { bookingOrderUrl, type OrderMethod } from "../lib/whatsapp";
 import { uploadImage } from "../lib/uploadImage";
 import { isSupabaseConfigured } from "../lib/supabase";
 import { kunciScroll } from "../lib/scrollLock";
+import ReviewModal from "./ReviewModal";
 
 /* ── Config ─────────────────────────────────────────────────────────────── */
 
@@ -32,43 +12,26 @@ const CATEGORIES = [
   {
     id: "Kue Ulang Tahun",
     label: "Kue Ulang Tahun",
-    icon: Cake,
-    desc: "Custom cake & tart",
+    desc: "Custom cake & tart pilihan spesial",
   },
   {
     id: "Hampers / Parsel",
     label: "Hampers / Parsel",
-    icon: Gift,
-    desc: "Paket bingkisan",
+    desc: "Paket bingkisan manis & eksklusif",
   },
   {
     id: "Tumpeng / Tampah",
     label: "Tumpeng / Tampah",
-    icon: UtensilsCrossed,
-    desc: "Snack & sajan",
+    desc: "Tradisional & sajian istimewa acara",
   },
   {
     id: "Custom Design",
     label: "Custom Design",
-    icon: Sparkles,
-    desc: "Request bebas",
+    desc: "Bebas sesuai imajinasi & selera Anda",
   },
 ];
 
-const QTY_SUGGESTIONS = [
-  "10-15 Porsi",
-  "20-25 Porsi",
-  "Loyang 22cm",
-  "Paket Acara",
-];
-const BUDGET_SUGGESTIONS = [
-  "< Rp 300rb",
-  "Rp 300-500rb",
-  "Rp 500rb-1jt",
-  "> Rp 1jt",
-];
-
-/* ── UI Sub-components ─────────────────────────────────────────────────── */
+/* ── UI Sub-components ────────────────────────────────────── */
 
 function FormField({
   label,
@@ -84,19 +47,21 @@ function FormField({
   children: React.ReactNode;
 }) {
   return (
-    <div className="space-y-1">
-      <div className="flex items-center justify-between font-text text-[10px] font-bold tracking-wider text-cocoa-700 uppercase">
-        <span>
-          {label}{" "}
-          {required && <span className="text-caramel font-bold">*</span>}
+    <div className="flex flex-col space-y-1.5 font-itim">
+      <div className="flex items-baseline justify-between gap-2 text-xs font-semibold text-neutral-800">
+        <span className="inline-flex items-center gap-0.5 leading-none">
+          {label}
+          {required && <span className="text-pink-600 font-bold">*</span>}
         </span>
         {hint && (
-          <span className="text-cocoa-400 font-normal normal-case">{hint}</span>
+          <span className="text-[11px] font-normal leading-none text-neutral-400 shrink-0">
+            {hint}
+          </span>
         )}
       </div>
-      {children}
+      <div className="w-full font-itim">{children}</div>
       {error && (
-        <p className="font-text text-[11px] font-medium text-rose-500">
+        <p className="text-[11px] font-medium leading-tight text-pink-600">
           {error}
         </p>
       )}
@@ -105,61 +70,43 @@ function FormField({
 }
 
 function InputField({
-  icon: Icon,
   error,
   className = "",
   ...props
 }: {
-  icon?: React.ElementType;
   error?: string;
 } & React.InputHTMLAttributes<HTMLInputElement>) {
   return (
-    <div className="relative flex items-center">
-      {Icon && (
-        <Icon className="pointer-events-none absolute left-3 h-4 w-4 text-cocoa-400" />
-      )}
-      <input
-        {...props}
-        className={`w-full rounded-lg border bg-white px-3 py-2 font-text text-xs text-cocoa-900 transition-all placeholder:text-cocoa-300 focus:outline-none focus:ring-2 focus:ring-caramel/20 focus:border-caramel ${
-          Icon ? "pl-9" : ""
-        } ${
-          error
-            ? "border-rose-400 ring-1 ring-rose-400/20"
-            : "border-cocoa-200 hover:border-cocoa-300"
-        } ${className}`}
-      />
-    </div>
+    <input
+      {...props}
+      className={`w-full h-10 rounded-xl border bg-pink-50/20 px-3.5 text-xs text-neutral-900 font-itim transition-all leading-normal placeholder:font-normal placeholder:text-neutral-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-pink-400/50 focus:border-pink-400 ${
+        error
+          ? "border-pink-300 bg-pink-50/50"
+          : "border-pink-200/80 hover:border-pink-300"
+      } ${className}`}
+    />
   );
 }
 
 function TextareaField({
-  icon: Icon,
   error,
   rows = 2,
   className = "",
   ...props
 }: {
-  icon?: React.ElementType;
   error?: string;
   rows?: number;
 } & React.TextareaHTMLAttributes<HTMLTextAreaElement>) {
   return (
-    <div className="relative flex">
-      {Icon && (
-        <Icon className="pointer-events-none absolute left-3 top-2.5 h-4 w-4 text-cocoa-400" />
-      )}
-      <textarea
-        {...props}
-        rows={rows}
-        className={`w-full rounded-lg border bg-white px-3 py-2 font-text text-xs text-cocoa-900 transition-all placeholder:text-cocoa-300 focus:outline-none focus:ring-2 focus:ring-caramel/20 focus:border-caramel ${
-          Icon ? "pl-9" : ""
-        } ${
-          error
-            ? "border-rose-400 ring-1 ring-rose-400/20"
-            : "border-cocoa-200 hover:border-cocoa-300"
-        } ${className}`}
-      />
-    </div>
+    <textarea
+      {...props}
+      rows={rows}
+      className={`w-full rounded-xl border bg-pink-50/20 px-3.5 py-2.5 text-xs text-neutral-900 font-itim transition-all leading-relaxed placeholder:font-normal placeholder:text-neutral-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-pink-400/50 focus:border-pink-400 resize-none ${
+        error
+          ? "border-pink-300 bg-pink-50/50"
+          : "border-pink-200/80 hover:border-pink-300"
+      } ${className}`}
+    />
   );
 }
 
@@ -174,7 +121,8 @@ export default function BookingModal({
 }) {
   const [step, setStep] = useState<1 | 2>(1);
 
-  const [category, setCategory] = useState("Kue Ulang Tahun");
+  // Kategori awal diubah menjadi string kosong ""
+  const [category, setCategory] = useState("");
   const [customLabel, setCustomLabel] = useState("");
   const [photo, setPhoto] = useState("");
   const [uploading, setUploading] = useState(false);
@@ -185,16 +133,16 @@ export default function BookingModal({
   const [date, setDate] = useState("");
   const [qty, setQty] = useState("");
   const [theme, setTheme] = useState("");
-  const [budget, setBudget] = useState("");
   const [method, setMethod] = useState<OrderMethod>("ambil");
   const [address, setAddress] = useState("");
   const [note, setNote] = useState("");
 
   const [touched1, setTouched1] = useState(false);
   const [touched2, setTouched2] = useState(false);
+  const [ulasanTerbuka, setUlasanTerbuka] = useState(false);
 
   const finalType =
-    category === "Custom Design"
+    category === "Custom Design" || category.toLowerCase().includes("custom")
       ? customLabel.trim() || "Custom Design"
       : category;
 
@@ -237,7 +185,9 @@ export default function BookingModal({
     try {
       setPhoto(await uploadImage(file, "booking"));
     } catch (err) {
-      setPhotoError(err instanceof Error ? err.message : "Gagal upload foto");
+      setPhotoError(
+        err instanceof Error ? err.message : "Gagal mengunggah foto",
+      );
     } finally {
       setUploading(false);
     }
@@ -259,7 +209,7 @@ export default function BookingModal({
         date,
         quantity: qty.trim(),
         theme: theme.trim(),
-        budget: budget.trim(),
+        budget: "",
         method,
         address: address.trim(),
         note: note.trim(),
@@ -268,461 +218,508 @@ export default function BookingModal({
       "_blank",
       "noopener,noreferrer",
     );
+    // Tutup modal booking, lalu buka form ulasan otomatis setelah jeda singkat
+    // agar pelanggan sempat melihat pesan WhatsApp yang terbuka.
     onClose();
+    window.setTimeout(() => setUlasanTerbuka(true), 1200);
   };
 
   return (
-    <AnimatePresence>
-      {open && (
-        <motion.div
-          className="fixed inset-0 z-[70] flex items-center justify-center p-3 sm:p-4"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-        >
-          {/* Backdrop */}
-          <button
-            type="button"
-            aria-label="Tutup"
-            onClick={onClose}
-            className="absolute inset-0 bg-cocoa-950/40 backdrop-blur-sm"
-          />
+    <>
+      {/* Form ulasan otomatis muncul setelah booking dikirim */}
+      <ReviewModal
+        open={ulasanTerbuka}
+        onClose={() => setUlasanTerbuka(false)}
+      />
 
-          {/* Modal Container */}
+      <AnimatePresence>
+        {open && (
           <motion.div
-            role="dialog"
-            aria-modal="true"
-            initial={{ opacity: 0, scale: 0.97, y: 10 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.97, y: 10 }}
-            className="relative flex max-h-[85vh] w-full max-w-lg flex-col overflow-hidden rounded-2xl bg-white shadow-xl ring-1 ring-black/5"
+            className="fixed inset-0 z-[70] flex items-center justify-center p-3 sm:p-4 md:p-6"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
           >
-            {/* Modal Header */}
-            <div className="shrink-0 border-b border-cocoa-100 bg-white px-5 py-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="font-text text-[10px] font-bold tracking-wider text-caramel uppercase">
-                    Mulya Bakery Order System
-                  </p>
-                  <h2 className="font-heading text-lg font-bold text-cocoa-900 sm:text-xl">
-                    Form Booking Custom
-                  </h2>
-                </div>
-                <button
-                  type="button"
-                  onClick={onClose}
-                  className="flex h-8 w-8 items-center justify-center rounded-lg text-cocoa-400 hover:bg-cocoa-50 hover:text-cocoa-700 transition-colors"
-                >
-                  <X className="h-5 w-5" />
-                </button>
-              </div>
+            {/* Inject Font 'Itim' & Pengaturan Placeholder Tidak Bold */}
+            <style>{`
+            @import url('https://fonts.googleapis.com/css2?family=Itim&display=swap');
+            
+            .font-itim, .font-itim * { 
+              font-family: 'Itim', cursive, sans-serif; 
+            }
 
-              {/* Minimal Step Indicator */}
-              <div className="mt-3.5 flex items-center gap-2 border-t border-cocoa-100/60 pt-3">
-                <div className="flex flex-1 items-center gap-2">
-                  <span
-                    className={`flex h-5 w-5 items-center justify-center rounded-full text-[11px] font-bold ${
+            /* Memastikan semua teks placeholder tidak tebal */
+            ::placeholder {
+              font-weight: 400 !important;
+            }
+            ::-webkit-input-placeholder {
+              font-weight: 400 !important;
+            }
+            ::-moz-placeholder {
+              font-weight: 400 !important;
+            }
+            :-ms-input-placeholder {
+              font-weight: 400 !important;
+            }
+
+            /* Hide scrollbar */
+            .no-scrollbar::-webkit-scrollbar {
+              display: none;
+            }
+            .no-scrollbar {
+              -ms-overflow-style: none;
+              scrollbar-width: none;
+            }
+          `}</style>
+
+            {/* Backdrop */}
+            <button
+              type="button"
+              aria-label="Tutup"
+              onClick={onClose}
+              className="absolute inset-0 bg-neutral-950/40 backdrop-blur-xs transition-opacity"
+            />
+
+            {/* Modal Container */}
+            <motion.div
+              role="dialog"
+              aria-modal="true"
+              initial={{ opacity: 0, scale: 0.97, y: 8 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.97, y: 8 }}
+              transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+              className="relative flex max-h-[85vh] w-full max-w-lg flex-col overflow-hidden rounded-2xl sm:rounded-3xl bg-white shadow-2xl border border-pink-200/80 font-itim"
+            >
+              {/* Modal Header */}
+              <div className="shrink-0 border-b border-pink-100 bg-gradient-to-b from-pink-50/70 via-pink-50/20 to-white px-5 py-4 sm:px-6 sm:pt-6 sm:pb-5">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0 flex-1">
+                    <span className="block text-[10px] sm:text-[11px] font-bold tracking-widest text-pink-700 uppercase leading-none">
+                      Pemesanan Khusus
+                    </span>
+                    <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-neutral-900 mt-1 leading-none truncate">
+                      Mulya Bakery
+                    </h2>
+                    <p className="text-xs text-neutral-500 mt-1 leading-normal">
+                      Kreasi manis kustomisasi untuk momen spesial Anda
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={onClose}
+                    className="shrink-0 rounded-full h-8 w-8 flex items-center justify-center text-neutral-400 hover:bg-pink-100/60 hover:text-pink-900 transition-colors text-sm font-bold"
+                  >
+                    ✕
+                  </button>
+                </div>
+
+                {/* Step Navigation Tabs */}
+                <div className="mt-4 grid grid-cols-2 gap-2">
+                  <div
+                    className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs transition-all ${
                       step === 1
-                        ? "bg-cocoa-900 text-white"
-                        : "bg-emerald-600 text-white"
+                        ? "bg-pink-100/80 text-neutral-900 font-semibold border border-pink-300/70 shadow-xs"
+                        : "bg-neutral-50 text-neutral-500 font-medium border border-neutral-200/60"
                     }`}
                   >
-                    {step === 1 ? "1" : <Check className="h-3 w-3" />}
-                  </span>
-                  <span
-                    className={`font-text text-xs ${step === 1 ? "font-bold text-cocoa-900" : "text-cocoa-500"}`}
-                  >
-                    Konsep Pesanan
-                  </span>
-                </div>
-                <div className="h-px w-6 bg-cocoa-200" />
-                <div className="flex flex-1 items-center gap-2 justify-end">
-                  <span
-                    className={`flex h-5 w-5 items-center justify-center rounded-full text-[11px] font-bold ${
+                    <span
+                      className={`text-[10px] font-bold leading-none px-1.5 py-0.5 rounded-md ${
+                        step === 1
+                          ? "bg-pink-200/80 text-pink-900"
+                          : "bg-neutral-200/60 text-neutral-600"
+                      }`}
+                    >
+                      01
+                    </span>
+                    <span className="truncate leading-none p-1">
+                      Konsep Pesanan
+                    </span>
+                  </div>
+                  <div
+                    className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs transition-all ${
                       step === 2
-                        ? "bg-cocoa-900 text-white"
-                        : "bg-cocoa-100 text-cocoa-400"
+                        ? "bg-pink-100/80 text-neutral-900 font-semibold border border-pink-300/70 shadow-xs"
+                        : "bg-neutral-50 text-neutral-500 font-medium border border-neutral-200/60"
                     }`}
                   >
-                    2
-                  </span>
-                  <span
-                    className={`font-text text-xs ${step === 2 ? "font-bold text-cocoa-900" : "text-cocoa-400"}`}
-                  >
-                    Data Pemesan
-                  </span>
+                    <span
+                      className={`text-[10px] font-bold leading-none px-1.5 py-0.5 rounded-md ${
+                        step === 2
+                          ? "bg-pink-200/80 text-pink-900"
+                          : "bg-neutral-200/60 text-neutral-600"
+                      }`}
+                    >
+                      02
+                    </span>
+                    <span className="truncate leading-none p-1">
+                      Data & Pengiriman
+                    </span>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            {/* Modal Body (Scrollable Container) */}
-            <div className="min-h-0 flex-1 overflow-y-auto p-5 space-y-4">
-              <AnimatePresence mode="wait">
-                {step === 1 ? (
-                  <motion.div
-                    key="step1"
-                    initial={{ opacity: 0, x: -6 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: 6 }}
-                    transition={{ duration: 0.15 }}
-                    className="space-y-4"
-                  >
-                    {/* Category Selector (2x2 Grid) */}
-                    <div className="space-y-1">
-                      <span className="font-text text-[10px] font-bold tracking-wider text-cocoa-700 uppercase">
-                        Kategori Pesanan <span className="text-caramel">*</span>
-                      </span>
-                      <div className="grid grid-cols-2 gap-2">
-                        {CATEGORIES.map((cat) => {
-                          const isSelected = category === cat.id;
-                          const Icon = cat.icon;
-                          return (
-                            <button
-                              key={cat.id}
-                              type="button"
-                              onClick={() => setCategory(cat.id)}
-                              className={`flex items-start gap-2.5 rounded-lg border p-2.5 text-left transition-all ${
-                                isSelected
-                                  ? "border-caramel bg-caramel/5 ring-1 ring-caramel/30"
-                                  : "border-cocoa-200/80 bg-white hover:border-cocoa-300"
-                              }`}
-                            >
-                              <div
-                                className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-md ${
-                                  isSelected
-                                    ? "bg-caramel text-white"
-                                    : "bg-cocoa-100/60 text-cocoa-600"
-                                }`}
-                              >
-                                <Icon className="h-3.5 w-3.5" />
-                              </div>
-                              <div className="min-w-0 flex-1">
-                                <p className="font-text text-xs font-bold text-cocoa-900 leading-tight truncate">
-                                  {cat.label}
-                                </p>
-                                <p className="font-text text-[10px] text-cocoa-400 truncate">
+              {/* Modal Body */}
+              <div className="min-h-0 flex-1 overflow-y-auto no-scrollbar px-5 py-4 sm:px-6 sm:py-5 space-y-4 sm:space-y-5">
+                <AnimatePresence mode="wait">
+                  {step === 1 ? (
+                    <motion.div
+                      key="step1"
+                      initial={{ opacity: 0, x: -6 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: 6 }}
+                      transition={{ duration: 0.15 }}
+                      className="space-y-4 sm:space-y-5"
+                    >
+                      {/* Category Selection */}
+                      <div className="space-y-1.5">
+                        <FormField
+                          label="Kategori Pilihan"
+                          required
+                          error={
+                            touched1 && !typeOk
+                              ? "Harap isi atau pilih kategori"
+                              : undefined
+                          }
+                        >
+                          <div className="relative">
+                            <InputField
+                              list="category-options"
+                              placeholder="Ketik kategori atau pilih dari daftar..."
+                              value={category}
+                              onChange={(e) => setCategory(e.target.value)}
+                            />
+                            <datalist id="category-options">
+                              {CATEGORIES.map((cat) => (
+                                <option key={cat.id} value={cat.label}>
                                   {cat.desc}
+                                </option>
+                              ))}
+                            </datalist>
+                          </div>
+                        </FormField>
+
+                        {category.toLowerCase().includes("custom") && (
+                          <div className="mt-2">
+                            <FormField
+                              label="Detail Request Custom"
+                              required
+                              error={
+                                touched1 && !typeOk
+                                  ? "Harap isi detail custom pesanan"
+                                  : undefined
+                              }
+                            >
+                              <InputField
+                                placeholder="Contoh: Cupcake Tema Kelulusan 12 pcs"
+                                value={customLabel}
+                                onChange={(e) => setCustomLabel(e.target.value)}
+                              />
+                            </FormField>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Date & Quantity */}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 items-start">
+                        <FormField
+                          label="Tanggal Acara"
+                          required
+                          hint="Pesan H-2"
+                          error={
+                            touched1 && !dateOk
+                              ? "Pilih tanggal acara"
+                              : undefined
+                          }
+                        >
+                          <InputField
+                            type="date"
+                            min={minDate}
+                            value={date}
+                            onChange={(e) => setDate(e.target.value)}
+                          />
+                        </FormField>
+
+                        <FormField label="Porsi / Ukuran">
+                          <InputField
+                            placeholder="Contoh: 1 Loyang, 20 Porsi, Loyang 22cm, dll."
+                            value={qty}
+                            onChange={(e) => setQty(e.target.value)}
+                          />
+                        </FormField>
+                      </div>
+
+                      {/* Theme & Details */}
+                      <FormField label="Tema / Ucapan">
+                        <TextareaField
+                          rows={2}
+                          placeholder="Contoh: Warna pink pastel, ucapan: Happy Birthday"
+                          value={theme}
+                          onChange={(e) => setTheme(e.target.value)}
+                        />
+                      </FormField>
+
+                      {/* Photo Reference Upload */}
+                      <div className="space-y-1.5">
+                        <div className="flex items-baseline justify-between gap-2">
+                          <span className="text-xs font-semibold text-neutral-800 leading-none">
+                            Foto Referensi{" "}
+                            <span className="font-normal text-neutral-400">
+                              (Opsional)
+                            </span>
+                          </span>
+                          <span className="text-[11px] font-normal text-neutral-400 leading-none shrink-0">
+                            Lampirkan gambar contoh
+                          </span>
+                        </div>
+
+                        {photo ? (
+                          <div className="flex items-center justify-between rounded-xl border border-pink-200 bg-pink-50/30 p-2.5">
+                            <div className="flex items-center gap-2.5 min-w-0">
+                              <img
+                                src={photo}
+                                alt="Referensi"
+                                className="h-10 w-10 shrink-0 rounded-lg object-cover border border-pink-200"
+                              />
+                              <div className="min-w-0 flex-1">
+                                <p className="text-xs font-semibold text-neutral-900 leading-tight truncate">
+                                  Berhasil Diunggah
+                                </p>
+                                <p className="text-[10px] text-neutral-500 leading-tight truncate mt-0.5">
+                                  Terlampir pada pemesanan
                                 </p>
                               </div>
-                            </button>
-                          );
-                        })}
-                      </div>
-                    </div>
-
-                    {category === "Custom Design" && (
-                      <FormField
-                        label="Nama Request Custom"
-                        required
-                        error={touched1 && !typeOk ? "Harap diisi" : undefined}
-                      >
-                        <InputField
-                          placeholder="mis. Cupcake Set 12 pcs, Roti Sobek..."
-                          value={customLabel}
-                          onChange={(e) => setCustomLabel(e.target.value)}
-                        />
-                      </FormField>
-                    )}
-
-                    {/* Date & Quantity */}
-                    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                      <FormField
-                        label="Tanggal Acara"
-                        required
-                        hint="Min. H+2"
-                        error={
-                          touched1 && !dateOk ? "Pilih tanggal" : undefined
-                        }
-                      >
-                        <InputField
-                          type="date"
-                          min={minDate}
-                          icon={Calendar}
-                          value={date}
-                          onChange={(e) => setDate(e.target.value)}
-                        />
-                      </FormField>
-
-                      <FormField label="Porsi / Ukuran">
-                        <InputField
-                          icon={Users}
-                          placeholder="mis. 20 porsi / loyang 22cm"
-                          value={qty}
-                          onChange={(e) => setQty(e.target.value)}
-                        />
-                        <div className="mt-1 flex flex-wrap gap-1">
-                          {QTY_SUGGESTIONS.map((item) => (
+                            </div>
                             <button
-                              key={item}
                               type="button"
-                              onClick={() => setQty(item)}
-                              className="rounded border border-cocoa-200 bg-cocoa-50/50 px-1.5 py-0.5 font-text text-[10px] text-cocoa-600 hover:border-caramel hover:text-caramel"
+                              onClick={() => setPhoto("")}
+                              className="shrink-0 text-xs font-semibold text-pink-700 hover:text-pink-900 px-2 py-1"
                             >
-                              {item}
+                              Hapus
                             </button>
-                          ))}
-                        </div>
-                      </FormField>
-                    </div>
-
-                    {/* Theme & Budget */}
-                    <FormField label="Tema / Warna / Tulisan Ucapan">
-                      <TextareaField
-                        icon={Palette}
-                        placeholder='mis. Tema Pastel Pink, tulisan "Happy Birthday Sarah"'
-                        rows={2}
-                        value={theme}
-                        onChange={(e) => setTheme(e.target.value)}
-                      />
-                    </FormField>
-
-                    <FormField label="Estimasi Budget">
-                      <InputField
-                        icon={Wallet}
-                        placeholder="Rp 300.000 - Rp 500.000"
-                        value={budget}
-                        onChange={(e) => setBudget(e.target.value)}
-                      />
-                      <div className="mt-1 flex flex-wrap gap-1">
-                        {BUDGET_SUGGESTIONS.map((item) => (
-                          <button
-                            key={item}
-                            type="button"
-                            onClick={() => setBudget(item)}
-                            className="rounded border border-cocoa-200 bg-cocoa-50/50 px-1.5 py-0.5 font-text text-[10px] text-cocoa-600 hover:border-caramel hover:text-caramel"
-                          >
-                            {item}
-                          </button>
-                        ))}
-                      </div>
-                    </FormField>
-
-                    {/* Photo Reference (Compact Dropzone) */}
-                    <div className="space-y-1">
-                      <span className="font-text text-[10px] font-bold tracking-wider text-cocoa-700 uppercase">
-                        Foto Referensi{" "}
-                        <span className="font-normal text-cocoa-400">
-                          (Opsional)
-                        </span>
-                      </span>
-
-                      {photo ? (
-                        <div className="flex items-center gap-3 rounded-lg border border-cocoa-200 bg-white p-2">
-                          <img
-                            src={photo}
-                            alt="Ref"
-                            className="h-10 w-10 rounded object-cover"
-                          />
-                          <div className="flex-1 min-w-0">
-                            <p className="font-text text-xs font-semibold text-cocoa-800 truncate">
-                              Foto Referensi Ter-upload
-                            </p>
-                            <p className="font-text text-[10px] text-cocoa-400">
-                              Siap dikirimkan via WA
-                            </p>
                           </div>
+                        ) : (
+                          <label
+                            className={`flex cursor-pointer flex-col items-center justify-center rounded-xl border border-dashed border-pink-300/80 bg-pink-50/20 p-3.5 text-center transition-all hover:bg-pink-50/50 hover:border-pink-300 ${
+                              uploading || !isSupabaseConfigured
+                                ? "opacity-50 pointer-events-none"
+                                : ""
+                            }`}
+                          >
+                            <span className="text-xs font-semibold text-pink-900 leading-none">
+                              {uploading
+                                ? "Mengunggah..."
+                                : "Klik untuk Unggah Foto / Sketsa"}
+                            </span>
+                            <span className="text-[10px] text-neutral-500 mt-1 leading-none">
+                              Format JPG, PNG (Maksimal 5MB)
+                            </span>
+                            <input
+                              type="file"
+                              accept="image/*"
+                              className="hidden"
+                              onChange={handleFile}
+                              disabled={uploading || !isSupabaseConfigured}
+                            />
+                          </label>
+                        )}
+                        {photoError && (
+                          <p className="text-[11px] font-medium text-pink-600 leading-tight">
+                            {photoError}
+                          </p>
+                        )}
+                      </div>
+                    </motion.div>
+                  ) : (
+                    <motion.div
+                      key="step2"
+                      initial={{ opacity: 0, x: 6 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -6 }}
+                      transition={{ duration: 0.15 }}
+                      className="space-y-4 sm:space-y-5"
+                    >
+                      {/* User Data Inputs */}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 items-start">
+                        <FormField
+                          label="Nama Pemesan"
+                          required
+                          error={
+                            touched2 && !nameOk
+                              ? "Nama minimal 2 karakter"
+                              : undefined
+                          }
+                        >
+                          <InputField
+                            placeholder="Nama lengkap Anda"
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                          />
+                        </FormField>
+
+                        <FormField
+                          label="Nomor WhatsApp"
+                          required
+                          error={
+                            touched2 && !phoneOk
+                              ? "Nomor WhatsApp tidak valid"
+                              : undefined
+                          }
+                        >
+                          <InputField
+                            type="tel"
+                            placeholder="Contoh: 08123456789"
+                            value={phone}
+                            onChange={(e) => setPhone(e.target.value)}
+                          />
+                        </FormField>
+                      </div>
+
+                      {/* Method Selection */}
+                      <div className="space-y-1.5">
+                        <span className="text-xs font-semibold text-neutral-800 leading-none">
+                          Metode Penerimaan{" "}
+                          <span className="text-pink-600 font-bold">*</span>
+                        </span>
+                        <div className="grid grid-cols-2 gap-2">
                           <button
                             type="button"
-                            onClick={() => setPhoto("")}
-                            className="p-1 text-cocoa-400 hover:text-rose-600"
+                            onClick={() => setMethod("ambil")}
+                            className={`rounded-xl border p-3 text-left transition-all ${
+                              method === "ambil"
+                                ? "border-pink-300 bg-pink-100/60 text-neutral-900 shadow-xs ring-1 ring-pink-300/50"
+                                : "border-pink-100 bg-pink-50/10 text-neutral-800 hover:border-pink-200 hover:bg-pink-50/40"
+                            }`}
                           >
-                            <X className="h-4 w-4" />
+                            <span className="text-xs font-bold leading-tight block">
+                              Ambil di Toko
+                            </span>
+                            <span className="text-[10px] text-neutral-500 leading-tight block mt-0.5">
+                              Tanpa biaya tambahan
+                            </span>
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setMethod("antar")}
+                            className={`rounded-xl border p-3 text-left transition-all ${
+                              method === "antar"
+                                ? "border-pink-300 bg-pink-100/60 text-neutral-900 shadow-xs ring-1 ring-pink-300/50"
+                                : "border-pink-100 bg-pink-50/10 text-neutral-800 hover:border-pink-200 hover:bg-pink-50/40"
+                            }`}
+                          >
+                            <span className="text-xs font-bold leading-tight block">
+                              Antar Kurir
+                            </span>
+                            <span className="text-[10px] text-neutral-500 leading-tight block mt-0.5">
+                              Kirim ke lokasi Anda
+                            </span>
                           </button>
                         </div>
-                      ) : (
-                        <label
-                          className={`flex cursor-pointer items-center justify-center gap-2 rounded-lg border border-dashed border-cocoa-200 p-3 text-center transition-colors hover:bg-cocoa-50/50 ${
-                            uploading || !isSupabaseConfigured
-                              ? "opacity-50 pointer-events-none"
-                              : ""
-                          }`}
+                      </div>
+
+                      {needAddress && (
+                        <FormField
+                          label="Alamat Pengantaran"
+                          required
+                          error={
+                            touched2 && !addressOk
+                              ? "Alamat wajib diisi lengkap"
+                              : undefined
+                          }
                         >
-                          <Upload className="h-4 w-4 text-cocoa-400" />
-                          <span className="font-text text-xs font-medium text-cocoa-600">
-                            {uploading
-                              ? "Mengunggah..."
-                              : "Unggah Foto Contoh / Sketch"}
-                          </span>
-                          <input
-                            type="file"
-                            accept="image/*"
-                            className="hidden"
-                            onChange={handleFile}
-                            disabled={uploading || !isSupabaseConfigured}
+                          <TextareaField
+                            rows={2}
+                            placeholder="Nama jalan, nomor rumah, RT/RW, patokan..."
+                            value={address}
+                            onChange={(e) => setAddress(e.target.value)}
                           />
-                        </label>
+                        </FormField>
                       )}
-                      {photoError && (
-                        <p className="font-text text-[11px] font-medium text-rose-500">
-                          {photoError}
-                        </p>
-                      )}
-                    </div>
-                  </motion.div>
-                ) : (
-                  <motion.div
-                    key="step2"
-                    initial={{ opacity: 0, x: 6 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -6 }}
-                    transition={{ duration: 0.15 }}
-                    className="space-y-4"
-                  >
-                    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                      <FormField
-                        label="Nama Lengkap"
-                        required
-                        error={touched2 && !nameOk ? "Isi nama" : undefined}
-                      >
-                        <InputField
-                          icon={FileText}
-                          placeholder="Nama Anda"
-                          value={name}
-                          onChange={(e) => setName(e.target.value)}
-                        />
-                      </FormField>
 
-                      <FormField
-                        label="No. WhatsApp"
-                        required
-                        error={
-                          touched2 && !phoneOk
-                            ? "No. WA tidak valid"
-                            : undefined
-                        }
-                      >
-                        <InputField
-                          type="tel"
-                          icon={Phone}
-                          placeholder="08xxxxxxxxxx"
-                          value={phone}
-                          onChange={(e) => setPhone(e.target.value)}
-                        />
-                      </FormField>
-                    </div>
-
-                    {/* Method Toggle */}
-                    <div className="space-y-1">
-                      <span className="font-text text-[10px] font-bold tracking-wider text-cocoa-700 uppercase">
-                        Metode Pengambilan{" "}
-                        <span className="text-caramel">*</span>
-                      </span>
-                      <div className="grid grid-cols-2 gap-2 rounded-lg bg-cocoa-50 p-1 border border-cocoa-100">
-                        <button
-                          type="button"
-                          onClick={() => setMethod("ambil")}
-                          className={`flex items-center justify-center gap-1.5 rounded-md py-1.5 font-text text-xs font-semibold transition-all ${
-                            method === "ambil"
-                              ? "bg-white text-cocoa-900 shadow-sm"
-                              : "text-cocoa-500 hover:text-cocoa-800"
-                          }`}
-                        >
-                          <Store className="h-3.5 w-3.5" /> Ambil Toko
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => setMethod("antar")}
-                          className={`flex items-center justify-center gap-1.5 rounded-md py-1.5 font-text text-xs font-semibold transition-all ${
-                            method === "antar"
-                              ? "bg-white text-cocoa-900 shadow-sm"
-                              : "text-cocoa-500 hover:text-cocoa-800"
-                          }`}
-                        >
-                          <Bike className="h-3.5 w-3.5" /> Antar Kurir
-                        </button>
-                      </div>
-                    </div>
-
-                    {needAddress && (
-                      <FormField
-                        label="Alamat Pengantaran"
-                        required
-                        error={
-                          touched2 && !addressOk
-                            ? "Isi alamat lengkap"
-                            : undefined
-                        }
-                      >
+                      <FormField label="Catatan Tambahan">
                         <TextareaField
-                          icon={MapPin}
                           rows={2}
-                          placeholder="Jalan, No. Rumah, Patokan..."
-                          value={address}
-                          onChange={(e) => setAddress(e.target.value)}
+                          placeholder="Contoh: Alergi bahan tertentu, waktu pengiriman khusus"
+                          value={note}
+                          onChange={(e) => setNote(e.target.value)}
                         />
                       </FormField>
-                    )}
 
-                    <FormField label="Catatan Tambahan">
-                      <TextareaField
-                        icon={FileText}
-                        rows={2}
-                        placeholder="Info alergi, ucapan khusus, dll."
-                        value={note}
-                        onChange={(e) => setNote(e.target.value)}
-                      />
-                    </FormField>
+                      {/* Ringkasan Ringkas */}
+                      <div className="rounded-xl border border-pink-200/80 bg-pink-50/30 p-3.5 text-xs space-y-2">
+                        <div className="flex items-center justify-between font-bold text-neutral-900 border-b border-pink-200/50 pb-2">
+                          <span className="leading-none">
+                            Ringkasan Pesanan
+                          </span>
+                          <span className="rounded-md bg-pink-200/70 border border-pink-300/70 px-2 py-0.5 text-[10px] font-semibold text-pink-900 uppercase leading-none">
+                            {method === "ambil" ? "Ambil Toko" : "Antar Kurir"}
+                          </span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-neutral-500">
+                            Jenis Pesanan:
+                          </span>
+                          <span className="font-semibold text-neutral-900 truncate max-w-[180px] text-right">
+                            {finalType || "-"}
+                          </span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-neutral-500">
+                            Tanggal Acara:
+                          </span>
+                          <span className="font-semibold text-neutral-900">
+                            {date || "-"}
+                          </span>
+                        </div>
+                        {qty && (
+                          <div className="flex justify-between items-center">
+                            <span className="text-neutral-500">
+                              Porsi / Ukuran:
+                            </span>
+                            <span className="font-semibold text-neutral-900">
+                              {qty}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
 
-                    {/* Summary Box */}
-                    <div className="rounded-lg border border-cocoa-200/80 bg-cocoa-50/40 p-3 font-text text-xs space-y-1.5">
-                      <div className="flex justify-between font-bold text-cocoa-900 border-b border-cocoa-200/60 pb-1">
-                        <span>Ringkasan Order</span>
-                        <span className="text-[10px] text-caramel uppercase font-semibold">
-                          {method === "ambil" ? "Pick-Up Toko" : "Delivery"}
-                        </span>
-                      </div>
-                      <div className="flex justify-between text-cocoa-600">
-                        <span>Produk:</span>
-                        <span className="font-semibold text-cocoa-900">
-                          {finalType}
-                        </span>
-                      </div>
-                      <div className="flex justify-between text-cocoa-600">
-                        <span>Tanggal:</span>
-                        <span className="font-semibold text-cocoa-900">
-                          {date || "-"}
-                        </span>
-                      </div>
-                    </div>
-                  </motion.div>
+              {/* Modal Footer Buttons */}
+              <div className="shrink-0 border-t border-pink-100 bg-white px-5 py-3.5 sm:px-6 sm:py-4">
+                {step === 1 ? (
+                  <button
+                    type="button"
+                    onClick={goToStep2}
+                    className="w-full rounded-xl bg-pink-400 border border-pink-300/80 py-2.5 sm:py-3 text-xs font-bold text-neutral-900 tracking-wide transition-all hover:bg-pink-300 active:scale-[0.99] shadow-xs"
+                  >
+                    Lanjutkan ke Data Pemesan →
+                  </button>
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setStep(1)}
+                      className="rounded-xl border border-pink-200 px-3.5 py-2.5 sm:py-3 text-xs font-semibold text-neutral-700 hover:bg-pink-50 transition-colors"
+                    >
+                      ← Kembali
+                    </button>
+                    <button
+                      type="button"
+                      onClick={submit}
+                      disabled={!canSubmit}
+                      className="flex-1 rounded-xl bg-emerald-600 py-2.5 sm:py-3 text-xs font-bold text-white tracking-wide shadow-xs transition-all hover:bg-emerald-700 disabled:opacity-40 active:scale-[0.99]"
+                    >
+                      Kirim Pesanan via WhatsApp
+                    </button>
+                  </div>
                 )}
-              </AnimatePresence>
-            </div>
-
-            {/* Modal Footer */}
-            <div className="shrink-0 border-t border-cocoa-100 bg-white px-5 py-3.5">
-              {step === 1 ? (
-                <button
-                  type="button"
-                  onClick={goToStep2}
-                  className="flex w-full items-center justify-center gap-2 rounded-xl bg-cocoa-900 py-2.5 font-text text-xs font-bold text-white shadow hover:bg-cocoa-800 active:scale-[0.99] transition-all"
-                >
-                  Lanjut ke Data Pemesan <ArrowRight className="h-4 w-4" />
-                </button>
-              ) : (
-                <div className="flex items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setStep(1)}
-                    className="flex items-center justify-center gap-1 rounded-xl border border-cocoa-200 px-3 py-2.5 font-text text-xs font-semibold text-cocoa-700 hover:bg-cocoa-50"
-                  >
-                    <ChevronLeft className="h-4 w-4" /> Kembali
-                  </button>
-                  <button
-                    type="button"
-                    onClick={submit}
-                    disabled={!canSubmit}
-                    className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-emerald-600 py-2.5 font-text text-xs font-bold text-white shadow hover:bg-emerald-700 disabled:opacity-50 transition-all active:scale-[0.99]"
-                  >
-                    <MessageCircle className="h-4 w-4 fill-current" />
-                    Kirim via WhatsApp
-                  </button>
-                </div>
-              )}
-            </div>
+              </div>
+            </motion.div>
           </motion.div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+        )}
+      </AnimatePresence>
+    </>
   );
 }

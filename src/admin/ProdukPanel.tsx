@@ -121,7 +121,10 @@ export default function ProdukPanel() {
       )
     )
       return;
-    const { error } = await supabaseAdmin.from("products").delete().eq("id", row.id);
+    const { error } = await supabaseAdmin
+      .from("products")
+      .delete()
+      .eq("id", row.id);
     if (error) {
       window.alert(
         "Gagal menghapus (kemungkinan produk sudah punya pesanan/ulasan). " +
@@ -151,7 +154,7 @@ export default function ProdukPanel() {
         <button
           type="button"
           onClick={() => setEditing("baru")}
-          className="inline-flex items-center gap-2 rounded-full bg-cocoa-800 px-5 py-2.5 font-text text-sm font-bold text-paper-50 shadow-cocoa transition-all hover:-translate-y-0.5 hover:bg-cocoa-900"
+          className="inline-flex items-center gap-2 rounded-full bg-primary-500 px-5 py-2.5 font-text text-sm font-bold text-white shadow-pink transition-all hover:-translate-y-0.5 hover:bg-primary-600"
         >
           <Plus className="h-4 w-4" /> Tambah Produk
         </button>
@@ -170,16 +173,18 @@ export default function ProdukPanel() {
         </div>
       ) : rows.length === 0 ? (
         <div className="rounded-2xl bg-paper-50 py-16 text-center ring-1 ring-cocoa-700/10">
-          <p className="font-heading text-lg text-cocoa-800">Belum ada produk</p>
+          <p className="font-heading text-lg text-cocoa-800">
+            Belum ada produk
+          </p>
           <p className="mt-1 font-text text-sm text-cocoa-700/60">
             Tekan “Tambah Produk” untuk mulai.
           </p>
         </div>
       ) : (
         <>
-          {/* Tabel produk — bisa digeser samping di layar kecil */}
-          <div className="overflow-x-auto rounded-2xl bg-paper-50 ring-1 ring-cocoa-700/10">
-            <table className="w-full min-w-[680px] border-collapse text-left">
+          {/* Tabel produk — desktop: tabel penuh; mobile: kartu (tanpa scrollbar horizontal) */}
+          <div className="hidden overflow-hidden rounded-2xl bg-paper-50 ring-1 ring-cocoa-700/10 md:block">
+            <table className="w-full border-collapse text-left">
               <thead>
                 <tr className="border-b border-cocoa-700/10 font-text text-[11px] font-bold uppercase tracking-wide text-cocoa-700/55">
                   <th className="px-4 py-3">Produk</th>
@@ -294,12 +299,114 @@ export default function ProdukPanel() {
             </table>
           </div>
 
+          {/* Kartu produk — tampil di mobile (md:hidden) */}
+          <div className="flex flex-col gap-3 md:hidden">
+            {barisHalaman.map((row) => (
+              <article
+                key={row.id}
+                className={`rounded-2xl bg-paper-50 p-4 ring-1 ring-cocoa-700/10 ${
+                  row.is_active ? "" : "opacity-60"
+                }`}
+              >
+                <div className="flex items-start gap-3">
+                  <div className="h-16 w-16 shrink-0 overflow-hidden rounded-xl bg-paper-200">
+                    {row.image ? (
+                      <img
+                        src={row.image}
+                        alt=""
+                        className="h-full w-full object-cover"
+                        onError={(e) =>
+                          (e.currentTarget.style.visibility = "hidden")
+                        }
+                      />
+                    ) : (
+                      <div className="flex h-full w-full items-center justify-center text-cocoa-700/30">
+                        <ImageIcon className="h-6 w-6" />
+                      </div>
+                    )}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-1.5">
+                      <p className="truncate font-heading text-sm text-cocoa-800">
+                        {row.name}
+                      </p>
+                      {row.featured && (
+                        <Star
+                          className="h-3.5 w-3.5 shrink-0 fill-caramel text-caramel"
+                          aria-label="Unggulan"
+                        />
+                      )}
+                      {row.video && (
+                        <Film
+                          className="h-3.5 w-3.5 shrink-0 text-cocoa-700/50"
+                          aria-label="Ada video"
+                        />
+                      )}
+                    </div>
+                    <p className="truncate font-text text-[11px] text-cocoa-700/45">
+                      {row.id}
+                    </p>
+                    <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1">
+                      <span className="font-text text-sm font-bold text-cocoa-800">
+                        {formatPrice(row.price)}
+                      </span>
+                      <span className="font-text text-xs text-cocoa-700/70">
+                        {row.category}
+                      </span>
+                      {row.is_active ? (
+                        <span className="inline-flex items-center rounded-full bg-green-100 px-2 py-0.5 font-text text-[10px] font-bold text-green-700">
+                          Aktif
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center rounded-full bg-cocoa-700/10 px-2 py-0.5 font-text text-[10px] font-bold text-cocoa-700/70">
+                          Nonaktif
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+                <div className="mt-3 flex items-center justify-end gap-1 border-t border-cocoa-700/10 pt-2.5">
+                  <button
+                    type="button"
+                    onClick={() => toggleAktif(row)}
+                    title={row.is_active ? "Nonaktifkan" : "Aktifkan"}
+                    className="flex items-center gap-1.5 rounded-full bg-paper-200 px-3 py-1.5 font-text text-xs font-bold text-cocoa-800 transition-colors hover:bg-cocoa-800 hover:text-paper-50"
+                  >
+                    {row.is_active ? (
+                      <Eye className="h-3.5 w-3.5" />
+                    ) : (
+                      <EyeOff className="h-3.5 w-3.5" />
+                    )}
+                    {row.is_active ? "Nonaktifkan" : "Aktifkan"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setEditing(row)}
+                    title="Edit"
+                    className="flex items-center gap-1.5 rounded-full bg-paper-200 px-3 py-1.5 font-text text-xs font-bold text-cocoa-800 transition-colors hover:bg-cocoa-800 hover:text-paper-50"
+                  >
+                    <Pencil className="h-3.5 w-3.5" /> Edit
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => hapus(row)}
+                    title="Hapus"
+                    className="flex items-center gap-1.5 rounded-full bg-paper-200 px-3 py-1.5 font-text text-xs font-bold text-cocoa-800 transition-colors hover:bg-red-500 hover:text-white"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" /> Hapus
+                  </button>
+                </div>
+              </article>
+            ))}
+          </div>
+
           {/* Kontrol pagination */}
           {totalHalaman > 1 && (
             <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
               <p className="font-text text-xs text-cocoa-700/60">
                 Menampilkan {(halaman - 1) * PER_HALAMAN + 1}–
-                {Math.min(halaman * PER_HALAMAN, rows.length)} dari {rows.length}
+                {Math.min(halaman * PER_HALAMAN, rows.length)} dari{" "}
+                {rows.length}
               </p>
               <div className="flex items-center gap-1.5">
                 <button
@@ -316,7 +423,9 @@ export default function ProdukPanel() {
                 </span>
                 <button
                   type="button"
-                  onClick={() => setHalaman((h) => Math.min(totalHalaman, h + 1))}
+                  onClick={() =>
+                    setHalaman((h) => Math.min(totalHalaman, h + 1))
+                  }
                   disabled={halaman >= totalHalaman}
                   aria-label="Halaman berikutnya"
                   className="flex h-9 w-9 items-center justify-center rounded-full bg-paper-50 text-cocoa-800 ring-1 ring-cocoa-700/10 transition-colors hover:bg-cocoa-800 hover:text-paper-50 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-paper-50 disabled:hover:text-cocoa-800"
@@ -367,15 +476,18 @@ function FormProduk({
   const [id, setId] = useState(awal?.id ?? "");
   const [idDisentuh, setIdDisentuh] = useState(!baru); // pada mode baru: auto dari nama sampai diedit
   const [name, setName] = useState(awal?.name ?? "");
-  const [price, setPrice] = useState(awal?.price != null ? String(awal.price) : "");
+  const [price, setPrice] = useState(
+    awal?.price != null ? String(awal.price) : "",
+  );
   const [category, setCategory] = useState<string>(
     awal?.category ?? kategori[0] ?? "",
   );
   // Bila produk sedang memakai kategori yang tak ada di daftar (mis. nonaktif),
   // tetap sertakan agar tidak hilang dari dropdown.
-  const opsiKategori = category && !kategori.includes(category)
-    ? [category, ...kategori]
-    : kategori;
+  const opsiKategori =
+    category && !kategori.includes(category)
+      ? [category, ...kategori]
+      : kategori;
   const [description, setDescription] = useState(awal?.description ?? "");
   const [image, setImage] = useState(awal?.image ?? "");
   const [video, setVideo] = useState(awal?.video ?? "");
@@ -469,7 +581,7 @@ function FormProduk({
 
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-cocoa-900/50 p-0 backdrop-blur-sm sm:items-center sm:p-6">
-      <div className="flex max-h-[94vh] w-full max-w-xl flex-col overflow-hidden rounded-t-3xl bg-paper-100 shadow-cocoa-lg sm:rounded-3xl">
+      <div className="flex max-h-[94dvh] w-full max-w-xl flex-col overflow-hidden rounded-t-3xl bg-paper-100 shadow-cocoa-lg sm:rounded-3xl">
         <div className="flex items-center justify-between border-b border-cocoa-700/10 px-5 py-4">
           <h2 className="font-heading text-xl text-cocoa-800">
             {baru ? "Tambah Produk" : "Edit Produk"}
@@ -497,7 +609,9 @@ function FormProduk({
           <Kolom
             label="ID / slug"
             wajib
-            bantuan={baru ? "otomatis dari nama, bisa diubah" : "tidak bisa diubah"}
+            bantuan={
+              baru ? "otomatis dari nama, bisa diubah" : "tidak bisa diubah"
+            }
           >
             <input
               type="text"
@@ -564,7 +678,11 @@ function FormProduk({
             <div className="flex items-center gap-3">
               <div className="h-20 w-20 shrink-0 overflow-hidden rounded-xl bg-paper-200 ring-1 ring-cocoa-700/10">
                 {image ? (
-                  <img src={image} alt="" className="h-full w-full object-cover" />
+                  <img
+                    src={image}
+                    alt=""
+                    className="h-full w-full object-cover"
+                  />
                 ) : (
                   <div className="flex h-full w-full items-center justify-center text-cocoa-700/30">
                     <ImageIcon className="h-6 w-6" />
@@ -573,7 +691,7 @@ function FormProduk({
               </div>
               <div className="flex flex-col gap-1.5">
                 <label
-                  className={`inline-flex cursor-pointer items-center gap-1.5 rounded-full bg-cocoa-800 px-4 py-2 font-text text-sm font-bold text-paper-50 transition-colors hover:bg-cocoa-900 ${
+                  className={`inline-flex cursor-pointer items-center gap-1.5 rounded-full bg-primary-500 px-4 py-2 font-text text-sm font-bold text-white transition-colors hover:bg-primary-600 ${
                     unggahFoto ? "pointer-events-none opacity-60" : ""
                   }`}
                 >
@@ -582,7 +700,11 @@ function FormProduk({
                   ) : (
                     <ImageIcon className="h-4 w-4" />
                   )}
-                  {unggahFoto ? "Mengunggah…" : image ? "Ganti foto" : "Upload foto"}
+                  {unggahFoto
+                    ? "Mengunggah…"
+                    : image
+                      ? "Ganti foto"
+                      : "Upload foto"}
                   <input
                     type="file"
                     accept="image/png,image/jpeg,image/webp"
@@ -612,7 +734,7 @@ function FormProduk({
             <div className="flex flex-col gap-2">
               <div className="flex items-center gap-2">
                 <label
-                  className={`inline-flex cursor-pointer items-center gap-1.5 rounded-full bg-paper-200 px-4 py-2 font-text text-sm font-bold text-cocoa-800 transition-colors hover:bg-cocoa-800 hover:text-paper-50 ${
+                  className={`inline-flex cursor-pointer items-center gap-1.5 rounded-full bg-pink-100 px-4 py-2 font-text text-sm font-bold text-primary-600 transition-colors hover:bg-primary-500 hover:text-white ${
                     unggahVid ? "pointer-events-none opacity-60" : ""
                   }`}
                 >
@@ -682,7 +804,7 @@ function FormProduk({
             type="button"
             onClick={kirim}
             disabled={!valid || simpan || unggahFoto || unggahVid}
-            className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-cocoa-800 px-6 py-3.5 font-text text-base font-bold text-paper-50 shadow-cocoa transition-all hover:-translate-y-0.5 hover:bg-cocoa-900 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0"
+            className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-primary-500 px-6 py-3.5 font-text text-base font-bold text-white shadow-pink transition-all hover:-translate-y-0.5 hover:bg-primary-600 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0"
           >
             {simpan ? (
               <Loader2 className="h-5 w-5 animate-spin" />
@@ -721,7 +843,9 @@ function Kolom({
           {wajib && <span className="text-red-500"> *</span>}
         </span>
         {bantuan && (
-          <span className="font-text text-[11px] text-cocoa-700/50">{bantuan}</span>
+          <span className="font-text text-[11px] text-cocoa-700/50">
+            {bantuan}
+          </span>
         )}
       </span>
       {children}
@@ -745,8 +869,8 @@ function TombolToggle({
       aria-pressed={aktif}
       className={`rounded-full px-4 py-2 font-text text-sm font-bold transition-colors ${
         aktif
-          ? "bg-cocoa-800 text-paper-50 shadow-cocoa"
-          : "bg-paper-200 text-cocoa-700/70 hover:text-cocoa-900"
+          ? "bg-primary-500 text-white shadow-pink"
+          : "bg-pink-100 text-cocoa-700/70 hover:bg-pink-200 hover:text-primary-600"
       }`}
     >
       {label}

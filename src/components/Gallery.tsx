@@ -67,17 +67,8 @@ export default function Gallery() {
   useScrolly(sectionRef);
 
   const [activeIndex, setActiveIndex] = useState(0);
-  const [isDesktop, setIsDesktop] = useState(false);
 
   const total = items.length;
-
-  // Deteksi Ukuran Layar Responsive
-  useEffect(() => {
-    const handleResize = () => setIsDesktop(window.innerWidth >= 1024);
-    handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
 
   const nextSlide = useCallback(() => {
     setActiveIndex((prev) => (prev + 1) % total);
@@ -109,7 +100,7 @@ export default function Gallery() {
 
   return (
     <section
-      id="galeri"
+      id="gallery"
       ref={sectionRef}
       className="relative w-full overflow-hidden bg-cocoa-800 text-paper-50 flex flex-col pt-8 sm:pt-16 lg:pt-20 pb-8 sm:pb-16 lg:pb-20 select-none min-h-max"
     >
@@ -211,7 +202,7 @@ export default function Gallery() {
           {/* Active Item Details & Glowing Thumbnail */}
           <div className="flex items-start justify-between gap-3 min-h-[90px]">
             <div className="flex-1 space-y-1">
-              <h3 className="font-heading text-2xl font-bold text-white leading-tight">
+              <h3 className="font-heading text-2xl text-white leading-tight">
                 {currentItem.label}
               </h3>
               <p className="font-text text-xs text-paper-200/80 leading-relaxed line-clamp-3">
@@ -252,7 +243,7 @@ export default function Gallery() {
                   >
                     <div className="pr-2">
                       <h4
-                        className={`text-xs font-heading ${isSelected ? "text-white font-bold" : "text-paper-100"}`}
+                        className={`text-xs font-heading ${isSelected ? "text-white " : "text-paper-100"}`}
                       >
                         {item.label}
                       </h4>

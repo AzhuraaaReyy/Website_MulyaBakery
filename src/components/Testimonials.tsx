@@ -7,6 +7,7 @@ import {
   PenLine,
   BadgeCheck,
   MessageSquarePlus,
+  Utensils,
 } from "lucide-react";
 import PlaceholderImage from "./PlaceholderImage";
 import ReviewModal from "./ReviewModal";
@@ -18,7 +19,7 @@ import { useScrolly } from "../hooks/useScrolly";
 interface UlasanPelayanan {
   id: string;
   reviewer_name: string;
-  reviewer_role: string | null;
+  reviewer_role: string | null; // Digunakan untuk menyimpan nama menu / produk yang diulas
   rating: number;
   quote: string;
   photo_url: string | null;
@@ -59,7 +60,7 @@ export default function Testimonials() {
   const [dragOffset, setDragOffset] = useState(0);
   const hasDraggedRef = useRef(false);
 
-  const muat = useCallback(async () => {
+  const muat = useCallback(async (pilihTerbaru = false) => {
     if (!supabase) {
       setUlasan([]);
       setMemuat(false);
@@ -74,9 +75,12 @@ export default function Testimonials() {
       const listData = (data ?? []) as UlasanPelayanan[];
       setUlasan(listData);
 
-      // Set index aktif ke elemen paling tengah saat data selesai dimuat
       if (listData.length > 0) {
-        setAktifIndex(Math.floor(listData.length / 2));
+        if (pilihTerbaru) {
+          setAktifIndex(0);
+        } else {
+          setAktifIndex(Math.floor(listData.length / 2));
+        }
       }
     } catch (err) {
       console.error("[Testimonials] gagal memuat ulasan:", err);
@@ -90,8 +94,9 @@ export default function Testimonials() {
     void muat();
   }, [muat]);
 
-  useEffect(() => dengarkan("ulasan-pelayanan", () => void muat()), [muat]);
-  useEffect(() => dengarTestimoniLintasTab(() => void muat()), [muat]);
+  // Mendengarkan event kirim ulasan lokal & lintas tab
+  useEffect(() => dengarkan("ulasan-pelayanan", () => void muat(true)), [muat]);
+  useEffect(() => dengarTestimoniLintasTab(() => void muat(true)), [muat]);
 
   useEffect(() => {
     const onVisible = () => {
@@ -212,7 +217,6 @@ export default function Testimonials() {
       ref={sectionRef}
       className="testimonials-section relative w-full overflow-hidden bg-paper-100 py-12 sm:py-16 lg:py-20"
     >
-      {/* Import & Style Custom Font 'Itim' */}
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Itim&display=swap');
         .font-card-custom {
@@ -223,7 +227,6 @@ export default function Testimonials() {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10 max-w-7xl">
         {/* Header Section */}
         <div className="mx-auto mb-8 flex max-w-2xl flex-col items-center text-center sm:mb-12">
-          {/* Badge Eyebrow */}
           <div
             data-reveal
             className="inline-flex items-center gap-2 rounded-full bg-caramel/20 px-3.5 py-1 text-xs font-semibold text-cocoa-800 sm:text-sm"
@@ -234,9 +237,10 @@ export default function Testimonials() {
 
           <h2
             data-reveal
-            className="title-1 mt-2 text-2xl font-bold tracking-tight text-cocoa-900 sm:text-3xl lg:text-4xl"
+            className="title-1 mt-2 text-2xl  tracking-tight text-cocoa-900 sm:text-3xl lg:text-4xl"
           >
-            Cerita Manis dari Pelanggan Kami
+            Cerita Manis <br/> 
+            dari Pelanggan Kami
           </h2>
 
           <p
@@ -255,7 +259,6 @@ export default function Testimonials() {
             <div className="h-96 w-80 animate-pulse rounded-3xl bg-white/60 border border-cocoa-900/10 shadow-md" />
           </div>
         ) : count === 0 ? (
-          /* Empty State */
           <div className="mx-auto max-w-xl text-center rounded-3xl bg-white p-6 sm:p-12 border border-cocoa-900/10 shadow-lg backdrop-blur-md mb-6">
             <div className="mx-auto flex h-14 w-14 sm:h-16 sm:w-16 items-center justify-center rounded-2xl bg-paper-200 text-cocoa-900 mb-4">
               <MessageSquarePlus
@@ -280,10 +283,8 @@ export default function Testimonials() {
             </button>
           </div>
         ) : (
-          /* Card Testimoni Slider 3D Coverflow */
           <div className="relative w-full max-w-4xl mx-auto flex flex-col items-center">
             <div className="relative w-full flex items-center justify-center">
-              {/* Tombol Panah Kiri & Kanan */}
               {count > 1 && (
                 <>
                   <button
@@ -305,9 +306,8 @@ export default function Testimonials() {
                 </>
               )}
 
-              {/* CONTAINER SLIDER WITH MOUSE DRAG & TOUCH LISTENERS */}
               <div
-                className={`relative w-full h-[365px] sm:h-[385px] flex items-center justify-center overflow-hidden [perspective:1200px] select-none ${
+                className={`relative w-full h-[375px] sm:h-[395px] flex items-center justify-center overflow-hidden [perspective:1200px] select-none ${
                   isDragging ? "cursor-grabbing" : "cursor-grab"
                 }`}
                 onMouseDown={(e) => handleDragStart(e.clientX)}
@@ -329,16 +329,16 @@ export default function Testimonials() {
                         }
                       }}
                       style={getCardStyle3D(diff)}
-                      className="absolute w-[280px] sm:w-[320px] md:w-[340px] flex flex-col justify-between rounded-3xl bg-white p-6 sm:p-7 shadow-xl border border-cocoa-900/10 transition-all duration-500 ease-out h-[360px] sm:h-[380px] cursor-pointer"
+                      className="absolute w-[280px] sm:w-[320px] md:w-[340px] flex flex-col justify-between rounded-3xl bg-white p-6 sm:p-7 shadow-xl border border-cocoa-900/10 transition-all duration-500 ease-out h-[370px] sm:h-[390px] cursor-pointer"
                     >
                       {/* Ikon Quote (Sudut Kanan Atas) */}
                       <div className="absolute top-5 right-5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-caramel/15 text-caramel border border-caramel/25">
                         <Quote className="h-4 w-4 fill-caramel" aria-hidden />
                       </div>
 
-                      {/* Foto Profil & Nama */}
-                      <div className="flex flex-col items-center text-center shrink-0 pt-2">
-                        <div className="h-20 w-20 sm:h-22 sm:w-22 shrink-0 overflow-hidden rounded-full border-2 border-caramel/40 bg-paper-100 shadow-md">
+                      {/* Foto Profil, Nama & Label Menu/Produk */}
+                      <div className="flex flex-col items-center text-center shrink-0 pt-1">
+                        <div className="h-16 w-16 sm:h-18 sm:w-18 shrink-0 overflow-hidden rounded-full border-2 border-caramel/40 bg-paper-100 shadow-md">
                           <PlaceholderImage
                             alt={item.reviewer_name}
                             src={item.photo_url ?? ""}
@@ -349,13 +349,24 @@ export default function Testimonials() {
                           />
                         </div>
 
-                        <div className="mt-3.5 flex items-center justify-center gap-1.5 max-w-full px-2">
+                        <div className="mt-2.5 flex items-center justify-center gap-1 max-w-full px-2">
                           <h4 className="font-card-custom text-base sm:text-lg font-bold text-cocoa-900 truncate">
                             {item.reviewer_name}
                           </h4>
                           {item.verified_purchase && (
                             <BadgeCheck className="h-4 w-4 shrink-0 text-emerald-600" />
                           )}
+                        </div>
+
+                        {/* BADGE MENU / PESANAN (Memiliki Fallback jika null / kosong) */}
+                        <div className="mt-1 inline-flex items-center gap-1 rounded-full bg-caramel/15 px-2.5 py-0.5 text-xs font-semibold text-cocoa-800 max-w-[220px] truncate">
+                          <Utensils className="h-3 w-3 shrink-0 text-caramel" />
+                          <span className="truncate">
+                            {item.reviewer_role &&
+                            item.reviewer_role.trim() !== ""
+                              ? item.reviewer_role
+                              : "Menu Pilihan Mulya Bakery"}
+                          </span>
                         </div>
                       </div>
 
@@ -366,13 +377,13 @@ export default function Testimonials() {
 
                       {/* Teks Ulasan */}
                       <div className="my-2 flex-1 flex items-start justify-center overflow-hidden text-center">
-                        <p className="font-card-custom text-sm sm:text-base italic leading-relaxed text-cocoa-700/85 line-clamp-3 sm:line-clamp-4">
+                        <p className="font-card-custom text-sm sm:text-base italic leading-relaxed text-cocoa-700/85 line-clamp-3">
                           "{item.quote}"
                         </p>
                       </div>
 
                       {/* Footer Tanggal */}
-                      <div className="pt-3 border-t border-cocoa-900/10 flex items-center justify-between font-card-custom text-xs text-cocoa-700/60 shrink-0 w-full">
+                      <div className="pt-2.5 border-t border-cocoa-900/10 flex items-center justify-between font-card-custom text-xs text-cocoa-700/60 shrink-0 w-full">
                         <span>Ulasan Terverifikasi</span>
                         <span>
                           {new Date(item.created_at).toLocaleDateString(
@@ -390,7 +401,7 @@ export default function Testimonials() {
               </div>
             </div>
 
-            {/* Tombol CTA Bagikan Pengalamanmu di Bawah Card */}
+            {/* Tombol CTA Bagikan Pengalamanmu */}
             <div className="mt-8 sm:mt-10 flex justify-center">
               <button
                 type="button"
@@ -405,7 +416,11 @@ export default function Testimonials() {
         )}
       </div>
 
-      <ReviewModal open={tulisTerbuka} onClose={() => setTulisTerbuka(false)} />
+      <ReviewModal
+        open={tulisTerbuka}
+        onClose={() => setTulisTerbuka(false)}
+        onSubmitted={() => void muat(true)}
+      />
     </section>
   );
 }

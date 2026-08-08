@@ -175,6 +175,14 @@ export default function Hero() {
       onTouchEnd={onTouchEnd}
       className="font-body relative flex min-h-[100dvh] w-full items-center justify-start overflow-hidden"
     >
+      {/* Dynamic Font Injection */}
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Itim&display=swap');
+        .font-section3-p {
+          font-family: 'Itim', cursive, sans-serif;
+        }
+      `}</style>
+
       {/* ── Background Image ── */}
       <AnimatePresence mode="sync">
         <motion.div
@@ -287,12 +295,12 @@ export default function Hero() {
             </AnimatePresence>
           </div>
 
-          {/* 3. Subtitle (Diatur text-justify agar Rata Kanan-Kiri) */}
+          {/* 3. Subtitle (Menggunakan Font Itim) */}
           <div className="grid min-h-[4.5rem] sm:min-h-[4rem] w-full max-w-lg">
             <AnimatePresence mode="wait">
               <motion.p
                 key={slide.id + "-sub"}
-                className="font-body [grid-area:1/1] text-justify text-sm font-normal leading-relaxed text-stone-100/90 [text-shadow:0_1px_12px_rgba(0,0,0,0.5)] sm:text-base lg:text-lg"
+                className="font-section3-p [grid-area:1/1] text-justify text-sm font-normal leading-relaxed text-stone-100/90 [text-shadow:0_1px_12px_rgba(0,0,0,0.5)] sm:text-base lg:text-lg"
                 initial={{ opacity: 0, y: reduce ? 0 : 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: reduce ? 0 : -8 }}

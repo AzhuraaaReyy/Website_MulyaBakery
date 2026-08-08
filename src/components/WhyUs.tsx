@@ -42,6 +42,12 @@ export default function WhyUs() {
         className="paper-grain pointer-events-none absolute inset-0 opacity-60"
         aria-hidden
       />
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Itim&display=swap');
+        .font-itim {
+          font-family: 'Itim', cursive, sans-serif;
+        }
+      `}</style>
 
       <div className="container-wide relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Header Section */}
@@ -54,9 +60,10 @@ export default function WhyUs() {
 
           <h2
             data-reveal
-            className="title-1 mt-2 text-2xl font-bold tracking-tight text-cocoa-900 sm:text-3xl lg:text-4xl"
+            className="title-1 mt-2 text-2xl  tracking-tight text-cocoa-900 sm:text-3xl lg:text-4xl"
           >
-            Alasan Pelanggan Selalu Kembali Lagi
+            Alasan Pelanggan <br />
+            Selalu Kembali Lagi
           </h2>
 
           <p
@@ -98,7 +105,7 @@ export default function WhyUs() {
                 <h3 className="font-heading text-lg sm:text-xl text-cocoa-800">
                   {r.title}
                 </h3>
-                <p className="mt-2.5 font-text text-sm leading-relaxed text-cocoa-700/80">
+                <p className="mt-2.5 font-text text-sm leading-relaxed text-cocoa-700/80 font-itim">
                   {r.desc}
                 </p>
               </div>

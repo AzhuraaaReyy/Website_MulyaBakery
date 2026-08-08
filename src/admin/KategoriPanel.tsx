@@ -95,7 +95,7 @@ export default function KategoriPanel() {
         <button
           type="button"
           onClick={() => setEditing("baru")}
-          className="inline-flex items-center gap-2 rounded-full bg-cocoa-800 px-5 py-2.5 font-text text-sm font-bold text-paper-50 shadow-cocoa transition-all hover:-translate-y-0.5 hover:bg-cocoa-900"
+          className="inline-flex items-center gap-2 rounded-full bg-primary-500 px-5 py-2.5 font-text text-sm font-bold text-white shadow-pink transition-all hover:-translate-y-0.5 hover:bg-primary-600"
         >
           <Plus className="h-4 w-4" /> Tambah Kategori
         </button>
@@ -114,7 +114,9 @@ export default function KategoriPanel() {
         </div>
       ) : rows.length === 0 ? (
         <div className="rounded-2xl bg-paper-50 py-16 text-center ring-1 ring-cocoa-700/10">
-          <p className="font-heading text-lg text-cocoa-800">Belum ada kategori</p>
+          <p className="font-heading text-lg text-cocoa-800">
+            Belum ada kategori
+          </p>
           <p className="mt-1 font-text text-sm text-cocoa-700/60">
             Tekan “Tambah Kategori” untuk mulai.
           </p>
@@ -270,7 +272,7 @@ function FormKategori({
 
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-cocoa-900/50 p-0 backdrop-blur-sm sm:items-center sm:p-6">
-      <div className="flex max-h-[94vh] w-full max-w-md flex-col overflow-hidden rounded-t-3xl bg-paper-100 shadow-cocoa-lg sm:rounded-3xl">
+      <div className="flex max-h-[94dvh] w-full max-w-md flex-col overflow-hidden rounded-t-3xl bg-paper-100 shadow-cocoa-lg sm:rounded-3xl">
         <div className="flex items-center justify-between border-b border-cocoa-700/10 px-5 py-4">
           <h2 className="font-heading text-xl text-cocoa-800">
             {baru ? "Tambah Kategori" : "Edit Kategori"}
@@ -298,7 +300,8 @@ function FormKategori({
             />
             {!baru && (
               <span className="mt-1 block font-text text-[11px] text-cocoa-700/50">
-                Mengganti nama otomatis memperbarui semua produk di kategori ini.
+                Mengganti nama otomatis memperbarui semua produk di kategori
+                ini.
               </span>
             )}
           </label>
@@ -321,8 +324,8 @@ function FormKategori({
                     title={nama}
                     className={`flex aspect-square items-center justify-center rounded-xl ring-1 transition-colors ${
                       dipilih
-                        ? "bg-cocoa-800 text-paper-50 ring-cocoa-800"
-                        : "bg-paper-50 text-cocoa-700 ring-cocoa-700/15 hover:bg-paper-200"
+                        ? "bg-primary-500 text-white ring-primary-500 shadow-pink"
+                        : "bg-paper-50 text-cocoa-700 ring-pink-200 hover:bg-pink-100"
                     }`}
                   >
                     <Ikon className="h-5 w-5" strokeWidth={1.8} aria-hidden />
@@ -351,8 +354,8 @@ function FormKategori({
             aria-pressed={isActive}
             className={`rounded-full px-4 py-2 font-text text-sm font-bold transition-colors ${
               isActive
-                ? "bg-cocoa-800 text-paper-50 shadow-cocoa"
-                : "bg-paper-200 text-cocoa-700/70 hover:text-cocoa-900"
+                ? "bg-primary-500 text-white shadow-pink"
+                : "bg-pink-100 text-cocoa-700/70 hover:bg-pink-200 hover:text-primary-600"
             }`}
           >
             {isActive ? "Aktif (tampil di situs)" : "Nonaktif (disembunyikan)"}
@@ -371,7 +374,7 @@ function FormKategori({
             type="button"
             onClick={kirim}
             disabled={!valid || simpan}
-            className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-cocoa-800 px-6 py-3.5 font-text text-base font-bold text-paper-50 shadow-cocoa transition-all hover:-translate-y-0.5 hover:bg-cocoa-900 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0"
+            className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-primary-500 px-6 py-3.5 font-text text-base font-bold text-white shadow-pink transition-all hover:-translate-y-0.5 hover:bg-primary-600 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0"
           >
             {simpan ? (
               <Loader2 className="h-5 w-5 animate-spin" />

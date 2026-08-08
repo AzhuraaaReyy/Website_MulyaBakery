@@ -1,6 +1,6 @@
 import { useRef } from "react";
 import { motion, useReducedMotion } from "framer-motion";
-import { ArrowRight, Sparkles } from "lucide-react";
+import { Sparkles } from "lucide-react";
 import PlaceholderImage from "./PlaceholderImage";
 
 import { BRAND } from "../config/contact";
@@ -52,7 +52,8 @@ function BenefitCard({
       }`}
     >
       <h3 className="font-heading text-lg text-cocoa-800">{title}</h3>
-      <p className="mt-1.5 text-justify font-text text-xs leading-relaxed text-cocoa-700/75 sm:text-sm">
+      {/* Menggunakan font-itim khusus untuk deskripsi */}
+      <p className="font-itim mt-1.5 text-justify text-xs leading-relaxed text-cocoa-700/75 sm:text-sm">
         {desc}
       </p>
     </div>
@@ -68,11 +69,11 @@ export default function About() {
 
   return (
     <section id="tentang" ref={sectionRef} className="relative overflow-hidden">
-      {/* Import Google Font Caveat (Latin/Handwritten) khusus untuk p Section 1 */}
+      {/* Import Google Font 'Itim' untuk seluruh deskripsi paragraf */}
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&display=swap');
-        .font-latin-custom {
-          font-family: 'Caveat', cursive, sans-serif;
+        @import url('https://fonts.googleapis.com/css2?family=Itim&display=swap');
+        .font-itim {
+          font-family: 'Itim', cursive, sans-serif;
         }
       `}</style>
 
@@ -87,9 +88,8 @@ export default function About() {
           {/* Parent Grid */}
           <div className="grid grid-cols-1 items-center gap-8 lg:grid-cols-12 lg:gap-10">
             {/* Kiri: Teks Cerita & CTA */}
-            {/* Menggunakan `contents` di mobile agar anak di dalamnya langsung menjadi grid item */}
             <div data-reveal className="contents lg:block lg:col-span-6">
-              {/* 1. Badge & H1 (Order 1 di HP) */}
+              {/* Badge & H1 */}
               <div className="order-1 lg:order-none">
                 <div className="inline-flex items-center gap-2 rounded-full bg-caramel/20 px-3.5 py-1 text-xs font-semibold text-cocoa-800 sm:text-sm">
                   <span className="h-2 w-2 rounded-full bg-caramel"></span>
@@ -98,15 +98,16 @@ export default function About() {
                   </span>
                 </div>
 
-                <h1 className="title-1 mt-3 text-2xl font-bold tracking-tight text-cocoa-900 sm:text-3xl lg:text-4xl lg:leading-snug">
+                <h1 className="title-1 mt-3 text-2xl tracking-tight text-cocoa-900 sm:text-3xl lg:text-4xl lg:leading-snug">
                   Dibuat dengan{" "}
                   <span className="text-caramel">Cinta dari Dapur Rumah</span>,
                   Hadir untuk Menemani Setiap Momen Anda
                 </h1>
               </div>
 
-              {/* 3. Paragraf Deskripsi (Order 3 di HP) */}
-              <p className="order-3 font-latin-custom mt-4 text-justify text-lg leading-relaxed text-cocoa-800 sm:text-xl lg:order-none lg:text-2xl">
+              {/* Paragraf Deskripsi Section 1 */}
+              {/* Di mobile dipindah ke bawah kolase foto (order-3); di desktop kembali normal */}
+              <p className="font-itim order-3 text-justify text-base leading-relaxed text-cocoa-800 sm:text-lg lg:order-none lg:text-xl">
                 {BRAND.name} adalah UMKM roti rumahan yang dibangun oleh sebuah
                 keluarga dengan semangat menghadirkan roti berkualitas untuk
                 semua. Setiap adonan dibuat menggunakan bahan pilihan, diproses
@@ -118,7 +119,7 @@ export default function About() {
               </p>
             </div>
 
-            {/* Kanan: Grid Kolase Foto Asimetris (Order 2 di HP) */}
+            {/* Kanan: Grid Kolase Foto Asimetris */}
             <div className="order-2 relative lg:col-span-6 lg:order-none">
               <div className="grid grid-cols-2 gap-3 sm:gap-4">
                 {/* Kolom Foto Kiri */}
@@ -204,31 +205,14 @@ export default function About() {
 
       {/* ══ SECTION 2 · "Freshly Baked" ══════════════════════════════════════════ */}
       <div className="relative flex min-h-fit lg:min-h-screen w-full items-center bg-paper-200 py-12 sm:py-16 lg:py-20 overflow-hidden">
-        {/* Import Google Font Patrick Hand */}
-        <style>{`
-    @import url('https://fonts.googleapis.com/css2?family=Patrick+Hand&display=swap');
-    .font-section2-text {
-      font-family: 'Patrick Hand', cursive, sans-serif;
-    }
-  `}</style>
-
         <div
           className="paper-grain pointer-events-none absolute inset-0 opacity-40"
           aria-hidden
         />
 
         <div className="container-wide relative my-auto w-full px-4 sm:px-6 lg:px-8">
-          {/* Grid Container Utama */}
           <div className="flex flex-col gap-8 sm:gap-10 lg:grid lg:grid-cols-2 lg:items-center lg:gap-12">
-            {/* 
-        ========================================================================
-        KONTAINER TEKS (H2 + PARAGRAF)
-        Di Mobile: Menggunakan 'contents' agar H2 & P terpisah sebagai elemen Flex universal.
-        Di Desktop: Menjadi 'lg:flex lg:flex-col' tunggal di kolom kanan (GAP HILANG!).
-        ========================================================================
-      */}
             <div className="contents lg:flex lg:flex-col lg:justify-center lg:col-start-2 lg:order-2">
-              {/* 1. BADGE & H2 (Urutan 1 di Mobile & Tablet) */}
               <div
                 data-reveal
                 className="order-1 text-left sm:text-center lg:order-none lg:text-left"
@@ -240,20 +224,20 @@ export default function About() {
                   </span>
                 </div>
 
-                <h2 className="title-1 mt-2.5 text-2xl font-bold tracking-tight text-cocoa-900 sm:text-3xl lg:text-4xl lg:leading-snug">
+                <h2 className="title-1 mt-2.5 text-2xl tracking-tight text-cocoa-900 sm:text-3xl lg:text-4xl lg:leading-snug">
                   <span className="block">Roti Hangat</span>
                   <span className="block text-caramel">Dengan Cita Rasa</span>
                   <span className="block">Rumahan</span>
                 </h2>
               </div>
 
-              {/* 3. PARAGRAF DESKRIPSI (Urutan 3 di Mobile [Di bawah foto], Menempel Rapat di Desktop) */}
+              {/* Paragraf Deskripsi Section 2 */}
               <div
                 data-reveal
                 data-reveal-x="60"
                 className="order-3 mt-0 lg:order-none lg:mt-5 text-left sm:text-center lg:text-left"
               >
-                <p className="font-section2-text text-justify text-base leading-relaxed text-cocoa-800 sm:text-lg lg:text-xl">
+                <p className="font-itim text-justify text-base leading-relaxed text-cocoa-800 sm:text-lg lg:text-xl">
                   Berawal dari dapur kecil keluarga, Mulya Bakery menghadirkan
                   roti dengan proses pembuatan yang penuh perhatian. Setiap
                   adonan dibuat dengan resep pilihan dan dipanggang secara
@@ -261,7 +245,7 @@ export default function About() {
                   menggoda, serta kualitas terbaik untuk keluarga Anda.
                 </p>
 
-                <p className="font-section2-text mt-3 text-justify text-base leading-relaxed text-cocoa-800 sm:text-lg lg:text-xl">
+                <p className="font-itim mt-3 text-justify text-base leading-relaxed text-cocoa-800 sm:text-lg lg:text-xl">
                   Kami percaya bahwa roti bukan hanya sekadar makanan, tetapi
                   juga menjadi bagian dari momen hangat bersama orang-orang
                   tercinta. Nikmati kelezatan roti rumahan yang dibuat dengan
@@ -270,11 +254,7 @@ export default function About() {
               </div>
             </div>
 
-            {/* 
-        ========================================================================
-        2. KOLASE FOTO (Urutan 2 di Mobile [Di Bawah H2], Kolom Kiri di Desktop)
-        ========================================================================
-      */}
+            {/* Kolase Foto Section 2 */}
             <motion.div
               data-reveal
               data-reveal-x="-60"
@@ -287,9 +267,8 @@ export default function About() {
               }}
             >
               <div className="relative grid aspect-[4/4.8] w-full max-h-[340px] grid-cols-12 grid-rows-12 gap-1 p-1 sm:max-h-[440px] sm:gap-2 sm:p-1.5 lg:max-h-[500px]">
-                {/* A. Kotak Gradient Vertikal Atas-Kiri */}
                 <div className="col-span-4 row-span-6 z-10 flex flex-col justify-between rounded-md bg-gradient-to-br from-pink-100 via-pink-300 to-pink-500 p-2 text-paper-100 shadow-md sm:p-3.5">
-                  <p className="font-section2-text hidden text-[11px] leading-tight text-pink-900/90 sm:block sm:text-xs">
+                  <p className="font-itim hidden text-[11px] leading-tight text-pink-900/90 sm:block sm:text-xs">
                     Resep warisan keluarga dengan kehangatan autentik setiap
                     hari.
                   </p>
@@ -306,7 +285,6 @@ export default function About() {
                   </div>
                 </div>
 
-                {/* B. Foto Utama Atas-Kanan */}
                 <div className="relative col-span-8 row-span-7 col-start-5 z-20">
                   <div className="absolute -top-1 -right-1 inset-0 -z-10 rounded-md bg-white shadow-cocoa-md sm:-top-1.5 sm:-right-1.5" />
                   <div className="h-full w-full overflow-hidden rounded-md bg-white p-1 shadow-cocoa-lg">
@@ -320,7 +298,6 @@ export default function About() {
                   </div>
                 </div>
 
-                {/* C. Foto Horizontal Tengah-Kiri */}
                 <div className="relative col-span-4 row-span-3 row-start-7 col-start-1 z-20">
                   <div className="absolute -left-1 -bottom-1 inset-0 -z-10 rounded-md bg-white shadow-sm sm:-left-1.5 sm:-bottom-1.5" />
                   <div className="h-full w-full overflow-hidden rounded-md bg-white p-1 shadow-md">
@@ -334,7 +311,6 @@ export default function About() {
                   </div>
                 </div>
 
-                {/* D. Foto Bawah-Kiri */}
                 <div className="relative col-span-3 row-span-3 row-start-10 col-start-1 z-30">
                   <div className="absolute -left-1 -bottom-1 inset-0 -z-10 rounded-md bg-white shadow-sm" />
                   <div className="h-full w-full overflow-hidden rounded-md bg-white p-1 shadow-md">
@@ -348,7 +324,6 @@ export default function About() {
                   </div>
                 </div>
 
-                {/* E. Foto Bawah-Tengah */}
                 <div className="relative col-span-4 row-span-5 row-start-8 col-start-5 z-20">
                   <div className="h-full w-full overflow-hidden rounded-md bg-white p-1 shadow-md">
                     <PlaceholderImage
@@ -361,7 +336,6 @@ export default function About() {
                   </div>
                 </div>
 
-                {/* F. Badge Vertikal "2021" */}
                 <div className="col-span-2 row-span-3 row-start-10 col-start-4 z-40 flex items-center justify-center rounded-md bg-gradient-to-br from-rose-100 via-pink-200 to-rose-400 shadow-md">
                   <span
                     className="font-heading text-[9px] font-bold tracking-widest text-white [writing-mode:vertical-lr] sm:text-xs"
@@ -371,7 +345,6 @@ export default function About() {
                   </span>
                 </div>
 
-                {/* G. Tipografi Script Pojok Kanan Bawah */}
                 <div className="pointer-events-none col-span-4 row-span-4 row-start-9 col-start-9 z-40 flex flex-col justify-end p-0.5 text-right sm:p-1">
                   <span className="eyebrow-script text-base text-cocoa-900 drop-shadow-sm sm:text-xl lg:text-2xl">
                     Cita Rasa
@@ -387,16 +360,7 @@ export default function About() {
       </div>
 
       {/* ══ SECTION 3 · "Benefits Of Breads" ══════════════════════════════════════ */}
-      <div className="section-3-container relative flex min-h-fit lg:min-h-screen w-full items-center bg-paper-50 py-12 sm:py-16 lg:py-20 overflow-hidden">
-        {/* Import Google Font 'Itim' - Hanya Berlaku Khusus Paragraf & Deskripsi di Section 3 */}
-        <style>{`
-    @import url('https://fonts.googleapis.com/css2?family=Itim&display=swap');
-    .section-3-container p,
-    .font-section3-p {
-      font-family: 'Itim', cursive, sans-serif;
-    }
-  `}</style>
-
+      <div className="relative flex min-h-fit lg:min-h-screen w-full items-center bg-paper-50 py-12 sm:py-16 lg:py-20 overflow-hidden">
         <div
           className="paper-grain pointer-events-none absolute inset-0 opacity-40"
           aria-hidden
@@ -405,7 +369,6 @@ export default function About() {
         <div className="container-wide relative my-auto w-full px-4 sm:px-6 lg:px-8">
           {/* Header Section */}
           <div className="mx-auto max-w-2xl text-center">
-            {/* Badge Eyebrow */}
             <div className="inline-flex items-center gap-2 rounded-full bg-caramel/20 px-3.5 py-1 text-xs font-semibold text-cocoa-800 sm:text-sm">
               <span className="h-2 w-2 rounded-full bg-caramel"></span>
               <span className="eyebrow-script !m-0">Manfaat</span>
@@ -413,14 +376,16 @@ export default function About() {
 
             <h2
               data-reveal
-              className="title-1 mt-2 text-2xl font-bold tracking-tight text-cocoa-900 sm:text-3xl lg:text-4xl"
+              className="title-1 mt-2 text-2xl tracking-tight text-cocoa-900 sm:text-3xl lg:text-4xl"
             >
-              Kenapa Roti Kami Istimewa
+              Kenapa Roti <br />
+              Kami Istimewa
             </h2>
 
+            {/* Sub-header Section 3 */}
             <p
               data-reveal
-              className="font-section3-p mt-3 text-center text-base sm:text-lg lg:text-xl leading-relaxed text-cocoa-700/85"
+              className="font-itim mt-3 text-center text-base sm:text-lg lg:text-xl leading-relaxed text-cocoa-700/85"
             >
               Bukan sekadar enak — tiap gigitan punya alasan untuk kembali lagi.
             </p>
@@ -435,12 +400,11 @@ export default function About() {
                   key={b.title || index}
                   className="relative flex flex-col items-center lg:flex-row"
                 >
-                  {/* Card Kiri */}
                   <div className="w-full text-left sm:text-center lg:text-right">
                     <BenefitCard {...b} align="right" />
                   </div>
 
-                  {/* Panah Mobile Kiri/Atas -> Menunjuk ke Bawah (Menuju Gambar Tengah) */}
+                  {/* Arrow Mobile */}
                   <div className="mt-3 block text-cocoa-800 lg:hidden opacity-75">
                     <svg
                       viewBox="0 0 24 24"
@@ -450,7 +414,7 @@ export default function About() {
                     </svg>
                   </div>
 
-                  {/* Panah Desktop Kiri ke Gambar Tengah */}
+                  {/* Arrow Desktop */}
                   <div className="pointer-events-none absolute -right-12 top-1/2 hidden -translate-y-1/2 z-20 w-12 text-cocoa-900 lg:block">
                     <svg
                       viewBox="0 0 60 40"
@@ -524,7 +488,7 @@ export default function About() {
                   key={b.title || index}
                   className="relative flex flex-col items-center lg:flex-row"
                 >
-                  {/* Panah Mobile Kanan/Bawah -> Menunjuk ke Atas (Menuju Gambar Tengah) */}
+                  {/* Arrow Mobile */}
                   <div className="mb-3 block text-cocoa-800 lg:hidden opacity-75">
                     <svg
                       viewBox="0 0 24 24"
@@ -534,7 +498,7 @@ export default function About() {
                     </svg>
                   </div>
 
-                  {/* Panah Desktop Kanan ke Gambar Tengah */}
+                  {/* Arrow Desktop */}
                   <div className="pointer-events-none absolute -left-12 top-1/2 hidden -translate-y-1/2 z-20 w-12 text-cocoa-900 lg:block">
                     <svg
                       viewBox="0 0 60 40"
@@ -579,7 +543,6 @@ export default function About() {
                     </svg>
                   </div>
 
-                  {/* Card Kanan */}
                   <div className="w-full text-left sm:text-center lg:text-left">
                     <BenefitCard {...b} />
                   </div>

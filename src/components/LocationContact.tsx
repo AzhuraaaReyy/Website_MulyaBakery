@@ -25,6 +25,7 @@ export default function LocationContact() {
 
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<maplibregl.Map | null>(null);
+  const cleanupMapRef = useRef<(() => void) | null>(null);
 
   const [disalin, setDisalin] = useState(false);
   const [isBottomSheetExpanded, setIsBottomSheetExpanded] = useState(false);
@@ -107,27 +108,69 @@ export default function LocationContact() {
     }
   };
 
+  // Koordinat toko Mulya Bakery (dari link Google Maps)
+  // https://maps.app.goo.gl/4d1EBhvuAwdj9ekZ7
+  const TOKO_LNG = 110.3929844;
+  const TOKO_LAT = -7.1287625;
+
   // Fungsi untuk memusatkan kembali peta ke koordinat toko
   const resetPetaKeToko = () => {
     if (mapInstanceRef.current) {
       mapInstanceRef.current.flyTo({
-        center: [110.4194, -7.0051],
+        center: [TOKO_LNG, TOKO_LAT],
         zoom: 15,
         essential: true,
       });
     }
   };
 
-  // Inisialisasi MapLibre GL JS dengan OpenStreetMap Raster Style Inline
+  // Inisialisasi MapLibre GL JS dengan OpenStreetMap Raster Style Inline.
+  //
+  // OPTIMASI LAZY-LOAD: map hanya dibuat ketika section "Lokasi & Kontak" mulai
+  // terlihat di layar (IntersectionObserver). Sebelum user scroll ke sini, tidak
+  // ada tile OSM yang diunduh sama sekali — membuat halaman awal terasa jauh
+  // lebih ringan & cepat. Map dibuat hanya SEKALI (dijaga oleh mapInstanceRef
+  // dan flag "sudahLihat").
   useEffect(() => {
-    if (!mapContainerRef.current) return;
+    const el = mapContainerRef.current;
+    if (!el) return;
+
+    // Jika IntersectionObserver tidak tersedia, fallback: langsung buat map.
+    if (typeof IntersectionObserver === "undefined") {
+      initMap(el);
+      return;
+    }
+
+    let sudahLihat = false;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (sudahLihat) return;
+        if (entries.some((e) => e.isIntersecting)) {
+          sudahLihat = true;
+          initMap(el);
+          observer.disconnect();
+        }
+      },
+      // Mulai muat sedikit SEBELUM section benar-benar masuk layar (±160px),
+      // supaya tile sudah siap saat user sampai di sana.
+      { rootMargin: "160px 0px", threshold: 0.01 },
+    );
+
+    observer.observe(el);
+    return () => {
+      observer.disconnect();
+      cleanupMapRef.current?.();
+    };
+  }, []);
+
+  function initMap(container: HTMLElement) {
     if (mapInstanceRef.current) return;
 
-    const lng = 110.4194;
-    const lat = -7.0051;
+    const lng = TOKO_LNG;
+    const lat = TOKO_LAT;
 
     const map = new maplibregl.Map({
-      container: mapContainerRef.current,
+      container,
       style: {
         version: 8,
         sources: {
@@ -145,7 +188,9 @@ export default function LocationContact() {
             type: "raster",
             source: "osm-tiles",
             minzoom: 0,
-            maxzoom: 19,
+            // Batasi zoom maksimal ke 17 — cukup untuk lokasi toko sekaligus
+            // mengurangi jumlah tile yang diunduh (map lebih ringan & cepat).
+            maxzoom: 17,
           },
         ],
       },
@@ -171,12 +216,14 @@ export default function LocationContact() {
       map.resize();
     }, 250);
 
-    return () => {
+    // Simpan fungsi pembersih — dipanggil saat komponen unmount (bila map sudah dibuat).
+    cleanupMapRef.current = () => {
       clearTimeout(timer);
       map.remove();
       mapInstanceRef.current = null;
+      cleanupMapRef.current = null;
     };
-  }, []);
+  }
 
   const kontak = [
     {
@@ -228,9 +275,10 @@ export default function LocationContact() {
             <h2
               data-reveal
               style={{ transitionDelay: "150ms" }}
-              className="title-1 mt-2 text-2xl font-bold tracking-tight text-cocoa-900 sm:text-3xl lg:text-4xl transition-all duration-700"
+              className="title-1 mt-2 text-2xl  tracking-tight text-cocoa-900 sm:text-3xl lg:text-4xl transition-all duration-700"
             >
-              Mampir atau Hubungi Kami
+              Mampir atau <br />
+              Hubungi Kami
             </h2>
 
             <p
@@ -336,7 +384,7 @@ export default function LocationContact() {
                   <div className="flex items-center gap-3 min-w-0">
                     <div className="w-14 h-14 rounded-xl bg-rose-50 ring-1 ring-rose-200 overflow-hidden shrink-0">
                       <img
-                        src="https://images.unsplash.com/photo-1509440159596-0249088772ff?q=80&w=1000&auto=format&fit=crop"
+                        src="/images/icontoko.png"
                         alt="Store"
                         className="w-full h-full object-cover"
                       />
@@ -350,10 +398,10 @@ export default function LocationContact() {
                       </p>
                       <div className="flex items-center gap-2 mt-1">
                         <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-rose-100 text-rose-700 font-text text-[10px] font-bold">
-                          0.3 km
+                          Toko utama
                         </span>
                         <span className="font-text text-[11px] text-emerald-700 font-semibold">
-                          Buka • 07.00 - 20.00
+                          Buka • {LOCATION.hours[0]?.time ?? "08.00 - 23.00"}
                         </span>
                       </div>
                     </div>
@@ -371,7 +419,7 @@ export default function LocationContact() {
                           <MapPin className="h-4 w-4" strokeWidth={2.2} />
                         </span>
                         <div className="min-w-0">
-                          <h4 className="font-heading text-xs font-bold text-cocoa-800">
+                          <h4 className="font-heading text-xs  text-cocoa-800">
                             Alamat toko
                           </h4>
                           <p className="mt-0.5 font-text text-[11px] leading-relaxed text-cocoa-700/85">
@@ -451,7 +499,7 @@ export default function LocationContact() {
 
                     {/* Kontak Langsung */}
                     <div>
-                      <h3 className="font-heading text-xs font-bold text-cocoa-800 mb-1.5">
+                      <h3 className="font-heading text-xs text-cocoa-800 mb-1.5">
                         Hubungi langsung
                       </h3>
                       <div className="space-y-1.5">
@@ -492,7 +540,7 @@ export default function LocationContact() {
                           <ShoppingBag className="h-4 w-4" />
                         </span>
                         <div className="min-w-0">
-                          <h4 className="font-heading text-xs font-bold text-cocoa-800">
+                          <h4 className="font-heading text-xs  text-cocoa-800">
                             Terima pesanan custom!
                           </h4>
                           <p className="font-text text-[11px] text-cocoa-700/80 truncate">
@@ -545,7 +593,7 @@ export default function LocationContact() {
                     <Store className="h-3 w-3" /> TOKO FISIK KAMI
                   </span>
                   <img
-                    src="https://images.unsplash.com/photo-1509440159596-0249088772ff?q=80&w=1000&auto=format&fit=crop"
+                    src="/images/icontoko.png"
                     alt={`${BRAND.name} Toko`}
                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                   />

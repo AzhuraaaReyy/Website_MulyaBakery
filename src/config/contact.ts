@@ -23,7 +23,7 @@
  * nyasar ke nomor yang salah.
  * ─────────────────────────────────────────────────────────────────────────── */
 
-const NOMOR_CONTOH = "6283162253730";
+const NOMOR_CONTOH = "087837739102";
 
 const dariEnv = (import.meta.env.VITE_WHATSAPP_NUMBER as string | undefined)
   ?.replace(/\D/g, "")
@@ -57,22 +57,25 @@ function formatTampil(nomor: string): string {
 export const BRAND = {
   name: "Mulya Bakery",
   tagline: "Roti rumahan, dibuat dengan cinta setiap hari.",
-  established: 2021,
+  established: 2004,
 };
 
 export const CONTACT = {
   whatsapp: WHATSAPP_NUMBER,
   whatsappDisplay: formatTampil(WHATSAPP_NUMBER),
   phone: formatTampil(WHATSAPP_NUMBER),
-  instagram: "mulyabakery",
-  instagramUrl: "https://instagram.com/mulyabakery",
-  email: "halo@mulyabakery.id",
+  instagram: "mulyabakery_",
+  instagramUrl: "https://www.instagram.com/mulyabakery_",
+  // Email & Facebook belum diisi — isi nanti saat sudah dipersiapkan.
+  email: "",
+  facebook: "",
+  facebookUrl: "",
 };
 
 export const LOCATION = {
-  addressLine: "Jl. Contoh No. 12, Kel. Contoh",
-  city: "Semarang, Jawa Tengah",
-  mapsQuery: "Mulya Bakery Semarang",
+  addressLine: "Jl. Srikandi Raya, Suko, Lerep",
+  city: "Kec. Ungaran Bar., Kabupaten Semarang, Jawa Tengah 50519",
+  mapsQuery: "Mulya Bakery, Jl. Srikandi Raya, Suko, Lerep, Ungaran",
   /**
    * (Opsional) Tempel URL embed dari Google Maps untuk menampilkan lokasi PERSIS.
    * Cara: buka Google Maps → cari lokasi → Share/Bagikan → "Embed a map" →
@@ -80,9 +83,5 @@ export const LOCATION = {
    * Bila dibiarkan kosong, peta otomatis dibuat dari `mapsQuery` di atas.
    */
   mapEmbedSrc: "",
-  hours: [
-    { day: "Senin – Jumat", time: "07.00 – 20.00" },
-    { day: "Sabtu – Minggu", time: "08.00 – 21.00" },
-    { day: "Hari libur nasional", time: "08.00 – 15.00" },
-  ],
+  hours: [{ day: "Senin – Minggu", time: "08.00 – 23.00" }],
 };

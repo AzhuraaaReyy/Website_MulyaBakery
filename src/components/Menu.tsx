@@ -387,7 +387,7 @@ export default function Menu() {
 
           <h2
             data-reveal
-            className="title-1 mt-2 text-2xl font-bold tracking-tight text-cocoa-900 sm:text-3xl lg:text-4xl"
+            className="title-1 mt-2 text-2xl tracking-tight text-cocoa-900 sm:text-3xl lg:text-4xl"
           >
             Pilihan Roti & Kue Favorit
           </h2>
@@ -454,7 +454,7 @@ export default function Menu() {
           className="mt-10 flex items-center justify-between border-b border-cocoa-900/10 pb-4"
         >
           <div>
-            <h3 className="font-heading text-xl font-bold text-cocoa-900">
+            <h3 className="font-heading text-xl  text-cocoa-900">
               {activeCat === "Semua" ? "Semua Produk" : activeCat}
             </h3>
             <span className="font-text text-xs text-cocoa-700/60">
@@ -553,33 +553,52 @@ export default function Menu() {
           </div>
         )}
 
-        {/* ── Custom Order CTA Banner (Soft Pink Banner) ───────────────────── */}
-        <div
-          data-reveal
-          className="relative mt-12 overflow-hidden rounded-3xl bg-white border border-pink-200/80 p-6 sm:p-10 text-cocoa-900 shadow-md backdrop-blur-sm"
-        >
-          <div className="relative z-10 flex flex-col items-start justify-between gap-6 md:flex-row md:items-center">
-            <div className="max-w-xl">
-              <span className="inline-flex items-center gap-1.5 font-text text-xs font-bold tracking-wider uppercase text-pink-600">
-                <Cake className="h-4 w-4" /> Custom Order
-              </span>
-              <h3 className="mt-2 bg-cocoa-900  bg-clip-text font-heading text-2xl text-transparent sm:text-3xl">
-                Butuh Pesanan Khusus Acara Spesial?
-              </h3>
-              <p className="mt-2 font-text text-xs sm:text-sm text-cocoa-800/80 leading-relaxed text-justify">
-                Kami siap membantu menyediakan hampers, snackbox, hingga kue
-                ulang tahun sesuai permintaan Anda.
-              </p>
+        <>
+          {/* Import Google Font 'Itim' */}
+          <style>{`
+    @import url('https://fonts.googleapis.com/css2?family=Itim&display=swap');
+    .section-3-container p,
+    .font-section3-p {
+      font-family: 'Itim', cursive, sans-serif !important;
+    }
+  `}</style>
+
+          {/* ── Custom Order CTA Banner (Soft Pink Banner) ───────────────────── */}
+          <div
+            data-reveal
+            className="relative mt-8 sm:mt-12 w-full overflow-hidden rounded-2xl sm:rounded-3xl border border-pink-200/80 bg-white p-5 sm:p-8 md:p-10 text-cocoa-900 shadow-md backdrop-blur-sm"
+          >
+            <div className="relative z-10 flex flex-col items-start justify-between gap-5 md:flex-row md:items-center md:gap-8">
+              {/* Teks & Deskripsi */}
+              <div className="w-full max-w-xl min-w-0 flex-1">
+                <span className="inline-flex items-center gap-1.5 font-text text-[11px] sm:text-xs font-bold tracking-wider uppercase text-pink-600">
+                  <Cake className="h-4 w-4 shrink-0" aria-hidden />
+                  <span className="truncate">Custom Order</span>
+                </span>
+
+                <h3 className="mt-1.5 sm:mt-2 bg-cocoa-900 bg-clip-text font-heading text-xl sm:text-2xl md:text-3xl  leading-snug sm:leading-tight text-transparent">
+                  Butuh Pesanan Khusus Acara Spesial?
+                </h3>
+
+                <p className="font-section3-p mt-2 text-sm sm:text-base leading-relaxed sm:leading-normal text-cocoa-800/80 text-left sm:text-justify">
+                  Kami siap membantu menyediakan hampers, snackbox, hingga kue
+                  ulang tahun sesuai permintaan Anda.
+                </p>
+              </div>
+
+              {/* Tombol Aksion */}
+              <div className="w-full shrink-0 md:w-auto">
+                <button
+                  type="button"
+                  onClick={() => setBookingOpen(true)}
+                  className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-pink-300/80 bg-gradient-to-r from-pink-200 to-pink-400 px-5 sm:px-6 py-3 sm:py-3.5 font-text text-xs sm:text-sm font-bold text-cocoa-900 shadow-sm transition-all duration-300 hover:border-pink-500 hover:from-pink-500 hover:to-pink-600 hover:text-white active:scale-95 md:w-auto"
+                >
+                  <span>Konsultasi Pesanan</span>
+                </button>
+              </div>
             </div>
-            <button
-              type="button"
-              onClick={() => setBookingOpen(true)}
-              className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-pink-200 to-pink-400 border border-pink-300/80 px-6 py-3.5 font-text text-sm font-bold text-cocoa-900 transition-all duration-300 hover:from-pink-500 hover:to-pink-600 hover:text-white hover:border-pink-500 active:scale-95 shadow-sm"
-            >
-              Konsultasi Pesanan
-            </button>
           </div>
-        </div>
+        </>
       </div>
 
       {/* Modals */}

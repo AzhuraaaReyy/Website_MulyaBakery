@@ -10,6 +10,7 @@ import {
   MessageSquareQuote,
   ShoppingBag,
   MapPin,
+  Image,
   ChevronRight,
 } from "lucide-react";
 import { BRAND } from "../config/contact";
@@ -19,9 +20,10 @@ import { kunciScroll } from "../lib/scrollLock";
 const NAV_LINKS = [
   { label: "Tentang", href: "#tentang", icon: Heart },
   { label: "Menu", href: "#menu", icon: Croissant },
-  { label: "Keunggulan", href: "#keunggulan", icon: Award },
   { label: "Cara Pesan", href: "#cara-pesan", icon: ShoppingBag },
+  { label: "Keunggulan", href: "#keunggulan", icon: Award },
   { label: "Testimoni", href: "#testimoni", icon: MessageSquareQuote },
+  { label: "Gallery", href: "#gallery", icon: Image },
   { label: "Kontak", href: "#kontak", icon: MapPin },
 ];
 

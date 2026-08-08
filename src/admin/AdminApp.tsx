@@ -37,8 +37,8 @@ export default function AdminApp() {
           <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-red-500" />
           <p className="font-text text-sm text-red-700">
             Supabase belum dikonfigurasi. Isi <code>VITE_SUPABASE_URL</code> dan{" "}
-            <code>VITE_SUPABASE_PUBLISHABLE_KEY</code> di file <code>.env</code>,
-            lalu jalankan ulang.
+            <code>VITE_SUPABASE_PUBLISHABLE_KEY</code> di file <code>.env</code>
+            , lalu jalankan ulang.
           </p>
         </div>
       </Bingkai>
@@ -63,7 +63,7 @@ export default function AdminApp() {
 /* ── Kerangka layar (dipakai login & pesan status) ───────────────────────── */
 function Bingkai({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen bg-paper-100 px-4 py-10">
+    <div className="min-h-dvh bg-gradient-pink-soft px-4 py-10">
       <div className="mx-auto w-full max-w-md">{children}</div>
     </div>
   );
@@ -97,11 +97,13 @@ function Login() {
 
   return (
     <Bingkai>
-      <div className="rounded-3xl bg-paper-50 p-8 shadow-cocoa-lg ring-1 ring-cocoa-700/10">
-        <span className="flex h-12 w-12 items-center justify-center rounded-full bg-cocoa-800 text-paper-50">
+      <div className="rounded-3xl bg-white/90 p-8 shadow-pink-lg ring-1 ring-pink-200">
+        <span className="flex h-12 w-12 items-center justify-center rounded-full bg-primary-500 text-white shadow-pink">
           <Lock className="h-6 w-6" />
         </span>
-        <h1 className="mt-4 font-heading text-2xl text-cocoa-800">Panel Admin</h1>
+        <h1 className="mt-4 font-heading text-2xl text-cocoa-800">
+          Panel Admin
+        </h1>
         <p className="mt-1 font-text text-sm text-cocoa-700/70">
           Masuk untuk mengelola menu.
         </p>
@@ -144,7 +146,7 @@ function Login() {
           <button
             type="submit"
             disabled={kirim}
-            className="mt-1 inline-flex w-full items-center justify-center gap-2 rounded-full bg-cocoa-800 px-6 py-3.5 font-text text-base font-bold text-paper-50 shadow-cocoa transition-all hover:-translate-y-0.5 hover:bg-cocoa-900 disabled:opacity-50"
+            className="mt-1 inline-flex w-full items-center justify-center gap-2 rounded-full bg-primary-500 px-6 py-3.5 font-text text-base font-bold text-white shadow-pink transition-all hover:-translate-y-0.5 hover:bg-primary-600 disabled:opacity-50"
           >
             {kirim ? (
               <Loader2 className="h-5 w-5 animate-spin" />

@@ -6,6 +6,7 @@
   "description": "Landing page UMKM roti - Roti Bahagia (warm & homey bakery)",
   "scripts": {
     "dev": "vite",
+    "prebuild": "node scripts/check-env.mjs",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
     "lint": "tsc --noEmit"
@@ -14,7 +15,7 @@
     "@supabase/supabase-js": "^2.111.0",
     "@types/mapbox-gl": "^3.4.1",
     "framer-motion": "^11.11.9",
-    "gsap": "^3.12.5",
+    "gsap": "^3.15.0",
     "lucide-react": "^0.451.0",
     "mapbox-gl": "^3.27.0",
     "maplibre-gl": "^6.1.0",

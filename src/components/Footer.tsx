@@ -7,7 +7,6 @@ import {
   Phone,
   Mail,
   Clock,
-  Heart,
   ChevronDown,
 } from "lucide-react";
 import { BRAND, CONTACT, LOCATION } from "../config/contact";
@@ -117,7 +116,7 @@ export default function Footer() {
                   <Instagram className="w-5 h-5" />
                 </a>
                 <a
-                  href="#"
+                  href={CONTACT.facebookUrl || "#"}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-10 h-10 rounded-full bg-[#EFE3D3]/90 hover:bg-[#E2D2BF] flex items-center justify-center text-[#4A3B32] transition-colors shadow-sm"
@@ -152,11 +151,12 @@ export default function Footer() {
             </div>
             <ul className="space-y-3.5 text-sm font-medium text-[#5C4A3E]">
               {[
-                { label: "Beranda", href: "#beranda" },
-                { label: "Tentang Kami", href: "#tentang-kami" },
-                { label: "Produk", href: "#produk" },
+                { label: "Tentang", href: "#tentang" },
+                { label: "Menu", href: "#menu" },
+                { label: "Cara Pesan", href: "#cara-pesan" },
+                { label: "Keunggulan", href: "#keunggulan" },
                 { label: "Testimoni", href: "#testimoni" },
-                { label: "Galeri", href: "#galeri" },
+                { label: "Gallery", href: "#gallery" },
                 { label: "Kontak", href: "#kontak" },
               ].map((item, idx) => (
                 <li key={idx}>
@@ -275,16 +275,16 @@ export default function Footer() {
               href={CONTACT.instagramUrl || "#"}
               target="_blank"
               rel="noopener noreferrer"
-              className="w-10 h-10 rounded-full bg-[#EFE3D3]/90 hover:bg-[#E2D2BF] flex items-center justify-center text-[#4A3B32] transition-colors shadow-sm"
+              className="w-10 h-10 rounded-full bg-[#EFE3D3]/90 hover:bg-[#E2D2BF] flex items-center justify-center text-pink-500 transition-colors shadow-sm"
               aria-label="Instagram"
             >
               <Instagram className="w-5 h-5" />
             </a>
             <a
-              href="#"
+              href={CONTACT.facebookUrl || "#"}
               target="_blank"
               rel="noopener noreferrer"
-              className="w-10 h-10 rounded-full bg-[#EFE3D3]/90 hover:bg-[#E2D2BF] flex items-center justify-center text-[#4A3B32] transition-colors shadow-sm"
+              className="w-10 h-10 rounded-full bg-[#EFE3D3]/90 hover:bg-[#E2D2BF] flex items-center justify-center text-pink-500 transition-colors shadow-sm"
               aria-label="Facebook"
             >
               <Facebook className="w-5 h-5" />
@@ -293,7 +293,7 @@ export default function Footer() {
               href={generalOrderUrl()}
               target="_blank"
               rel="noopener noreferrer"
-              className="w-10 h-10 rounded-full bg-[#EFE3D3]/90 hover:bg-[#E2D2BF] flex items-center justify-center text-[#4A3B32] transition-colors shadow-sm"
+              className="w-10 h-10 rounded-full bg-[#EFE3D3]/90 hover:bg-[#E2D2BF] flex items-center justify-center text-pink-500 transition-colors shadow-sm"
               aria-label="WhatsApp"
             >
               <MessageCircle className="w-5 h-5" />
@@ -325,11 +325,12 @@ export default function Footer() {
                 <div className="overflow-hidden">
                   <ul className="space-y-3 text-sm font-medium text-[#5C4A3E] text-left pl-2">
                     {[
-                      { label: "Beranda", href: "#beranda" },
-                      { label: "Tentang Kami", href: "#tentang-kami" },
-                      { label: "Produk", href: "#produk" },
+                      { label: "Tentang", href: "#tentang" },
+                      { label: "Menu", href: "#menu" },
+                      { label: "Cara Pesan", href: "#cara-pesan" },
+                      { label: "Keunggulan", href: "#keunggulan" },
                       { label: "Testimoni", href: "#testimoni" },
-                      { label: "Galeri", href: "#galeri" },
+                      { label: "Gallery", href: "#gallery" },
                       { label: "Kontak", href: "#kontak" },
                     ].map((item, idx) => (
                       <li key={idx}>
@@ -385,7 +386,6 @@ export default function Footer() {
                       { name: "Snack", icon: "/images/icon-snack.png" },
                     ].map((prod, idx) => (
                       <li key={idx} className="flex items-center gap-3">
-                       
                         <span>{prod.name}</span>
                       </li>
                     ))}

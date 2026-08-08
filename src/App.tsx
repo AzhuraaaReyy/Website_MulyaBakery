@@ -1,3 +1,6 @@
+import { useEffect } from "react";
+import { initGlobalAnimations } from "./lib/gsap"; // Sesuaikan path jika letaknya berbeda
+
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
 import About from "./components/About";
@@ -15,6 +18,16 @@ import CartButton from "./components/CartButton";
 import CartModal from "./components/CartModal";
 
 export default function App() {
+  useEffect(() => {
+    // 1. Jalankan inisialisasi animasi global saat komponen App dimount
+    const cleanup = initGlobalAnimations();
+
+    // 2. Bersihkan animasi saat komponen unmount untuk mencegah memory leak
+    return () => {
+      cleanup();
+    };
+  }, []);
+
   return (
     <CartProvider>
       {/* Latar animasi scroll-driven di belakang semua section */}

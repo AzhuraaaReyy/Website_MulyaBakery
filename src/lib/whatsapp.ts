@@ -76,40 +76,44 @@ function rapikanNomor(nomor: string): string {
  * ═══════════════════════════════════════════════════════════════════════════ */
 
 /** Pesan umum untuk CTA di Hero & Footer (tanpa produk spesifik). */
+
 export function generalOrderUrl(): string {
   return buildWhatsAppUrl(
     [
       `Halo ${BRAND.name},`,
       "",
-      "Saya tertarik memesan dan ingin menanyakan menu serta",
-      "ketersediaannya hari ini. Mohon informasinya.",
+      "Saya tertarik untuk memesan roti di Mulya Bakery.",
+      "Boleh saya mendapatkan informasi mengenai menu yang tersedia",
+      "dan ketersediaannya hari ini?",
       "",
-      "Terima kasih.",
+      "Terima kasih. Saya menunggu informasinya.",
     ].join("\n"),
   );
 }
 
-/** Pesan spesifik untuk kartu produk — nama produk sudah terisi otomatis. */
 export function productOrderUrl(productName: string): string {
   return buildWhatsAppUrl(
     [
       `Halo ${BRAND.name},`,
       "",
-      `Saya ingin menanyakan ketersediaan *${productName}* untuk hari ini.`,
+      `Saya tertarik dengan *${productName}* dan ingin memesannya.`,
+      "Apakah produk tersebut masih tersedia untuk hari ini?",
       "",
-      "Terima kasih.",
+      "Terima kasih. Mohon informasinya.",
     ].join("\n"),
   );
 }
 
-/** Pesan untuk pesanan custom / acara. */
 export function customOrderUrl(): string {
   return buildWhatsAppUrl(
     [
       `Halo ${BRAND.name},`,
       "",
-      "Saya ingin memesan roti atau kue custom untuk sebuah acara.",
-      "Mohon informasi mengenai pilihan, harga, dan waktu pengerjaannya.",
+      "Saya ingin berkonsultasi mengenai pesanan roti atau kue custom",
+      "untuk sebuah acara.",
+      "",
+      "Boleh saya mendapatkan informasi mengenai pilihan menu,",
+      "harga, dan waktu pengerjaannya?",
       "",
       "Terima kasih.",
     ].join("\n"),
@@ -143,6 +147,7 @@ export interface CustomerInfo {
  *
  * Dipisah dari pembuatan URL supaya panjangnya bisa diperiksa lebih dulu.
  */
+
 export function cartOrderMessage(
   items: CartItem[],
   customer: CustomerInfo,
@@ -150,69 +155,82 @@ export function cartOrderMessage(
 ): string {
   const baris: string[] = [];
 
-  // ── Kepala nota ──────────────────────────────────────────────────────────
-  baris.push(`*PESANAN BARU - ${BRAND.name.toUpperCase()}*`);
+  // ── Header ────────────────────────────────────────────────────────────────
+  baris.push(`*PESANAN ${BRAND.name.toUpperCase()}*`);
   baris.push("");
+  baris.push(`Halo ${BRAND.name}, saya ingin melakukan pemesanan.`);
+  baris.push("");
+
   if (orderCode) baris.push(`No. Pesanan : ${orderCode}`);
   baris.push(`Tanggal     : ${stempelWaktu()}`);
+
   baris.push("");
   baris.push(GARIS);
 
-  // ── Rincian barang ───────────────────────────────────────────────────────
+  // ── Rincian Pesanan ───────────────────────────────────────────────────────
   baris.push("*RINCIAN PESANAN*");
   baris.push("");
 
   let total = 0;
   let jumlahUnit = 0;
+
   items.forEach(({ product, qty }, i) => {
     const subtotal = product.price * qty;
+
     total += subtotal;
     jumlahUnit += qty;
+
     baris.push(`${i + 1}. ${product.name}`);
     baris.push(
-      `    ${qty} x ${formatPrice(product.price)} = ${formatPrice(subtotal)}`,
+      `   ${qty} x ${formatPrice(product.price)} = ${formatPrice(subtotal)}`,
     );
+    baris.push("");
   });
 
-  baris.push("");
   baris.push(GARIS);
   baris.push(`*TOTAL (${jumlahUnit} item) : ${formatPrice(total)}*`);
   baris.push(GARIS);
-  baris.push("");
 
-  // ── Data pemesan ─────────────────────────────────────────────────────────
+  // ── Data Pemesan ──────────────────────────────────────────────────────────
+  baris.push("");
   baris.push("*DATA PEMESAN*");
   baris.push("");
-  baris.push(`Nama     : ${customer.name}`);
-  baris.push(`No. HP   : ${rapikanNomor(customer.phone)}`);
+
+  baris.push(`Nama       : ${customer.name}`);
+  baris.push(`No. HP     : ${rapikanNomor(customer.phone)}`);
   baris.push(
-    `Metode   : ${customer.method === "antar" ? "Diantar ke alamat" : "Ambil di toko"}`,
+    `Pengambilan : ${
+      customer.method === "antar" ? "Diantar ke alamat" : "Ambil di toko"
+    }`,
   );
+
   if (customer.method === "antar" && customer.address) {
-    baris.push(`Alamat   : ${customer.address}`);
-  }
-  if (customer.note) {
-    baris.push(`Catatan  : ${customer.note}`);
-  }
-  if (customer.photoUrl) {
-    baris.push(`Foto     : ${customer.photoUrl}`);
+    baris.push(`Alamat     : ${customer.address}`);
   }
 
-  // ── Penutup ──────────────────────────────────────────────────────────────
+  if (customer.note) {
+    baris.push(`Catatan    : ${customer.note}`);
+  }
+
+  if (customer.photoUrl) {
+    baris.push(`Foto referensi : ${customer.photoUrl}`);
+  }
+
+  // ── Penutup ───────────────────────────────────────────────────────────────
   baris.push("");
   baris.push(GARIS);
-  baris.push(
-    customer.method === "antar"
-      ? "Mohon konfirmasi ketersediaan stok, biaya pengiriman,"
-      : "Mohon konfirmasi ketersediaan stok",
-  );
-  baris.push(
-    customer.method === "antar"
-      ? "dan perkiraan waktu pengantaran."
-      : "dan waktu pengambilan yang memungkinkan.",
-  );
   baris.push("");
-  baris.push("Terima kasih.");
+
+  if (customer.method === "antar") {
+    baris.push("Mohon dibantu konfirmasi ketersediaan pesanan,");
+    baris.push("biaya pengiriman, dan perkiraan waktu pengantaran.");
+  } else {
+    baris.push("Mohon dibantu konfirmasi ketersediaan pesanan");
+    baris.push("dan waktu pengambilan yang tersedia.");
+  }
+
+  baris.push("");
+  baris.push("Terima kasih. Saya menunggu konfirmasinya.");
 
   return baris.join("\n");
 }
@@ -267,43 +285,80 @@ function formatDateID(iso: string): string {
  * Pesan booking pesanan custom. Formatnya sengaja disamakan dengan nota
  * keranjang supaya owner membaca dua jenis pesanan dengan pola yang sama.
  */
+
 export function bookingOrderUrl(b: BookingInfo): string {
   const baris: string[] = [];
 
-  baris.push(`*BOOKING PESANAN CUSTOM - ${BRAND.name.toUpperCase()}*`);
+  baris.push(`*PESANAN CUSTOM ${BRAND.name.toUpperCase()}*`);
   baris.push("");
-  baris.push(`Tanggal kirim : ${stempelWaktu()}`);
+  baris.push(
+    `Halo ${BRAND.name}, saya ingin berkonsultasi mengenai pesanan custom.`,
+  );
+  baris.push("");
+
+  baris.push(`Tanggal pesan : ${stempelWaktu()}`);
+
   baris.push("");
   baris.push(GARIS);
 
+  // ── Detail Pesanan ────────────────────────────────────────────────────────
   baris.push("*DETAIL PESANAN*");
   baris.push("");
-  baris.push(`Jenis        : ${b.type}`);
-  baris.push(`Dibutuhkan   : ${formatDateID(b.date)}`);
-  if (b.quantity) baris.push(`Jumlah       : ${b.quantity}`);
-  if (b.theme) baris.push(`Tema         : ${b.theme}`);
-  if (b.budget) baris.push(`Anggaran     : ${b.budget}`);
+
+  baris.push(`Jenis         : ${b.type}`);
+  baris.push(`Dibutuhkan    : ${formatDateID(b.date)}`);
+
+  if (b.quantity) {
+    baris.push(`Jumlah        : ${b.quantity}`);
+  }
+
+  if (b.theme) {
+    baris.push(`Tema          : ${b.theme}`);
+  }
+
+  if (b.budget) {
+    baris.push(`Anggaran      : ${b.budget}`);
+  }
 
   baris.push("");
   baris.push(GARIS);
+
+  // ── Data Pemesan ──────────────────────────────────────────────────────────
   baris.push("*DATA PEMESAN*");
   baris.push("");
-  baris.push(`Nama         : ${b.name}`);
-  baris.push(`No. HP       : ${rapikanNomor(b.phone)}`);
-  baris.push(
-    `Metode       : ${b.method === "antar" ? "Diantar ke alamat" : "Ambil di toko"}`,
-  );
-  if (b.method === "antar" && b.address)
-    baris.push(`Alamat       : ${b.address}`);
-  if (b.note) baris.push(`Catatan      : ${b.note}`);
-  if (b.photoUrl) baris.push(`Foto ref.    : ${b.photoUrl}`);
 
+  baris.push(`Nama          : ${b.name}`);
+  baris.push(`No. HP        : ${rapikanNomor(b.phone)}`);
+  baris.push(
+    `Pengambilan   : ${
+      b.method === "antar" ? "Diantar ke alamat" : "Ambil di toko"
+    }`,
+  );
+
+  if (b.method === "antar" && b.address) {
+    baris.push(`Alamat        : ${b.address}`);
+  }
+
+  if (b.note) {
+    baris.push(`Catatan       : ${b.note}`);
+  }
+
+  if (b.photoUrl) {
+    baris.push(`Foto referensi: ${b.photoUrl}`);
+  }
+
+  // ── Penutup ───────────────────────────────────────────────────────────────
   baris.push("");
   baris.push(GARIS);
-  baris.push("Mohon konfirmasi ketersediaan tanggal tersebut");
-  baris.push("beserta estimasi biayanya.");
   baris.push("");
-  baris.push("Terima kasih.");
+
+  baris.push("Mohon dibantu untuk menginformasikan ketersediaan");
+  baris.push(
+    "tanggal tersebut, pilihan yang tersedia, dan perkiraan biayanya.",
+  );
+
+  baris.push("");
+  baris.push("Terima kasih. Saya menunggu informasi selanjutnya.");
 
   return buildWhatsAppUrl(baris.join("\n"));
 }

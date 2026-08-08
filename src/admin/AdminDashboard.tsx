@@ -12,7 +12,7 @@ import {
 import { supabaseAdmin } from "../lib/supabaseAdmin";
 import ProdukPanel from "./ProdukPanel";
 import KategoriPanel from "./KategoriPanel";
-import ModerasiPanel from "./ModerasiPanel";
+import TestimoniPanel from "./TestimoniPanel";
 
 type Tab = "produk" | "kategori" | "testimoni";
 
@@ -27,7 +27,8 @@ const NAV: { id: Tab; label: string; Icon: typeof UtensilsCrossed }[] = [
  *   - Desktop (lg): sidebar menetap di kiri.
  *   - HP/tablet: sidebar jadi drawer yang dibuka dari tombol hamburger.
  *
- * Tab "Menu" -> kelola produk; "Testimoni" -> setujui/tolak ulasan berfoto.
+ * Tab "Menu" -> kelola produk; "Testimoni" -> CRUD data testimoni (termasuk
+ * persetujuan ulasan berfoto).
  */
 export default function AdminDashboard({ email }: { email: string }) {
   const [tab, setTab] = useState<Tab>("produk");
@@ -40,7 +41,7 @@ export default function AdminDashboard({ email }: { email: string }) {
   };
 
   return (
-    <div className="min-h-screen bg-paper-100">
+    <div className="min-h-dvh overflow-x-hidden bg-paper-100">
       {/* ── Sidebar desktop (menetap) ──────────────────────────────────────── */}
       <aside className="hidden border-r border-cocoa-700/10 bg-paper-50 lg:fixed lg:inset-y-0 lg:left-0 lg:z-30 lg:flex lg:w-64 lg:flex-col lg:p-5">
         <IsiSidebar tab={tab} pilih={pilih} email={email} keluar={keluar} />
@@ -74,7 +75,12 @@ export default function AdminDashboard({ email }: { email: string }) {
               >
                 <X className="h-5 w-5" />
               </button>
-              <IsiSidebar tab={tab} pilih={pilih} email={email} keluar={keluar} />
+              <IsiSidebar
+                tab={tab}
+                pilih={pilih}
+                email={email}
+                keluar={keluar}
+              />
             </motion.aside>
           </>
         )}
@@ -103,7 +109,7 @@ export default function AdminDashboard({ email }: { email: string }) {
           ) : tab === "kategori" ? (
             <KategoriPanel />
           ) : (
-            <ModerasiPanel />
+            <TestimoniPanel />
           )}
         </main>
       </div>
@@ -127,7 +133,7 @@ function IsiSidebar({
     <div className="flex h-full flex-col">
       {/* Brand */}
       <div className="flex items-center gap-2.5 px-1">
-        <span className="flex h-10 w-10 items-center justify-center rounded-full bg-cocoa-800 text-paper-50">
+        <span className="flex h-10 w-10 items-center justify-center rounded-full bg-primary-500 text-white shadow-pink">
           <Croissant className="h-5 w-5" aria-hidden />
         </span>
         <span className="font-heading text-lg text-cocoa-800">Panel Admin</span>
@@ -145,8 +151,8 @@ function IsiSidebar({
               aria-current={aktif ? "page" : undefined}
               className={`flex items-center gap-3 rounded-xl px-3.5 py-2.5 font-text text-sm font-bold transition-colors ${
                 aktif
-                  ? "bg-cocoa-800 text-paper-50 shadow-cocoa"
-                  : "text-cocoa-700/70 hover:bg-paper-200 hover:text-cocoa-900"
+                  ? "bg-primary-500 text-white shadow-pink"
+                  : "text-cocoa-700/70 hover:bg-pink-100/70 hover:text-primary-600"
               }`}
             >
               <Icon className="h-[18px] w-[18px] shrink-0" aria-hidden />
@@ -164,7 +170,7 @@ function IsiSidebar({
         <button
           type="button"
           onClick={keluar}
-          className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-full bg-paper-200 px-4 py-2.5 font-text text-sm font-bold text-cocoa-800 transition-colors hover:bg-cocoa-800 hover:text-paper-50"
+          className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-full bg-pink-100 text-primary-600 px-4 py-2.5 font-text text-sm font-bold transition-colors hover:bg-primary-500 hover:text-white hover:shadow-pink"
         >
           <LogOut className="h-4 w-4" /> Keluar
         </button>
