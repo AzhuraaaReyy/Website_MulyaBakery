@@ -20,6 +20,18 @@ Landing page UMKM roti **"Mulya Bakery"** (React 18 + Vite + TypeScript + Tailwi
 
 ---
 
+## 📌 Sesi Ini — README.md + .env.example
+
+**Status:** SELESAI.
+
+- `README.md` (BARU) — ringkasan proyek, fitur, tech stack, struktur proyek, setup
+  `.env`, panduan migrasi 001–010, akun admin & super admin, script, deploy Vercel,
+  catatan go-live.
+- `.env.example` (BARU) — template env aman (tanpa nilai asli) dengan komentar
+  lengkap untuk semua variabel `VITE_*` yang dibaca kode (Supabase, WA, super admin).
+
+---
+
 ## 📌 Sesi Ini — Ulasan Multi-Produk (1 Form untuk Banyak Menu)
 
 **Status:** KODE SELESAI — verifikasi `npx tsc --noEmit` & `npm run build` (lihat bagian bawah).
