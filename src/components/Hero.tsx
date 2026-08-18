@@ -10,6 +10,8 @@ import {
 import { BRAND } from "../config/contact";
 import { generalOrderUrl } from "../lib/whatsapp";
 import { useScrolly } from "../hooks/useScrolly";
+import { useFeatureFlags } from "../context/FeatureFlagsContext";
+import LockedCta from "./LockedCta";
 
 interface HeroSlide {
   id: string;
@@ -115,6 +117,7 @@ export default function Hero() {
   const reduce = useReducedMotion();
   const sectionRef = useRef<HTMLElement>(null);
   useScrolly(sectionRef);
+  const { isOn } = useFeatureFlags();
 
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
@@ -350,17 +353,24 @@ export default function Hero() {
                 exit={{ opacity: 0, y: reduce ? 0 : -8 }}
                 transition={{ duration: 0.45, delay: 0.2 }}
               >
-                <motion.a
-                  whileHover={{ scale: reduce ? 1 : 1.02 }}
-                  whileTap={{ scale: reduce ? 1 : 0.98 }}
-                  href={generalOrderUrl()}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="btn-cocoa font-body w-full justify-center sm:w-auto"
-                >
-                  <MessageCircle className="h-5 w-5" aria-hidden />
-                  Pesan Sekarang
-                </motion.a>
+                {isOn("pesan_wa") ? (
+                  <motion.a
+                    whileHover={{ scale: reduce ? 1 : 1.02 }}
+                    whileTap={{ scale: reduce ? 1 : 0.98 }}
+                    href={generalOrderUrl()}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn-cocoa font-body w-full justify-center sm:w-auto"
+                  >
+                    <MessageCircle className="h-5 w-5" aria-hidden />
+                    Pesan Sekarang
+                  </motion.a>
+                ) : (
+                  <LockedCta
+                    feature="pesan_wa"
+                    className="w-full justify-center sm:w-auto"
+                  />
+                )}
                 <motion.a
                   whileHover={{ scale: reduce ? 1 : 1.02 }}
                   whileTap={{ scale: reduce ? 1 : 0.98 }}

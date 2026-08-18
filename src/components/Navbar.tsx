@@ -16,6 +16,8 @@ import {
 import { BRAND } from "../config/contact";
 import { generalOrderUrl } from "../lib/whatsapp";
 import { kunciScroll } from "../lib/scrollLock";
+import { useFeatureFlags } from "../context/FeatureFlagsContext";
+import LockedCta from "./LockedCta";
 
 const NAV_LINKS = [
   { label: "Tentang", href: "#tentang", icon: Heart },
@@ -55,6 +57,7 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const active = useActiveSection();
+  const { isOn } = useFeatureFlags();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
@@ -150,22 +153,26 @@ export default function Navbar() {
         </ul>
 
         {/* Tombol Pesan Sekarang (Desktop CTA dengan Efek Micro-interaction) */}
-        <a
-          href={generalOrderUrl()}
-          target="_blank"
-          rel="noopener noreferrer"
-          className={`hidden items-center gap-2 rounded-full px-5 py-2.5 font-text text-sm font-bold transition-all duration-300 hover:-translate-y-0.5 active:scale-95 lg:inline-flex ${
-            isSolid
-              ? "bg-gradient-to-r from-[#FF69B4] to-[#FF4585] text-white shadow-md hover:shadow-lg hover:brightness-105"
-              : "bg-[#412415] text-[#F7F0E1] border border-[#E2D0B4]/40 shadow-sm hover:bg-[#5C3520] hover:shadow-md"
-          }`}
-        >
-          <MessageCircle
-            className="h-4 w-4 transition-transform duration-300 group-hover:rotate-12"
-            aria-hidden
-          />
-          Pesan Sekarang
-        </a>
+        {isOn("pesan_wa") ? (
+          <a
+            href={generalOrderUrl()}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={`hidden items-center gap-2 rounded-full px-5 py-2.5 font-text text-sm font-bold transition-all duration-300 hover:-translate-y-0.5 active:scale-95 lg:inline-flex ${
+              isSolid
+                ? "bg-gradient-to-r from-[#FF69B4] to-[#FF4585] text-white shadow-md hover:shadow-lg hover:brightness-105"
+                : "bg-[#412415] text-[#F7F0E1] border border-[#E2D0B4]/40 shadow-sm hover:bg-[#5C3520] hover:shadow-md"
+            }`}
+          >
+            <MessageCircle
+              className="h-4 w-4 transition-transform duration-300 group-hover:rotate-12"
+              aria-hidden
+            />
+            Pesan Sekarang
+          </a>
+        ) : (
+          <LockedCta feature="pesan_wa" className="hidden lg:inline-flex" />
+        )}
 
         {/* Mobile toggle button */}
         <button
@@ -283,16 +290,23 @@ export default function Navbar() {
                   }}
                   className="mt-3 pt-2 border-t border-[#FF69B4]/20"
                 >
-                  <a
-                    href={generalOrderUrl()}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    onClick={() => setOpen(false)}
-                    className="flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#FF69B4] to-[#FF4585] py-3.5 text-center font-text text-base font-bold text-white shadow-md transition-all duration-300 active:scale-[0.98] hover:brightness-105 hover:shadow-lg"
-                  >
-                    <MessageCircle className="h-5 w-5" aria-hidden />
-                    Pesan Sekarang
-                  </a>
+                                    {isOn("pesan_wa") ? (
+                    <a
+                      href={generalOrderUrl()}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={() => setOpen(false)}
+                      className="flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#FF69B4] to-[#FF4585] py-3.5 text-center font-text text-base font-bold text-white shadow-md transition-all duration-300 active:scale-[0.98] hover:brightness-105 hover:shadow-lg"
+                    >
+                      <MessageCircle className="h-5 w-5" aria-hidden />
+                      Pesan Sekarang
+                    </a>
+                  ) : (
+                    <LockedCta
+                      feature="pesan_wa"
+                      className="w-full py-3.5"
+                    />
+                  )}
                 </motion.li>
               </motion.ul>
             </motion.div>

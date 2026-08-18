@@ -581,6 +581,13 @@ function FormProduk({
 
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-cocoa-900/50 p-0 backdrop-blur-sm sm:items-center sm:p-6">
+      {/* Inject Font Itim — semua teks form kecuali H2 memakai Itim */}
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Itim&display=swap');
+        .font-itim, .font-itim * {
+          font-family: 'Itim', cursive, sans-serif !important;
+        }
+      `}</style>
       <div className="flex max-h-[94dvh] w-full max-w-xl flex-col overflow-hidden rounded-t-3xl bg-paper-100 shadow-cocoa-lg sm:rounded-3xl">
         <div className="flex items-center justify-between border-b border-cocoa-700/10 px-5 py-4">
           <h2 className="font-heading text-xl text-cocoa-800">
@@ -595,7 +602,7 @@ function FormProduk({
           </button>
         </div>
 
-        <div className="flex-1 space-y-4 overflow-y-auto p-5">
+        <div className="font-itim flex-1 space-y-4 overflow-y-auto p-5">
           <Kolom label="Nama produk" wajib>
             <input
               type="text"
@@ -799,7 +806,7 @@ function FormProduk({
           )}
         </div>
 
-        <div className="border-t border-cocoa-700/10 bg-paper-50 px-5 py-4">
+        <div className="font-itim border-t border-cocoa-700/10 bg-paper-50 px-5 py-4">
           <button
             type="button"
             onClick={kirim}

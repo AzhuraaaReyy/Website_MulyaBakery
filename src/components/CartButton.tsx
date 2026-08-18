@@ -1,13 +1,17 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import { ShoppingBag } from 'lucide-react'
 import { useCart } from '../context/CartContext'
+import { useFeatureFlags } from '../context/FeatureFlagsContext'
 
 /**
  * Tombol keranjang mengambang. Sengaja hanya muncul saat keranjang terisi —
  * kalau kosong tidak ada gunanya, jadi tidak menutupi konten.
+ * Bila fitur keranjang dimatikan super admin, tombol ini disembunyikan total.
  */
 export default function CartButton() {
   const { count, open } = useCart()
+  const { isOn } = useFeatureFlags()
+  if (!isOn('keranjang')) return null
 
   return (
     <AnimatePresence>

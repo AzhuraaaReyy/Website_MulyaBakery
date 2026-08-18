@@ -20,6 +20,7 @@ import { readableError } from "../lib/supabase";
 import { pathStorageDariUrl } from "../lib/storage";
 import { uploadImage } from "../lib/uploadImage";
 import { sinyalTestimoniBerubah } from "../lib/crosstab";
+import { Pagination, usePagination } from "./Pagination";
 
 interface Testimoni {
   id: string;
@@ -66,9 +67,9 @@ export default function TestimoniPanel() {
   const [editing, setEditing] = useState<Testimoni | "baru" | null>(null);
   const [sibuk, setSibuk] = useState<string | null>(null);
 
-  const muat = useCallback(async () => {
+  const muat = useCallback(async (senyap = false) => {
     if (!supabaseAdmin) return;
-    setMemuat(true);
+    if (!senyap) setMemuat(true);
     setGalat(null);
     const { data, error } = await supabaseAdmin
       .from("service_reviews")
@@ -78,11 +79,17 @@ export default function TestimoniPanel() {
       .order("created_at", { ascending: false });
     if (error) setGalat(readableError(error));
     else setRows((data ?? []) as Testimoni[]);
-    setMemuat(false);
+    if (!senyap) setMemuat(false);
   }, []);
 
   useEffect(() => {
     void muat();
+  }, [muat]);
+
+  // Auto-refresh: ulasan baru langsung muncul tanpa reload halaman.
+  useEffect(() => {
+    const id = window.setInterval(() => void muat(true), 15000);
+    return () => window.clearInterval(id);
   }, [muat]);
 
   const barisFilter = useMemo(() => {
@@ -97,6 +104,12 @@ export default function TestimoniPanel() {
         return rows;
     }
   }, [rows, filter]);
+
+  const {
+    halaman,
+    setHalaman,
+    baris: barisHalaman,
+  } = usePagination(barisFilter, filter);
 
   const toggleTampil = async (row: Testimoni) => {
     if (!supabaseAdmin) return;
@@ -210,7 +223,7 @@ export default function TestimoniPanel() {
         </div>
       ) : (
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 items-stretch">
-          {barisFilter.map((row) => (
+          {barisHalaman.map((row) => (
             <article
               key={row.id}
               className={`flex flex-col h-full overflow-hidden rounded-2xl bg-paper-50 ring-1 ring-cocoa-700/10 ${
@@ -316,6 +329,12 @@ export default function TestimoniPanel() {
           ))}
         </div>
       )}
+
+      <Pagination
+        total={barisFilter.length}
+        halaman={halaman}
+        setHalaman={setHalaman}
+      />
 
       {editing && (
         <FormTestimoni

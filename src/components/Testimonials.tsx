@@ -11,7 +11,9 @@ import {
 } from "lucide-react";
 import PlaceholderImage from "./PlaceholderImage";
 import ReviewModal from "./ReviewModal";
+import LockedCta from "./LockedCta";
 import { supabase } from "../lib/supabase";
+import { useFeatureFlags } from "../context/FeatureFlagsContext";
 import { dengarkan } from "../lib/dataevents";
 import { dengarTestimoniLintasTab } from "../lib/crosstab";
 import { useScrolly } from "../hooks/useScrolly";
@@ -48,6 +50,7 @@ function Stars({ rating }: { rating: number }) {
 export default function Testimonials() {
   const sectionRef = useRef<HTMLElement>(null);
   useScrolly(sectionRef);
+  const { isOn } = useFeatureFlags();
 
   const [ulasan, setUlasan] = useState<UlasanPelayanan[]>([]);
   const [memuat, setMemuat] = useState(true);
@@ -273,14 +276,18 @@ export default function Testimonials() {
               Jadilah pembeli pertama yang membagikan pengalaman kelezatan
               sajian roti buatan kami.
             </p>
-            <button
-              type="button"
-              onClick={() => setTulisTerbuka(true)}
-              className="font-card-custom mt-6 inline-flex items-center justify-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-semibold text-cocoa-800 shadow-md ring-1 ring-cocoa-900/10 transition-all hover:bg-pink-500 hover:text-white hover:ring-pink-500 active:scale-95"
-            >
-              <PenLine className="h-4 w-4" aria-hidden />
-              Tulis Ulasan Pertama
-            </button>
+            {isOn("ulasan") ? (
+              <button
+                type="button"
+                onClick={() => setTulisTerbuka(true)}
+                className="font-card-custom mt-6 inline-flex items-center justify-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-semibold text-cocoa-800 shadow-md ring-1 ring-cocoa-900/10 transition-all hover:bg-pink-500 hover:text-white hover:ring-pink-500 active:scale-95"
+              >
+                <PenLine className="h-4 w-4" aria-hidden />
+                Tulis Ulasan Pertama
+              </button>
+            ) : (
+              <LockedCta feature="ulasan" className="mt-6" />
+            )}
           </div>
         ) : (
           <div className="relative w-full max-w-4xl mx-auto flex flex-col items-center">
@@ -403,6 +410,7 @@ export default function Testimonials() {
 
             {/* Tombol CTA Bagikan Pengalamanmu */}
             <div className="mt-8 sm:mt-10 flex justify-center">
+{isOn("ulasan") ? (
               <button
                 type="button"
                 onClick={() => setTulisTerbuka(true)}
@@ -411,6 +419,9 @@ export default function Testimonials() {
                 <PenLine className="h-4 w-4 sm:h-5 sm:w-5" aria-hidden />
                 Bagikan Pengalamanmu
               </button>
+            ) : (
+              <LockedCta feature="ulasan" />
+            )}
             </div>
           </div>
         )}

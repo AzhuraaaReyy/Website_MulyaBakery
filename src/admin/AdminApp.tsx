@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import type { Session } from "@supabase/supabase-js";
 import { Loader2, Lock, LogIn, AlertCircle } from "lucide-react";
 import { supabaseAdmin, isAdminConfigured } from "../lib/supabaseAdmin";
+import { isSuperAdmin } from "../config/superadmin";
+import { FeatureFlagsProvider } from "../context/FeatureFlagsContext";
 import AdminDashboard from "./AdminDashboard";
 
 /**
@@ -57,7 +59,15 @@ export default function AdminApp() {
 
   if (!session) return <Login />;
 
-  return <AdminDashboard email={session.user.email ?? ""} />;
+  // Routing pasca-login: email super admin -> dashboard super admin (dengan tab
+  // "Pengaturan Fitur"); email lain -> dashboard admin biasa. Halaman login
+  // tetap sama untuk semua.
+  const email = session.user.email ?? "";
+  return (
+    <FeatureFlagsProvider>
+      <AdminDashboard email={email} isSuperAdmin={isSuperAdmin(email)} />
+    </FeatureFlagsProvider>
+  );
 }
 
 /* ── Kerangka layar (dipakai login & pesan status) ───────────────────────── */

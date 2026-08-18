@@ -22,22 +22,28 @@
  * `scripts/check-env.mjs`. Lebih baik build gagal daripada data pelanggan
  * nyasar ke nomor yang salah.
  * ─────────────────────────────────────────────────────────────────────────── */
+const envNumber = import.meta.env.VITE_WHATSAPP_NUMBER as string | undefined;
+export const WHATSAPP_NUMBER = (envNumber || "").replace(/\D/g, "").trim();
 
-const NOMOR_CONTOH = "087837739102";
+/**
+ * Nomor WhatsApp alternatif (kedua), OPSIONAL — diisi via
+ * `VITE_WHATSAPP_NUMBER2` di `.env`. Bila dikosongkan, nomor kedua otomatis
+ * disembunyikan dari seluruh bagian kontak.
+ */
+const envNumber2 = import.meta.env.VITE_WHATSAPP_NUMBER2 as string | undefined;
+export const WHATSAPP_NUMBER2 = (envNumber2 || "").replace(/\D/g, "").trim();
 
-const dariEnv = (import.meta.env.VITE_WHATSAPP_NUMBER as string | undefined)
-  ?.replace(/\D/g, "")
-  .trim();
+if (!WHATSAPP_NUMBER) {
+  const errorMsg =
+    "❌ [ENV ERROR] VITE_WHATSAPP_NUMBER belum diisi di file .env!";
 
-export const WHATSAPP_NUMBER = dariEnv || NOMOR_CONTOH;
-
-if (import.meta.env.DEV && WHATSAPP_NUMBER === NOMOR_CONTOH) {
-  console.warn(
-    "[Kontak] VITE_WHATSAPP_NUMBER belum diisi — memakai nomor contoh. " +
-      "Pesanan TIDAK akan sampai ke owner. Isi di file .env sebelum dipakai sungguhan.",
-  );
+  if (import.meta.env.DEV) {
+    console.error(errorMsg);
+  } else {
+    // Pada mode produksi, lempar error agar build/aplikasi sadar bahwa env penting belum ada
+    throw new Error(errorMsg);
+  }
 }
-
 /** Nomor siap tampil: 6281234567890 → +62 812-3456-7890 */
 function formatTampil(nomor: string): string {
   if (!nomor.startsWith("62")) return `+${nomor}`;
@@ -63,6 +69,9 @@ export const BRAND = {
 export const CONTACT = {
   whatsapp: WHATSAPP_NUMBER,
   whatsappDisplay: formatTampil(WHATSAPP_NUMBER),
+  // Nomor alternatif (kedua) — kosong bila env VITE_WHATSAPP_NUMBER2 tidak diisi.
+  whatsapp2: WHATSAPP_NUMBER2,
+  whatsapp2Display: WHATSAPP_NUMBER2 ? formatTampil(WHATSAPP_NUMBER2) : "",
   phone: formatTampil(WHATSAPP_NUMBER),
   instagram: "mulyabakery_",
   instagramUrl: "https://www.instagram.com/mulyabakery_",
@@ -76,6 +85,13 @@ export const LOCATION = {
   addressLine: "Jl. Srikandi Raya, Suko, Lerep",
   city: "Kec. Ungaran Bar., Kabupaten Semarang, Jawa Tengah 50519",
   mapsQuery: "Mulya Bakery, Jl. Srikandi Raya, Suko, Lerep, Ungaran",
+  /**
+   * Koordinat toko (dari link Google Maps). Dipakai untuk menghitung jarak
+   * pengantaran & tautan rute di panel admin. Satu-satunya sumber kebenaran —
+   * komponen peta (LocationPickerModal) memakai nilai ini juga.
+   */
+  lat: -7.1287625,
+  lng: 110.3929844,
   /**
    * (Opsional) Tempel URL embed dari Google Maps untuk menampilkan lokasi PERSIS.
    * Cara: buka Google Maps → cari lokasi → Share/Bagikan → "Embed a map" →

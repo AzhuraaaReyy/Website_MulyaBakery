@@ -8,63 +8,67 @@ import {
   MessageCircle,
 } from "lucide-react";
 import PlaceholderImage from "./PlaceholderImage";
+import LockedCta from "./LockedCta";
 import { useScrolly } from "../hooks/useScrolly";
+import { useFeatureFlags } from "../context/FeatureFlagsContext";
 
 // Item galeri (foto produk & proses)
+// Data Gallery UMKM Mulya Bakery
 const items = [
   {
     id: "g1",
-    label: "Adonan Segar",
-    subtitle: "Dibuat Segar Setiap Pagi",
-    image: "/images/herosection1.png",
+    label: "Proses Pembuatan",
+    subtitle: "Adonan Dibuat Setiap Hari",
+    image: "/images/gallery/proses-pembuatan.jpg",
     tape: true,
-    desc: "Proses pengadonan dengan bahan-bahan pilihan terbaik yang disiapkan segar setiap pagi untuk menjamin kelembutan tekstur.",
+    desc: "Adonan roti dibuat dan diolah setiap hari menggunakan bahan pilihan untuk menjaga kelembutan dan cita rasa khas Mulya Bakery.",
   },
   {
     id: "g2",
-    label: "Roti Panggang",
-    subtitle: "Aroma Keemasan Sempurna",
-    image: "/images/herosection2.png",
+    label: "Roti Fresh",
+    subtitle: "Baru Keluar dari Oven",
+    image: "/images/gallery/roti-fresh.jpg",
     tape: false,
-    desc: "Hasil pemanggangan sempurna dengan warna keemasan dan kulit luar renyah yang menggugah selera.",
+    desc: "Roti yang telah dipanggang hingga matang dengan warna keemasan dan aroma khas yang menggugah selera.",
   },
   {
     id: "g3",
-    label: "Isian Coklat",
-    subtitle: "Lumeran Premium Melimpah",
-    image: "/images/herosection3.png",
+    label: "Pilihan Roti",
+    subtitle: "Beragam Varian Favorit",
+    image: "/images/gallery/pilihan-roti.jpg",
     tape: true,
-    desc: "Lumeran coklat premium yang melimpah dan memberikan kelezatan mendalam di setiap gigitan.",
+    desc: "Berbagai pilihan roti dengan rasa dan bentuk yang beragam, dibuat untuk menemani sarapan, camilan, maupun acara keluarga.",
   },
   {
     id: "g4",
-    label: "Croissant",
-    subtitle: "Tekstur Berlapis Renyah",
-    image: "/images/about_us.jpg",
+    label: "Bahan Pilihan",
+    subtitle: "Disiapkan dengan Cermat",
+    image: "/images/gallery/bahan-bakery.jpg",
     tape: false,
-    desc: "Tekstur berlapis khas Perancis yang renyah di luar dan sangat lembut gurih di bagian dalam.",
+    desc: "Setiap bahan dipilih dan dipersiapkan dengan cermat agar kualitas dan rasa roti tetap terjaga pada setiap produksi.",
   },
   {
     id: "g5",
-    label: "Oven Hangat",
-    subtitle: "Suhu & Pemanggangan Presisi",
-    image: "/images/about_us2.jpg",
+    label: "Pengemasan",
+    subtitle: "Rapi & Higienis",
+    image: "/images/gallery/pengemasan.jpg",
     tape: false,
-    desc: "Aroma khas roti panggang hangat menyelimuti seluruh area dapur kami sepanjang hari.",
+    desc: "Setelah selesai diproduksi, setiap roti dikemas dengan rapi dan higienis sebelum diberikan kepada pelanggan.",
   },
   {
     id: "g6",
-    label: "Siap Diantar",
-    subtitle: "Kemasan Rapi & Higienis",
-    image: "/images/about_us3.jpg",
+    label: "Pesanan Pelanggan",
+    subtitle: "Siap Dibawa Pulang",
+    image: "/images/gallery/pesanan-pelanggan.jpg",
     tape: true,
-    desc: "Kemasan rapi dan higienis yang siap membawa kehangatan roti langsung ke tangan Anda.",
+    desc: "Pesanan pelanggan disiapkan dengan penuh perhatian agar tetap rapi, segar, dan siap dinikmati bersama keluarga.",
   },
 ];
 
 export default function Gallery() {
   const sectionRef = useRef<HTMLElement>(null);
   useScrolly(sectionRef);
+  const { isOn } = useFeatureFlags();
 
   const [activeIndex, setActiveIndex] = useState(0);
 
@@ -296,15 +300,23 @@ export default function Gallery() {
               Bakery.
             </p>
           </div>
-          <a
-            href="https://wa.me/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="h-10 w-10 rounded-full bg-[#eb7b88] text-white flex items-center justify-center shrink-0 shadow-md active:scale-95 transition-transform"
-            aria-label="Pesan via WhatsApp"
-          >
-            <MessageCircle className="h-5 w-5 fill-current" />
-          </a>
+                    {isOn("pesan_wa") ? (
+            <a
+              href="https://wa.me/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="h-10 w-10 rounded-full bg-[#eb7b88] text-white flex items-center justify-center shrink-0 shadow-md active:scale-95 transition-transform"
+              aria-label="Pesan via WhatsApp"
+            >
+              <MessageCircle className="h-5 w-5 fill-current" />
+            </a>
+          ) : (
+            <LockedCta
+              feature="pesan_wa"
+              variant="icon"
+              className="h-10 w-10 shrink-0 rounded-full shadow-md"
+            />
+          )}
         </div>
       </div>
 

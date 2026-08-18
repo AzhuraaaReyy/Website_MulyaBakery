@@ -13,6 +13,7 @@ import { supabaseAdmin } from "../lib/supabaseAdmin";
 import { readableError } from "../lib/supabase";
 import { pathStorageDariUrl } from "../lib/storage";
 import { sinyalTestimoniBerubah } from "../lib/crosstab";
+import { Pagination, usePagination } from "./Pagination";
 
 interface Ulasan {
   id: string;
@@ -55,9 +56,9 @@ export default function ModerasiPanel() {
   const [galat, setGalat] = useState<string | null>(null);
   const [sibuk, setSibuk] = useState<string | null>(null); // id yang sedang diproses
 
-  const muat = useCallback(async () => {
+  const muat = useCallback(async (senyap = false) => {
     if (!supabaseAdmin) return;
-    setMemuat(true);
+    if (!senyap) setMemuat(true);
     setGalat(null);
     const { data, error } = await supabaseAdmin
       .from("service_reviews")
@@ -69,12 +70,24 @@ export default function ModerasiPanel() {
       .order("created_at", { ascending: false });
     if (error) setGalat(readableError(error));
     else setRows((data ?? []) as Ulasan[]);
-    setMemuat(false);
+    if (!senyap) setMemuat(false);
   }, []);
 
   useEffect(() => {
     void muat();
   }, [muat]);
+
+  // Auto-refresh: ulasan berfoto yang baru masuk langsung muncul tanpa reload.
+  useEffect(() => {
+    const id = window.setInterval(() => void muat(true), 15000);
+    return () => window.clearInterval(id);
+  }, [muat]);
+
+  const {
+    halaman,
+    setHalaman,
+    baris: barisHalaman,
+  } = usePagination(rows, 0);
 
   const setujui = async (row: Ulasan) => {
     if (!supabaseAdmin) return;
@@ -162,7 +175,7 @@ export default function ModerasiPanel() {
         </div>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {rows.map((row) => (
+          {barisHalaman.map((row) => (
             <article
               key={row.id}
               className="flex flex-col overflow-hidden rounded-2xl bg-paper-50 ring-1 ring-cocoa-700/10"
@@ -245,6 +258,12 @@ export default function ModerasiPanel() {
           ))}
         </div>
       )}
+
+      <Pagination
+        total={rows.length}
+        halaman={halaman}
+        setHalaman={setHalaman}
+      />
     </>
   );
 }

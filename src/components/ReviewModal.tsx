@@ -7,6 +7,7 @@ import {
   CheckCircle2,
   BadgeCheck,
   AlertCircle,
+  Check,
 } from "lucide-react";
 import { supabase, readableError, isSupabaseConfigured } from "../lib/supabase";
 import { uploadImage } from "../lib/uploadImage";
@@ -90,7 +91,6 @@ function IsiModal({
   const [sukses, setSukses] = useState(false);
   const [kirim, setKirim] = useState(false);
   const [galat, setGalat] = useState<string | null>(null);
-  const [popDuplikat, setPopDuplikat] = useState(false);
 
   const [website, setWebsite] = useState(""); // Honeypot field
 
@@ -100,7 +100,7 @@ function IsiModal({
       ? produkDipesan
       : items.map((p) => ({ id: p.id, name: p.name }));
 
-  const [produkId, setProdukId] = useState("");
+  const [produkDipilih, setProdukDipilih] = useState<string[]>([]);
   const [nama, setNama] = useState("");
   const [rating, setRating] = useState(0);
   const [komentar, setKomentar] = useState("");
@@ -108,9 +108,19 @@ function IsiModal({
   const [uploadFoto, setUploadFoto] = useState(false);
   const [galatFoto, setGalatFoto] = useState<string | null>(null);
 
+  // Saat ulasan dibuka setelah pesanan, semua produk yang baru dibeli
+  // otomatis tercentang — pelanggan bisa mengulas semuanya sekali kirim.
   useEffect(() => {
-    if (!produkId && daftarProduk.length > 0) setProdukId(daftarProduk[0].id);
-  }, [daftarProduk, produkId]);
+    if (produkDipesan && produkDipesan.length > 0) {
+      setProdukDipilih(produkDipesan.map((p) => p.id));
+    }
+  }, [produkDipesan]);
+
+  const toggleProduk = (id: string) => {
+    setProdukDipilih((prev) =>
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
+    );
+  };
 
   async function pilihFoto(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -130,7 +140,10 @@ function IsiModal({
   }
 
   const formValid =
-    rating >= 1 && nama.trim().length >= 2 && komentar.trim().length >= 5;
+    produkDipilih.length >= 1 &&
+    rating >= 1 &&
+    nama.trim().length >= 2 &&
+    komentar.trim().length >= 10;
 
   const deviceId = getDeviceId();
 
@@ -139,15 +152,20 @@ function IsiModal({
     setKirim(true);
     setGalat(null);
 
-    // Cari nama menu berdasarkan ID produk yang dipilih
-    const produkTerpilih = daftarProduk.find((p) => p.id === produkId);
-    const namaMenu = produkTerpilih ? produkTerpilih.name : "Menu Mulya Bakery";
+    // Nama menu terpilih digabung untuk badge ulasan pelayanan
+    // (dipotong agar tetap ringkas di kartu testimoni).
+    const produkTerpilih = daftarProduk.filter((p) =>
+      produkDipilih.includes(p.id),
+    );
+    const namaMenu = produkTerpilih.length
+      ? produkTerpilih.map((p) => p.name).join(", ").slice(0, 60)
+      : "Menu Mulya Bakery";
 
     try {
-      // 1. Kirim ulasan utama (per menu / produk)
+      // 1. Kirim ulasan untuk SEMUA menu terpilih (sekali kirim).
       const { error: errMenu } = await supabase.rpc("submit_product_review", {
         payload: {
-          product_id: produkId || null,
+          product_ids: produkDipilih,
           reviewer_name: nama.trim(),
           rating: rating,
           comment: komentar.trim(),
@@ -168,7 +186,7 @@ function IsiModal({
           {
             payload: {
               reviewer_name: nama.trim(),
-              reviewer_role: namaMenu, // Nama menu dikirim agar badge muncul
+              reviewer_role: namaMenu, // Nama menu digabung agar badge muncul
               rating: rating,
               quote: komentar.trim(),
               photo_url: foto || null,
@@ -187,17 +205,7 @@ function IsiModal({
       beritahu("ulasan-pelayanan");
       onSubmitted?.();
     } catch (err) {
-      const pesan = readableError(err);
-      // Kalau penyebabnya sudah pernah mengulas dalam 7 hari, tampilkan
-      // sebagai pop-up tersendiri di tengah layar.
-      if (
-        /sudah pernah mengulas|sudah mengirim ulasan|minggu depan/i.test(pesan)
-      ) {
-        setPopDuplikat(true);
-        setGalat(null);
-      } else {
-        setGalat(pesan);
-      }
+      setGalat(readableError(err));
     } finally {
       setKirim(false);
     }
@@ -211,7 +219,9 @@ function IsiModal({
           <CheckCircle2 className="h-8 w-8 sm:h-9 sm:w-9" aria-hidden />
         </span>
         <h2 className="font-heading text-xl sm:text-2xl text-cocoa-800 leading-snug">
-          Terima kasih, ulasanmu terkirim!
+          {produkDipilih.length > 1
+            ? `Terima kasih, ${produkDipilih.length} ulasanmu terkirim!`
+            : "Terima kasih, ulasanmu terkirim!"}
         </h2>
         <p className="font-section3-p max-w-sm text-sm sm:text-base leading-relaxed text-cocoa-700/80">
           {foto
@@ -225,40 +235,6 @@ function IsiModal({
             className="w-full sm:w-auto rounded-full bg-cocoa-800 px-8 py-3 font-text text-sm font-bold text-paper-50 shadow-cocoa transition-transform hover:-translate-y-0.5"
           >
             Selesai
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  /* ── Pop-up "sudah pernah mengulas" (di tengah layar) ────────────────── */
-  if (popDuplikat) {
-    return (
-      <div className="relative flex flex-col items-center gap-4 px-5 py-10 sm:px-6 sm:py-14 text-center">
-        <span className="flex h-14 w-14 sm:h-16 sm:w-16 items-center justify-center rounded-full bg-amber-100 text-amber-600 shrink-0">
-          <AlertCircle className="h-8 w-8 sm:h-9 sm:w-9" aria-hidden />
-        </span>
-        <h2 className="font-heading text-xl sm:text-2xl text-cocoa-800 leading-snug">
-          Kamu sudah pernah mengulas menu ini
-        </h2>
-        <p className="font-section3-p max-w-sm text-sm sm:text-base leading-relaxed text-cocoa-700/80">
-          Satu produk hanya bisa diulas maksimal 1 kali dalam 7 hari. Silakan
-          coba lagi minggu depan, atau beri ulasan untuk menu lain.
-        </p>
-        <div className="mt-2 flex w-full flex-col gap-2 sm:flex-row sm:justify-center">
-          <button
-            type="button"
-            onClick={() => setPopDuplikat(false)}
-            className="w-full sm:w-auto rounded-full bg-paper-200 px-6 py-3 font-text text-sm font-bold text-cocoa-800 transition-colors hover:bg-paper-300"
-          >
-            Kembali
-          </button>
-          <button
-            type="button"
-            onClick={onClose}
-            className="w-full sm:w-auto rounded-full bg-cocoa-800 px-6 py-3 font-text text-sm font-bold text-paper-50 shadow-cocoa transition-transform hover:-translate-y-0.5"
-          >
-            Tutup
           </button>
         </div>
       </div>
@@ -309,19 +285,57 @@ function IsiModal({
         />
 
         <div className="flex flex-col gap-3.5 sm:gap-4">
-          <Kolom label="Menu yang kamu coba (opsional)">
-            <select
-              value={produkId}
-              onChange={(e) => setProdukId(e.target.value)}
-              className={inputCls}
-            >
-              <option value="">-- Pilih Menu (Secara Umum) --</option>
-              {daftarProduk.map((p) => (
-                <option key={p.id} value={p.id}>
-                  {p.name}
-                </option>
-              ))}
-            </select>
+          <Kolom
+            label="Menu yang kamu coba"
+            wajib
+            bantuan={`${produkDipilih.length} dipilih`}
+          >
+            <div className="max-h-44 overflow-y-auto rounded-xl bg-paper-50 p-1.5 ring-1 ring-cocoa-700/15 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+              {daftarProduk.length === 0 && (
+                <p className="px-2.5 py-2 font-section3-p text-xs text-cocoa-700/60">
+                  Belum ada menu yang bisa dipilih.
+                </p>
+              )}
+              {daftarProduk.map((p) => {
+                const aktif = produkDipilih.includes(p.id);
+                return (
+                  <label
+                    key={p.id}
+                    className={`flex cursor-pointer items-center gap-2.5 rounded-lg px-2.5 py-2 transition-colors ${
+                      aktif
+                        ? "bg-cocoa-800 text-paper-50"
+                        : "text-cocoa-800 hover:bg-paper-200"
+                    }`}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={aktif}
+                      onChange={() => toggleProduk(p.id)}
+                      className="sr-only"
+                    />
+                    <span
+                      aria-hidden
+                      className={`flex h-4 w-4 shrink-0 items-center justify-center rounded border ${
+                        aktif
+                          ? "border-paper-50 bg-paper-50"
+                          : "border-cocoa-700/30 bg-paper-50"
+                      }`}
+                    >
+                      {aktif && (
+                        <Check
+                          className={`h-3 w-3 stroke-[3] ${
+                            aktif ? "text-cocoa-800" : ""
+                          }`}
+                        />
+                      )}
+                    </span>
+                    <span className="truncate font-section3-p text-sm">
+                      {p.name}
+                    </span>
+                  </label>
+                );
+              })}
+            </div>
           </Kolom>
 
           <Kolom label="Bagaimana pengalaman keseluruhanmu?" wajib>
@@ -346,7 +360,7 @@ function IsiModal({
           <Kolom
             label="Ceritakan ulasanmu"
             wajib
-            bantuan={`${komentar.length}/500 · min 5 huruf`}
+            bantuan={`${komentar.length}/500 · min 10 huruf`}
           >
             <textarea
               value={komentar}
@@ -392,8 +406,8 @@ function IsiModal({
                     : "Upload foto belum aktif"}
                 <input
                   type="file"
-                  accept="image/png,image/jpeg,image/webp"
-                  className="hidden"
+                  accept="image/*"
+                  className="sr-only"
                   disabled={uploadFoto || !isSupabaseConfigured}
                   onChange={pilihFoto}
                 />

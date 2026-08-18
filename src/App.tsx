@@ -14,6 +14,8 @@ import FAQ from "./components/FAQ";
 import Footer from "./components/Footer";
 import ScrollStoryBackground from "./components/ScrollStoryBackground";
 import { CartProvider } from "./context/CartContext";
+import { FeatureFlagsProvider } from "./context/FeatureFlagsContext";
+import FeatureGate from "./components/FeatureGate";
 import CartButton from "./components/CartButton";
 import CartModal from "./components/CartModal";
 
@@ -29,27 +31,47 @@ export default function App() {
   }, []);
 
   return (
-    <CartProvider>
-      {/* Latar animasi scroll-driven di belakang semua section */}
-      <ScrollStoryBackground />
+    <FeatureFlagsProvider>
+      <CartProvider>
+        {/* Latar animasi scroll-driven di belakang semua section */}
+        <ScrollStoryBackground />
 
-      <Navbar />
-      <main className="relative">
-        <Hero />
-        <About />
-        <Menu />
-        <HowToOrder />
-        <WhyUs />
-        <Testimonials />
-        <Gallery />
-        <LocationContact />
-        <FAQ />
-      </main>
-      <Footer />
+        <Navbar />
+        <main className="relative">
+          <FeatureGate feature="hero">
+            <Hero />
+          </FeatureGate>
+          <FeatureGate feature="tentang">
+            <About />
+          </FeatureGate>
+          <FeatureGate feature="menu">
+            <Menu />
+          </FeatureGate>
+          <FeatureGate feature="cara_pesan">
+            <HowToOrder />
+          </FeatureGate>
+          <FeatureGate feature="keunggulan">
+            <WhyUs />
+          </FeatureGate>
+          <FeatureGate feature="testimoni">
+            <Testimonials />
+          </FeatureGate>
+          <FeatureGate feature="galeri">
+            <Gallery />
+          </FeatureGate>
+          <FeatureGate feature="kontak">
+            <LocationContact />
+          </FeatureGate>
+          <FeatureGate feature="faq">
+            <FAQ />
+          </FeatureGate>
+        </main>
+        <Footer />
 
-      {/* Keranjang belanja → checkout via WhatsApp */}
-      <CartButton />
-      <CartModal />
-    </CartProvider>
+        {/* Keranjang belanja → checkout via WhatsApp */}
+        <CartButton />
+        <CartModal />
+      </CartProvider>
+    </FeatureFlagsProvider>
   );
 }

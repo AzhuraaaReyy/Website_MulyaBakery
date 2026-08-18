@@ -24,6 +24,8 @@ import { ScrollTrigger } from "../lib/gsap";
 import { useMenuData, type MenuProduct } from "../hooks/Usemenudata";
 import { supabase } from "../lib/supabase";
 import { ikonKategori } from "../lib/kategoriIkon";
+import { useFeatureFlags } from "../context/FeatureFlagsContext";
+import LockedCta from "./LockedCta";
 
 const PER_ROW = 8;
 
@@ -55,6 +57,7 @@ function ProductCard({
   interaktif: boolean;
 }) {
   const { add } = useCart();
+  const { isOn } = useFeatureFlags();
   const [added, setAdded] = useState(false);
   const addedTimer = useRef<number | null>(null);
 
@@ -202,22 +205,26 @@ function ProductCard({
             {formatPrice(product.price)}
           </span>
 
-          <button
-            type="button"
-            onClick={handleAdd}
-            aria-label={`Tambah ${product.name} ke keranjang`}
-            className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl transition-all duration-200 active:scale-90 ${
-              added
-                ? "bg-emerald-600 text-white shadow-sm"
-                : "bg-cocoa-900 text-white hover:bg-caramel hover:text-cocoa-900 shadow-sm"
-            }`}
-          >
-            {added ? (
-              <Check className="h-4 w-4 stroke-[3]" />
-            ) : (
-              <Plus className="h-4 w-4 stroke-[2.5]" />
-            )}
-          </button>
+          {isOn("keranjang") ? (
+            <button
+              type="button"
+              onClick={handleAdd}
+              aria-label={`Tambah ${product.name} ke keranjang`}
+              className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl transition-all duration-200 active:scale-90 ${
+                added
+                  ? "bg-emerald-600 text-white shadow-sm"
+                  : "bg-cocoa-900 text-white hover:bg-caramel hover:text-cocoa-900 shadow-sm"
+              }`}
+            >
+              {added ? (
+                <Check className="h-4 w-4 stroke-[3]" />
+              ) : (
+                <Plus className="h-4 w-4 stroke-[2.5]" />
+              )}
+            </button>
+          ) : (
+            <LockedCta feature="keranjang" variant="icon" />
+          )}
         </div>
       </div>
     </motion.article>
@@ -259,6 +266,7 @@ export default function Menu() {
   );
 
   const { items, loading, offline, toggleLike } = useMenuData();
+  const { isOn } = useFeatureFlags();
 
   const muatKategori = useCallback(() => {
     if (!supabase) return;
@@ -588,13 +596,20 @@ export default function Menu() {
 
               {/* Tombol Aksion */}
               <div className="w-full shrink-0 md:w-auto">
-                <button
-                  type="button"
-                  onClick={() => setBookingOpen(true)}
-                  className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-pink-300/80 bg-gradient-to-r from-pink-200 to-pink-400 px-5 sm:px-6 py-3 sm:py-3.5 font-text text-xs sm:text-sm font-bold text-cocoa-900 shadow-sm transition-all duration-300 hover:border-pink-500 hover:from-pink-500 hover:to-pink-600 hover:text-white active:scale-95 md:w-auto"
-                >
-                  <span>Konsultasi Pesanan</span>
-                </button>
+                {isOn("pesanan_khusus") ? (
+                  <button
+                    type="button"
+                    onClick={() => setBookingOpen(true)}
+                    className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-pink-300/80 bg-gradient-to-r from-pink-200 to-pink-400 px-5 sm:px-6 py-3 sm:py-3.5 font-text text-xs sm:text-sm font-bold text-cocoa-900 shadow-sm transition-all duration-300 hover:border-pink-500 hover:from-pink-500 hover:to-pink-600 hover:text-white active:scale-95 md:w-auto"
+                  >
+                    <span>Konsultasi Pesanan</span>
+                  </button>
+                ) : (
+                  <LockedCta
+                    feature="pesanan_khusus"
+                    className="w-full py-3 sm:py-3.5 md:w-auto"
+                  />
+                )}
               </div>
             </div>
           </div>

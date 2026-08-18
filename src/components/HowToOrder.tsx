@@ -19,6 +19,8 @@ import { useScrolly } from "../hooks/useScrolly";
 import { gsap } from "../lib/gsap";
 import { parseVideoTutorial } from "../lib/video";
 import { kunciScroll } from "../lib/scrollLock";
+import { useFeatureFlags } from "../context/FeatureFlagsContext";
+import LockedCta from "./LockedCta";
 
 const steps = [
   {
@@ -77,6 +79,7 @@ function HintTonton() {
 export default function HowToOrder() {
   const sectionRef = useRef<HTMLElement>(null);
   const [aktif, setAktif] = useState<number | null>(null);
+  const { isOn } = useFeatureFlags();
 
   useScrolly(sectionRef, () => {
     if (!window.matchMedia("(min-width: 1024px)").matches) return;
@@ -239,15 +242,19 @@ export default function HowToOrder() {
 
         {/* ── Tombol CTA Mulai Pesan Sekarang ────────────────────── */}
         <div data-reveal className="mt-10 text-center sm:mt-12 lg:mt-14">
-          <a
-            href={generalOrderUrl()}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="font-section3-p inline-flex items-center justify-center gap-2 rounded-full bg-white px-7 py-3.5 text-base font-semibold text-cocoa-800 shadow-sm transition-all duration-300 hover:bg-pink-500 hover:text-white hover:shadow-md active:scale-95"
-          >
-            <MessageCircle className="h-5 w-5" aria-hidden />
-            Mulai Pesan Sekarang
-          </a>
+          {isOn("pesan_wa") ? (
+            <a
+              href={generalOrderUrl()}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-section3-p inline-flex items-center justify-center gap-2 rounded-full bg-white px-7 py-3.5 text-base font-semibold text-cocoa-800 shadow-sm transition-all duration-300 hover:bg-pink-500 hover:text-white hover:shadow-md active:scale-95"
+            >
+              <MessageCircle className="h-5 w-5" aria-hidden />
+              Mulai Pesan Sekarang
+            </a>
+          ) : (
+            <LockedCta feature="pesan_wa" />
+          )}
         </div>
       </div>
 

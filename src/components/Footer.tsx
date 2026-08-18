@@ -116,15 +116,6 @@ export default function Footer() {
                   <Instagram className="w-5 h-5" />
                 </a>
                 <a
-                  href={CONTACT.facebookUrl || "#"}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-10 h-10 rounded-full bg-[#EFE3D3]/90 hover:bg-[#E2D2BF] flex items-center justify-center text-[#4A3B32] transition-colors shadow-sm"
-                  aria-label="Facebook"
-                >
-                  <Facebook className="w-5 h-5" />
-                </a>
-                <a
                   href={generalOrderUrl()}
                   target="_blank"
                   rel="noopener noreferrer"
@@ -230,6 +221,21 @@ export default function Footer() {
                   {CONTACT.whatsappDisplay || "+62 812-3456-7890"}
                 </a>
               </li>
+              {CONTACT.whatsapp2 && (
+                <li className="py-3 flex items-center gap-3.5">
+                  <div className="w-9 h-9 rounded-full bg-[#EFE3D3] flex items-center justify-center shrink-0 text-[#4A3B32]">
+                    <MessageCircle className="w-4 h-4" />
+                  </div>
+                  <a
+                    href={`https://wa.me/${CONTACT.whatsapp2}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-left hover:text-[#8C6D58] transition-colors"
+                  >
+                    {CONTACT.whatsapp2Display}
+                  </a>
+                </li>
+              )}
               <li className="py-3 flex items-center gap-3.5">
                 <div className="w-9 h-9 rounded-full bg-[#EFE3D3] flex items-center justify-center shrink-0 text-[#4A3B32]">
                   <Mail className="w-4 h-4" />
@@ -442,6 +448,21 @@ export default function Footer() {
                         {CONTACT.whatsappDisplay || "+62 812-3456-7890"}
                       </a>
                     </li>
+                    {CONTACT.whatsapp2 && (
+                      <li className="py-2.5 flex items-center gap-3.5">
+                        <div className="w-9 h-9 rounded-full bg-[#EFE3D3] flex items-center justify-center shrink-0 text-[#4A3B32]">
+                          <MessageCircle className="w-4 h-4" />
+                        </div>
+                        <a
+                          href={`https://wa.me/${CONTACT.whatsapp2}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="hover:text-[#8C6D58] transition-colors"
+                        >
+                          {CONTACT.whatsapp2Display}
+                        </a>
+                      </li>
+                    )}
                     <li className="py-2.5 flex items-center gap-3.5">
                       <div className="w-9 h-9 rounded-full bg-[#EFE3D3] flex items-center justify-center shrink-0 text-[#4A3B32]">
                         <Mail className="w-4 h-4" />

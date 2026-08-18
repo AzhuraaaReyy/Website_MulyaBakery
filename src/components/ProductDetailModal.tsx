@@ -4,6 +4,8 @@ import { X, Plus, Check, Star } from "lucide-react";
 import PlaceholderImage from "./PlaceholderImage";
 import { formatPrice, type Product } from "../data/products";
 import { useCart } from "../context/CartContext";
+import { useFeatureFlags } from "../context/FeatureFlagsContext";
+import LockedCta from "./LockedCta";
 import { kunciScroll } from "../lib/scrollLock";
 import { parseVideo } from "../lib/video";
 
@@ -80,6 +82,7 @@ export default function ProductDetailModal({
   onClose: () => void;
 }) {
   const { add } = useCart();
+  const { isOn } = useFeatureFlags();
   const [added, setAdded] = useState(false);
 
   // Kunci scroll body via pengunci bersama (reference-counted) — aman meski
@@ -185,26 +188,34 @@ export default function ProductDetailModal({
                   <p className="font-heading text-3xl text-cocoa-800">
                     {formatPrice(product.price)}
                   </p>
-                  <button
-                    type="button"
-                    onClick={handleAdd}
-                    className={`mt-4 inline-flex w-full items-center justify-center gap-2 rounded-full px-6 py-3.5 font-text text-base font-bold shadow-pink transition-all ${
-                      added
-                        ? "bg-green-600 text-white"
-                        : "bg-primary-500 text-white hover:-translate-y-0.5 hover:bg-primary-600"
-                    }`}
-                  >
-                    {added ? (
-                      <>
-                        <Check className="h-5 w-5" aria-hidden /> Ditambahkan
-                      </>
-                    ) : (
-                      <>
-                        <Plus className="h-5 w-5" aria-hidden /> Tambah ke
-                        Keranjang
-                      </>
-                    )}
-                  </button>
+                  {isOn("keranjang") ? (
+                    <button
+                      type="button"
+                      onClick={handleAdd}
+                      className={`mt-4 inline-flex w-full items-center justify-center gap-2 rounded-full px-6 py-3.5 font-text text-base font-bold shadow-pink transition-all ${
+                        added
+                          ? "bg-green-600 text-white"
+                          : "bg-primary-500 text-white hover:-translate-y-0.5 hover:bg-primary-600"
+                      }`}
+                    >
+                      {added ? (
+                        <>
+                          <Check className="h-5 w-5" aria-hidden /> Ditambahkan
+                        </>
+                      ) : (
+                        <>
+                          <Plus className="h-5 w-5" aria-hidden /> Tambah ke
+                          Keranjang
+                        </>
+                      )}
+                    </button>
+                  ) : (
+                    <LockedCta
+                      feature="keranjang"
+                      className="mt-4 w-full py-3.5"
+                      label="Segera Hadir"
+                    />
+                  )}
                 </div>
               </div>
             </motion.div>

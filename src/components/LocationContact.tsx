@@ -234,6 +234,18 @@ export default function LocationContact() {
       chip: "bg-[#25D366]",
       external: true,
     },
+    ...(CONTACT.whatsapp2
+      ? [
+          {
+            label: "WhatsApp Alternatif",
+            value: CONTACT.whatsapp2Display,
+            href: `https://wa.me/${CONTACT.whatsapp2}`,
+            Icon: MessageCircle,
+            chip: "bg-[#25D366]",
+            external: true,
+          },
+        ]
+      : []),
     {
       label: "Instagram",
       value: `@${CONTACT.instagram}`,

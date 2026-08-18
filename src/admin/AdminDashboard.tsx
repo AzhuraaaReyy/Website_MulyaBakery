@@ -8,19 +8,41 @@ import {
   Croissant,
   Menu as MenuIcon,
   X,
+  ReceiptText,
+  CakeSlice,
+  Settings2,
 } from "lucide-react";
 import { supabaseAdmin } from "../lib/supabaseAdmin";
 import ProdukPanel from "./ProdukPanel";
 import KategoriPanel from "./KategoriPanel";
 import TestimoniPanel from "./TestimoniPanel";
+import PesananPanel from "./PesananPanel";
+import LaporanPanel from "./LaporanPanel";
+import CustomPanel from "./CustomPanel";
+import FeaturePanel from "./FeaturePanel";
+import FeatureGate from "../components/FeatureGate";
 
-type Tab = "produk" | "kategori" | "testimoni";
+type Tab =
+  | "produk"
+  | "kategori"
+  | "testimoni"
+  | "pesanan"
+  | "laporan"
+  | "custom"
+  | "fitur";
 
 const NAV: { id: Tab; label: string; Icon: typeof UtensilsCrossed }[] = [
   { id: "produk", label: "Menu", Icon: UtensilsCrossed },
   { id: "kategori", label: "Kategori", Icon: Tags },
+  { id: "pesanan", label: "Pesanan", Icon: ReceiptText },
+  { id: "custom", label: "Pesanan Khusus", Icon: CakeSlice },
+  
   { id: "testimoni", label: "Testimoni", Icon: MessageSquareQuote },
 ];
+
+/** Tab tambahan khusus super admin — dipakai menonaktifkan/menyalakan fitur. */
+const NAV_SUPER_ADMIN: { id: Tab; label: string; Icon: typeof UtensilsCrossed } =
+  { id: "fitur", label: "Pengaturan Fitur", Icon: Settings2 };
 
 /**
  * Kerangka panel admin setelah login: sidebar kiri + area konten.
@@ -30,10 +52,18 @@ const NAV: { id: Tab; label: string; Icon: typeof UtensilsCrossed }[] = [
  * Tab "Menu" -> kelola produk; "Testimoni" -> CRUD data testimoni (termasuk
  * persetujuan ulasan berfoto).
  */
-export default function AdminDashboard({ email }: { email: string }) {
+export default function AdminDashboard({
+  email,
+  isSuperAdmin,
+}: {
+  email: string;
+  isSuperAdmin: boolean;
+}) {
   const [tab, setTab] = useState<Tab>("produk");
   const [drawer, setDrawer] = useState(false);
   const keluar = () => supabaseAdmin?.auth.signOut();
+
+  const nav = isSuperAdmin ? [...NAV, NAV_SUPER_ADMIN] : NAV;
 
   const pilih = (id: Tab) => {
     setTab(id);
@@ -44,7 +74,13 @@ export default function AdminDashboard({ email }: { email: string }) {
     <div className="min-h-dvh overflow-x-hidden bg-paper-100">
       {/* ── Sidebar desktop (menetap) ──────────────────────────────────────── */}
       <aside className="hidden border-r border-cocoa-700/10 bg-paper-50 lg:fixed lg:inset-y-0 lg:left-0 lg:z-30 lg:flex lg:w-64 lg:flex-col lg:p-5">
-        <IsiSidebar tab={tab} pilih={pilih} email={email} keluar={keluar} />
+        <IsiSidebar
+          nav={nav}
+          tab={tab}
+          pilih={pilih}
+          email={email}
+          keluar={keluar}
+        />
       </aside>
 
       {/* ── Drawer mobile ──────────────────────────────────────────────────── */}
@@ -76,6 +112,7 @@ export default function AdminDashboard({ email }: { email: string }) {
                 <X className="h-5 w-5" />
               </button>
               <IsiSidebar
+                nav={nav}
                 tab={tab}
                 pilih={pilih}
                 email={email}
@@ -99,17 +136,37 @@ export default function AdminDashboard({ email }: { email: string }) {
             <MenuIcon className="h-6 w-6" />
           </button>
           <span className="font-heading text-lg text-cocoa-800">
-            {NAV.find((n) => n.id === tab)?.label}
+            {nav.find((n) => n.id === tab)?.label}
           </span>
         </header>
 
         <main className="mx-auto max-w-5xl px-4 py-6 sm:px-6">
-          {tab === "produk" ? (
-            <ProdukPanel />
+          {tab === "fitur" ? (
+            <FeaturePanel />
+          ) : tab === "produk" ? (
+            <FeatureGate feature="panel_menu">
+              <ProdukPanel />
+            </FeatureGate>
           ) : tab === "kategori" ? (
-            <KategoriPanel />
+            <FeatureGate feature="panel_kategori">
+              <KategoriPanel />
+            </FeatureGate>
+          ) : tab === "pesanan" ? (
+            <FeatureGate feature="panel_pesanan">
+              <PesananPanel />
+            </FeatureGate>
+          ) : tab === "custom" ? (
+            <FeatureGate feature="panel_pesanan_khusus">
+              <CustomPanel />
+            </FeatureGate>
+          ) : tab === "laporan" ? (
+            <FeatureGate feature="panel_laporan">
+              <LaporanPanel />
+            </FeatureGate>
           ) : (
-            <TestimoniPanel />
+            <FeatureGate feature="panel_testimoni">
+              <TestimoniPanel />
+            </FeatureGate>
           )}
         </main>
       </div>
@@ -119,11 +176,13 @@ export default function AdminDashboard({ email }: { email: string }) {
 
 /* ── Isi sidebar (dipakai versi desktop & drawer) ───────────────────────────── */
 function IsiSidebar({
+  nav,
   tab,
   pilih,
   email,
   keluar,
 }: {
+  nav: { id: Tab; label: string; Icon: typeof UtensilsCrossed }[];
   tab: Tab;
   pilih: (id: Tab) => void;
   email: string;
@@ -141,7 +200,7 @@ function IsiSidebar({
 
       {/* Navigasi */}
       <nav className="mt-8 flex flex-col gap-1.5">
-        {NAV.map(({ id, label, Icon }) => {
+        {nav.map(({ id, label, Icon }) => {
           const aktif = tab === id;
           return (
             <button

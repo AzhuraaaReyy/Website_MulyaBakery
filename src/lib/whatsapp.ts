@@ -63,12 +63,43 @@ function stempelWaktu(): string {
   return `${tanggal}, ${jam} WIB`;
 }
 
+/** Sama seperti `stempelWaktu()`, tapi dari timestamp pesanan (ISO) yang sudah dibuat. */
+function stempelWaktuDari(iso: string | null | undefined): string {
+  if (!iso) return stempelWaktu();
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return stempelWaktu();
+  const tanggal = new Intl.DateTimeFormat("id-ID", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    timeZone: "Asia/Jakarta",
+  }).format(d);
+  const jam = new Intl.DateTimeFormat("id-ID", {
+    hour: "2-digit",
+    minute: "2-digit",
+    timeZone: "Asia/Jakarta",
+  }).format(d);
+  return `${tanggal}, ${jam} WIB`;
+}
+
 /** 083162253730 -> 0831-6225-3730, supaya mudah dibaca dan ditelepon balik. */
 function rapikanNomor(nomor: string): string {
   const angka = nomor.replace(/\D/g, "");
   const lokal = angka.startsWith("62") ? `0${angka.slice(2)}` : angka;
   const bagian = lokal.match(/^(\d{4})(\d{4})(\d{2,6})$/);
   return bagian ? `${bagian[1]}-${bagian[2]}-${bagian[3]}` : lokal;
+}
+
+/**
+ * 081234567890 -> 6281234567890.
+ * wa.me WAJIB nomor internasional (kode negara, tanpa "+" dan tanpa awalan 0).
+ * Pelanggan sering mengetik nomor dengan awalan 0, jadi dipastikan di sini.
+ */
+function normalisasiNomorWa(nomor: string): string {
+  const angka = nomor.replace(/\D/g, "");
+  if (angka.startsWith("0")) return `62${angka.slice(1)}`;
+  return angka;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -188,7 +219,14 @@ export function cartOrderMessage(
   });
 
   baris.push(GARIS);
-  baris.push(`*TOTAL (${jumlahUnit} item) : ${formatPrice(total)}*`);
+  // Untuk Diantar, total produk belum termasuk biaya pengiriman — sengaja
+  // diberi nama "SUBTOTAL PRODUK" agar pelanggan tidak mengira itu total akhir.
+  // Untuk Ambil Sendiri (tanpa ongkir) label "TOTAL" tetap dipakai.
+  baris.push(
+    customer.method === "antar"
+      ? `*SUBTOTAL PRODUK (${jumlahUnit} item) : ${formatPrice(total)}*`
+      : `*TOTAL (${jumlahUnit} item) : ${formatPrice(total)}*`,
+  );
   baris.push(GARIS);
 
   // ── Data Pemesan ──────────────────────────────────────────────────────────
@@ -222,6 +260,8 @@ export function cartOrderMessage(
   baris.push("");
 
   if (customer.method === "antar") {
+    baris.push("Subtotal produk di atas belum termasuk biaya pengiriman.");
+    baris.push("");
     baris.push("Mohon dibantu konfirmasi ketersediaan pesanan,");
     baris.push("biaya pengiriman, dan perkiraan waktu pengantaran.");
   } else {
@@ -286,7 +326,10 @@ function formatDateID(iso: string): string {
  * keranjang supaya owner membaca dua jenis pesanan dengan pola yang sama.
  */
 
-export function bookingOrderUrl(b: BookingInfo): string {
+export function bookingOrderUrl(
+  b: BookingInfo,
+  orderCode?: string | null,
+): string {
   const baris: string[] = [];
 
   baris.push(`*PESANAN CUSTOM ${BRAND.name.toUpperCase()}*`);
@@ -296,6 +339,7 @@ export function bookingOrderUrl(b: BookingInfo): string {
   );
   baris.push("");
 
+  if (orderCode) baris.push(`No. Pesanan   : ${orderCode}`);
   baris.push(`Tanggal pesan : ${stempelWaktu()}`);
 
   baris.push("");
@@ -361,4 +405,220 @@ export function bookingOrderUrl(b: BookingInfo): string {
   baris.push("Terima kasih. Saya menunggu informasi selanjutnya.");
 
   return buildWhatsAppUrl(baris.join("\n"));
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * KONFIRMASI ONGKIR (dari admin panel ke pelanggan)
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
+/** Data pesanan yang dibutuhkan untuk pesan konfirmasi ongkir. */
+export interface OrderOngkirInfo {
+  /** No. pesanan (order_code). */
+  orderCode: string;
+  customerName: string;
+  customerPhone: string;
+  /** Total harga produk (subtotal), sebelum ongkir. */
+  subtotal: number;
+  /** Biaya pengiriman yang sudah diisi admin. */
+  shippingFee: number;
+  /** Estimasi waktu pengantaran (opsional, mis. "±30 menit"). */
+  deliveryEstimate?: string | null;
+  /** Alamat pengiriman pelanggan. */
+  address?: string | null;
+  /** Daftar produk pesanan — ditampilkan sebagai RINCIAN PESANAN. */
+  items?: { name: string; price: number; qty: number }[];
+  /** Waktu pesanan dibuat (ISO) — ditampilkan di baris "Tanggal". */
+  createdAt?: string | null;
+}
+
+/**
+ * Pesan konfirmasi ongkir yang dikirim admin ke pelanggan via WhatsApp.
+ * Formatnya sengaja disamakan dengan nota pesanan awal (`cartOrderMessage`)
+ * supaya pelanggan membaca pola yang sama — hanya sekarang sudah ada TOTAL
+ * yang mencakup biaya pesanan + biaya pengiriman.
+ * Dibuat otomatis dari data pesanan — admin tidak perlu mengetik ulang.
+ * Tanpa emoji, memakai *bold* WhatsApp & garis pemisah yang sama.
+ */
+export function ongkirKonfirmasiMessage(o: OrderOngkirInfo): string {
+  const total = o.subtotal + o.shippingFee;
+  const jumlahUnit = (o.items ?? []).reduce((s, it) => s + it.qty, 0);
+  const baris: string[] = [];
+
+  // ── Header ────────────────────────────────────────────────────────────────
+  baris.push(`*KONFIRMASI PESANAN ${BRAND.name.toUpperCase()}*`);
+  baris.push("");
+  baris.push(`Halo Kak ${o.customerName},`);
+  baris.push("");
+  baris.push("Berikut rincian pembayaran untuk pesanan Anda.");
+  baris.push("");
+
+  if (o.orderCode) baris.push(`No. Pesanan : ${o.orderCode}`);
+  baris.push(`Tanggal     : ${stempelWaktuDari(o.createdAt)}`);
+
+  baris.push("");
+  baris.push(GARIS);
+
+  // ── Rincian Pesanan / Biaya ───────────────────────────────────────────────
+  if (o.items && o.items.length > 0) {
+    baris.push("*RINCIAN PESANAN*");
+    baris.push("");
+
+    o.items.forEach((item, i) => {
+      baris.push(`${i + 1}. ${item.name}`);
+      baris.push(
+        `   ${item.qty} x ${formatPrice(item.price)} = ${formatPrice(
+          item.price * item.qty,
+        )}`,
+      );
+      baris.push("");
+    });
+  } else {
+    baris.push("*RINCIAN BIAYA*");
+    baris.push("");
+  }
+
+  baris.push(GARIS);
+  // Subtotal dan total dipisah agar jelas biaya pesanan vs biaya pengiriman.
+  baris.push(
+    jumlahUnit > 0
+      ? `*SUBTOTAL PRODUK (${jumlahUnit} item) : ${formatPrice(o.subtotal)}*`
+      : `*SUBTOTAL PRODUK : ${formatPrice(o.subtotal)}*`,
+  );
+  baris.push(`Biaya Pengiriman     : ${formatPrice(o.shippingFee)}`);
+
+  if (o.deliveryEstimate) {
+    baris.push(`Estimasi Pengantaran : ${o.deliveryEstimate}`);
+  }
+
+  baris.push(`*TOTAL PEMBAYARAN    : ${formatPrice(total)}*`);
+  baris.push(GARIS);
+
+  // ── Data Pemesan ──────────────────────────────────────────────────────────
+  baris.push("");
+  baris.push("*DATA PEMESAN*");
+  baris.push("");
+
+  baris.push(`Nama        : ${o.customerName}`);
+  baris.push(`No. HP      : ${rapikanNomor(o.customerPhone)}`);
+  baris.push("Pengambilan : Diantar ke alamat");
+
+  if (o.address) {
+    baris.push(`Alamat      : ${o.address}`);
+  }
+
+  // ── Penutup ───────────────────────────────────────────────────────────────
+  baris.push("");
+  baris.push(GARIS);
+  baris.push("");
+
+  baris.push("Mohon konfirmasi apakah pesanan dengan total");
+  baris.push("tersebut dapat kami proses.");
+
+  baris.push("");
+  baris.push("Terima kasih.");
+
+  return baris.join("\n");
+}
+
+/** Bangun URL wa.me ke nomor pelanggan berisi pesan konfirmasi ongkir. */
+export function ongkirKonfirmasiUrl(o: OrderOngkirInfo): string {
+  return buildWhatsAppUrl(
+    ongkirKonfirmasiMessage(o),
+    normalisasiNomorWa(o.customerPhone),
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * KONFIRMASI ONGKIR — PESANAN CUSTOM (dari admin panel ke pelanggan)
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
+/** Data pesanan custom yang dibutuhkan untuk pesan konfirmasi ongkir. */
+export interface OrderCustomOngkirInfo {
+  /** No. pesanan custom (order_code). */
+  orderCode: string;
+  customerName: string;
+  customerPhone: string;
+  /** Harga produk custom (total final yang diisi admin), sebelum ongkir. */
+  totalProduk: number;
+  /** Biaya pengiriman yang sudah diisi admin. */
+  shippingFee: number;
+  /** Estimasi waktu pengantaran (opsional, mis. "±30 menit"). */
+  deliveryEstimate?: string | null;
+  /** Alamat pengiriman pelanggan. */
+  address?: string | null;
+  /** Waktu pesanan dibuat (ISO) — ditampilkan di baris "Tanggal". */
+  createdAt?: string | null;
+}
+
+/**
+ * Pesan konfirmasi ongkir untuk pesanan CUSTOM. Formatnya mengikuti nota
+ * pesanan custom awal (`bookingOrderUrl`) dan pesan konfirmasi keranjang
+ * (`ongkirKonfirmasiMessage`) supaya pelanggan membaca pola yang sama.
+ * Tanpa emoji, memakai *bold* WhatsApp & garis pemisah yang sama.
+ */
+export function ongkirKonfirmasiMessageCustom(o: OrderCustomOngkirInfo): string {
+  const total = o.totalProduk + o.shippingFee;
+  const baris: string[] = [];
+
+  // ── Header ────────────────────────────────────────────────────────────────
+  baris.push(`*KONFIRMASI PESANAN CUSTOM ${BRAND.name.toUpperCase()}*`);
+  baris.push("");
+  baris.push(`Halo Kak ${o.customerName},`);
+  baris.push("");
+  baris.push("Berikut rincian pembayaran untuk pesanan Anda.");
+  baris.push("");
+
+  if (o.orderCode) baris.push(`No. Pesanan : ${o.orderCode}`);
+  baris.push(`Tanggal     : ${stempelWaktuDari(o.createdAt)}`);
+
+  baris.push("");
+  baris.push(GARIS);
+
+  // ── Rincian Biaya ─────────────────────────────────────────────────────────
+  baris.push("*RINCIAN BIAYA*");
+  baris.push("");
+  baris.push(GARIS);
+  baris.push(`*TOTAL PRODUK         : ${formatPrice(o.totalProduk)}*`);
+  baris.push(`Biaya Pengiriman     : ${formatPrice(o.shippingFee)}`);
+
+  if (o.deliveryEstimate) {
+    baris.push(`Estimasi Pengantaran : ${o.deliveryEstimate}`);
+  }
+
+  baris.push(`*TOTAL PEMBAYARAN    : ${formatPrice(total)}*`);
+  baris.push(GARIS);
+
+  // ── Data Pemesan ──────────────────────────────────────────────────────────
+  baris.push("");
+  baris.push("*DATA PEMESAN*");
+  baris.push("");
+
+  baris.push(`Nama        : ${o.customerName}`);
+  baris.push(`No. HP      : ${rapikanNomor(o.customerPhone)}`);
+  baris.push("Pengambilan : Diantar ke alamat");
+
+  if (o.address) {
+    baris.push(`Alamat      : ${o.address}`);
+  }
+
+  // ── Penutup ───────────────────────────────────────────────────────────────
+  baris.push("");
+  baris.push(GARIS);
+  baris.push("");
+
+  baris.push("Mohon konfirmasi apakah pesanan dengan total");
+  baris.push("tersebut dapat kami proses.");
+
+  baris.push("");
+  baris.push("Terima kasih.");
+
+  return baris.join("\n");
+}
+
+/** Bangun URL wa.me ke nomor pelanggan berisi pesan konfirmasi ongkir custom. */
+export function ongkirKonfirmasiCustomUrl(o: OrderCustomOngkirInfo): string {
+  return buildWhatsAppUrl(
+    ongkirKonfirmasiMessageCustom(o),
+    normalisasiNomorWa(o.customerPhone),
+  );
 }

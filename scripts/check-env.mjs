@@ -115,6 +115,19 @@ if (wa && !/^62\d{8,14}$/.test(wa)) {
   console.warn("\n⚠️ [check-env] " + pesan + "\n");
 }
 
+// Nomor alternatif bersifat OPSIONAL — hanya divalidasi bila terisi.
+const wa2 = (process.env.VITE_WHATSAPP_NUMBER2 || "").replace(/\D/g, "");
+if (wa2 && !/^62\d{8,14}$/.test(wa2)) {
+  const pesan =
+    "VITE_WHATSAPP_NUMBER2 tampaknya bukan nomor Indonesia berformat internasional. " +
+    `Dibaca: "${process.env.VITE_WHATSAPP_NUMBER2}". Seharusnya mulai 62, mis. 6283148391567.`;
+  if (process.env.STRICT_ENV === "1") {
+    console.error("\n[check-env] (STRICT) " + pesan + "\n");
+    process.exit(1);
+  }
+  console.warn("\n⚠️ [check-env] " + pesan + "\n");
+}
+
 // ── 4. Cegah secret key terbawa ke frontend ─────────────────────────────────
 const secretTerdeteksi =
   (pubKey &&

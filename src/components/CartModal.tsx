@@ -11,6 +11,7 @@ import {
   MessageCircle,
   AlertCircle,
   Loader2,
+  MapPin,
 } from "lucide-react";
 import { useCart, type CartItem } from "../context/CartContext";
 import { formatPrice } from "../data/products";
@@ -26,6 +27,7 @@ import { beritahu } from "../lib/dataevents";
 import { kunciScroll } from "../lib/scrollLock";
 import OrderSuccess from "./OrderSuccess";
 import ReviewModal from "./ReviewModal";
+import LocationPickerModal from "./LocationPickerModal";
 
 interface HasilPesanan {
   orderCode: string;
@@ -71,6 +73,15 @@ export default function CartModal() {
   const [hasil, setHasil] = useState<HasilPesanan | null>(null);
   const [ulasanTerbuka, setUlasanTerbuka] = useState(false);
 
+  // Popup informasi pengiriman (hanya utk metode Diantar).
+  const [infoKirimBuka, setInfoKirimBuka] = useState(false);
+  // Flag "sudah ditampilkan" per sesi buka keranjang — biar muncul SEKALI saat
+  // keranjang dibuka (default Diantar), lalu tiap toggle Diantar ditekan lagi.
+  const [infoKirimSudahDitampil, setInfoKirimSudahDitampil] = useState(false);
+
+  // Modal pilih lokasi (MapLibre + lokasi saat ini + reverse-geocode).
+  const [pilihLokasiBuka, setPilihLokasiBuka] = useState(false);
+
   const idemRef = useRef<string | null>(null);
 
   /* ── Buka ulasan OTOMATIS setelah checkout sukses ─────────────────────────
@@ -88,6 +99,22 @@ export default function CartModal() {
   useEffect(() => {
     if (!isOpen) return;
     return kunciScroll();
+  }, [isOpen]);
+
+  /* Popup info pengiriman — muncul SEKALI saat keranjang dibuka (default metode
+     sudah "Diantar"), lalu setiap kali toggle "Diantar" ditekan. Reset flag
+     saat keranjang ditutup agar buka berikutnya muncul lagi. */
+  useEffect(() => {
+    if (!isOpen) return;
+    // Hanya tampilkan bila ada isi keranjang — popup di keranjang kosong tak perlu.
+    if (items.length > 0 && method === "antar" && !infoKirimSudahDitampil) {
+      setInfoKirimSudahDitampil(true);
+      setInfoKirimBuka(true);
+    }
+  }, [isOpen, method, infoKirimSudahDitampil, items.length]);
+
+  useEffect(() => {
+    if (!isOpen) setInfoKirimSudahDitampil(false);
   }, [isOpen]);
 
   useEffect(() => {
@@ -415,7 +442,10 @@ export default function CartModal() {
                       <div className="mt-3 grid grid-cols-2 gap-2 rounded-2xl bg-paper-200 p-1">
                         <button
                           type="button"
-                          onClick={() => setMethod("antar")}
+                          onClick={() => {
+                            setMethod("antar");
+                            setInfoKirimBuka(true);
+                          }}
                           aria-pressed={method === "antar"}
                           className={`flex items-center justify-center gap-1.5 rounded-xl py-2 font-section3-p text-sm font-bold transition-all ${
                             method === "antar"
@@ -510,6 +540,17 @@ export default function CartModal() {
                                   placeholder="Jalan, No. rumah, kelurahan, patokan…"
                                   className={inputCls}
                                 />
+                                <button
+                                  type="button"
+                                  onClick={() => setPilihLokasiBuka(true)}
+                                  className="mt-2 inline-flex w-full items-center justify-center gap-1.5 rounded-xl border border-dashed border-cocoa-700/30 px-4 py-2.5 text-center font-section3-p text-sm text-cocoa-700/80 transition-colors hover:bg-paper-200"
+                                >
+                                  <MapPin
+                                    className="h-4 w-4 shrink-0"
+                                    aria-hidden
+                                  />
+                                  Pilih lokasi dari peta
+                                </button>
                               </Field>
                             </motion.div>
                           )}
@@ -560,13 +601,17 @@ export default function CartModal() {
                                   : "Upload foto belum aktif"}
                               <input
                                 type="file"
-                                accept="image/png,image/jpeg,image/webp"
-                                className="hidden"
+                                accept="image/*"
+                                className="sr-only"
                                 disabled={uploadFoto || !isSupabaseConfigured}
                                 onChange={pilihFoto}
                               />
                             </label>
                           )}
+                          <p className="mt-1.5 font-section3-p text-[11px] leading-snug text-cocoa-700/60">
+                            Foto penanda rumah — membantu kurir (GoSend / toko)
+                            menemukan lokasi rumah Anda saat pengantaran.
+                          </p>
                           {galatFoto && (
                             <span className="mt-1 block font-section3-p text-xs text-red-500">
                               {galatFoto}
@@ -602,9 +647,19 @@ export default function CartModal() {
                     )}
 
                     <div className="mb-3 flex items-baseline justify-between">
-                      <span className="font-section3-p text-sm text-cocoa-700/80">
-                        Total
-                      </span>
+                      <div className="min-w-0">
+                        <span className="font-section3-p text-sm text-cocoa-700/80">
+                          {method === "antar"
+                            ? "Subtotal produk"
+                            : "Total"}
+                        </span>
+                        {method === "antar" && (
+                          <p className="font-section3-p text-[11px] text-cocoa-700/60 leading-tight">
+                            Belum termasuk ongkir — biaya kirim dikonfirmasi via
+                            WhatsApp sebelum pesanan diproses.
+                          </p>
+                        )}
+                      </div>
                       <span className="font-heading text-xl sm:text-2xl text-cocoa-800">
                         {formatPrice(total)}
                       </span>
@@ -648,6 +703,87 @@ export default function CartModal() {
         onClose={() => setUlasanTerbuka(false)}
         reviewToken={hasil?.reviewToken ?? null}
         produkDipesan={hasil?.produk}
+      />
+
+      {/* Popup informasi pengiriman — muncul saat memilih Diantar */}
+      <AnimatePresence>
+        {infoKirimBuka && (
+          <motion.div
+            className="fixed inset-0 z-[70] flex items-center justify-center p-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <button
+              type="button"
+              aria-label="Tutup informasi pengiriman"
+              onClick={() => setInfoKirimBuka(false)}
+              className="absolute inset-0 bg-cocoa-900/50 backdrop-blur-sm"
+            />
+            <motion.div
+              role="dialog"
+              aria-modal="true"
+              aria-label="Informasi pengiriman"
+              initial={{ opacity: 0, y: 24, scale: 0.96 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 24, scale: 0.96 }}
+              transition={{ type: "spring", stiffness: 320, damping: 30 }}
+              className="relative w-full max-w-sm rounded-3xl bg-paper-100 p-6 shadow-cocoa-lg ring-1 ring-cocoa-700/10"
+            >
+              <span className="flex h-12 w-12 items-center justify-center rounded-full bg-cocoa-800 text-paper-50 shadow-cocoa">
+                <Bike className="h-6 w-6" aria-hidden />
+              </span>
+              <h3 className="mt-3 font-heading text-lg text-cocoa-800">
+                Informasi Pengiriman
+              </h3>
+              <div className="mt-3 space-y-2.5">
+                <p className="font-section3-p text-sm leading-relaxed text-cocoa-700/90">
+                  Pesanan dengan metode diantar dapat menggunakan kurir Mulya
+                  Bakery atau kurir instan seperti GoSend, tergantung
+                  ketersediaan kendaraan saat pesanan diproses.
+                </p>
+                <p className="font-section3-p text-sm leading-relaxed text-cocoa-700/90">
+                  Biaya pengiriman akan dikonfirmasi terlebih dahulu berdasarkan
+                  alamat tujuan sebelum pesanan diproses.
+                </p>
+                <p className="font-section3-p text-sm leading-relaxed text-cocoa-700/90">
+                  Total pembayaran akhir akan diinformasikan melalui WhatsApp
+                  setelah biaya pengiriman diketahui.
+                </p>
+                <p className="font-section3-p text-sm font-bold leading-relaxed text-cocoa-800">
+                  Pesanan hanya akan diproses setelah total akhir dikonfirmasi
+                  dan disetujui pelanggan.
+                </p>
+              </div>
+              <div className="mt-5 grid grid-cols-2 gap-2.5">
+                <button
+                  type="button"
+                  onClick={() => setInfoKirimBuka(false)}
+                  className="rounded-full px-4 py-2.5 font-section3-p text-sm font-bold text-cocoa-800 ring-1 ring-cocoa-700/20 transition-colors hover:bg-paper-200"
+                >
+                  Batal
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setInfoKirimBuka(false)}
+                  className="rounded-full bg-cocoa-800 px-4 py-2.5 font-section3-p text-sm font-bold text-paper-50 shadow-cocoa transition-all hover:-translate-y-0.5 hover:bg-cocoa-900"
+                >
+                  Mengerti &amp; Lanjutkan
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Modal pilih lokasi pengiriman */}
+      <LocationPickerModal
+        open={pilihLokasiBuka}
+        onClose={() => setPilihLokasiBuka(false)}
+        onPilih={(alamat) => {
+          setAddress(alamat);
+          setPilihLokasiBuka(false);
+        }}
       />
     </>
   );

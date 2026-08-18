@@ -9,6 +9,8 @@ import {
   ShoppingBag,
   AlertTriangle,
 } from "lucide-react";
+import LockedCta from "./LockedCta";
+import { useFeatureFlags } from "../context/FeatureFlagsContext";
 
 interface Props {
   orderCode: string;
@@ -36,6 +38,7 @@ export default function OrderSuccess({
   onSelesai,
 }: Props) {
   const [disalin, setDisalin] = useState(false);
+  const { isOn } = useFeatureFlags();
 
   const salinKode = async () => {
     try {
@@ -148,14 +151,18 @@ export default function OrderSuccess({
           Bintang yang kamu beri akan langsung tampil di kartu menu dan membantu
           pembeli lain memilih.
         </p>
-        <button
-          type="button"
-          onClick={onBukaUlasan}
-          className="mt-4 inline-flex items-center justify-center gap-2 rounded-full bg-butter px-6 py-3 font-text text-sm font-bold text-cocoa-900 shadow-cocoa transition-transform hover:-translate-y-0.5"
-        >
-          <Star className="h-4 w-4 fill-cocoa-900" aria-hidden />
-          Tulis ulasan
-        </button>
+        {isOn("ulasan") ? (
+          <button
+            type="button"
+            onClick={onBukaUlasan}
+            className="mt-4 inline-flex items-center justify-center gap-2 rounded-full bg-butter px-6 py-3 font-text text-sm font-bold text-cocoa-900 shadow-cocoa transition-transform hover:-translate-y-0.5"
+          >
+            <Star className="h-4 w-4 fill-cocoa-900" aria-hidden />
+            Tulis ulasan
+          </button>
+        ) : (
+          <LockedCta feature="ulasan" className="mt-4" />
+        )}
       </motion.div>
 
       <button

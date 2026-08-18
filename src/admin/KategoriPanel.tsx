@@ -13,6 +13,7 @@ import {
 import { supabaseAdmin } from "../lib/supabaseAdmin";
 import { readableError } from "../lib/supabase";
 import { DAFTAR_IKON, ikonKategori } from "../lib/kategoriIkon";
+import { Pagination, usePagination } from "./Pagination";
 
 interface Kat {
   name: string;
@@ -51,6 +52,12 @@ export default function KategoriPanel() {
     () => (rows.length ? Math.max(...rows.map((r) => r.sort_order)) + 1 : 0),
     [rows],
   );
+
+  const {
+    halaman,
+    setHalaman,
+    baris: barisHalaman,
+  } = usePagination(rows, 0);
 
   const toggleAktif = async (row: Kat) => {
     if (!supabaseAdmin) return;
@@ -122,9 +129,10 @@ export default function KategoriPanel() {
           </p>
         </div>
       ) : (
-        <ul className="flex flex-col gap-2.5">
-          {rows.map((row) => {
-            const Icon = ikonKategori(row.icon);
+        <>
+          <ul className="flex flex-col gap-2.5">
+            {barisHalaman.map((row) => {
+              const Icon = ikonKategori(row.icon);
             return (
               <li
                 key={row.name}
@@ -177,7 +185,14 @@ export default function KategoriPanel() {
               </li>
             );
           })}
-        </ul>
+          </ul>
+
+          <Pagination
+            total={rows.length}
+            halaman={halaman}
+            setHalaman={setHalaman}
+          />
+        </>
       )}
 
       {editing && (

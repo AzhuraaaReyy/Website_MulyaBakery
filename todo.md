@@ -1,7 +1,7 @@
 # TODO — Mulya Bakery Landing Page
 
 > Dibuat: (tanggal pengerjaan)
-> Status pekerjaan sesi ini: **SEDANG BERLANGSUNG** — tidak selesai di sesi ini.
+> Status pekerjaan sesi ini: **SELESAI** — Feature Gating (19 fitur) + Panel Super Admin + Pola Blur "Coming Soon".
 
 ---
 
@@ -17,6 +17,222 @@ Landing page UMKM roti **"Mulya Bakery"** (React 18 + Vite + TypeScript + Tailwi
 * Data menu live dari RPC `get_menu` (lihat `src/hooks/Usemenudata.ts`)
 * Struktur komponen: Navbar, Hero, About, Menu, HowToOrder, WhyUs, Testimonials,
   Gallery, LocationContact, FAQ, Footer + modal (Cart, Booking, ProductDetail, Review)
+
+---
+
+## 📌 Sesi Ini — Ulasan Multi-Produk (1 Form untuk Banyak Menu)
+
+**Status:** KODE SELESAI — verifikasi `npx tsc --noEmit` & `npm run build` (lihat bagian bawah).
+
+### Keputusan user (dikonfirmasi)
+1. Aturan "1 ulasan per produk per 7 hari" (migrasi 006) **DIHAPUS total** — pelanggan
+   boleh mengulas produk yang sama lagi setiap membeli (anti-spam tetap: honeypot + validasi teks).
+2. Badge testimoni (`reviewer_role`) = **gabungan nama produk** terpilih (dipotong ~60 karakter).
+
+### Perubahan
+- `supabase/migrations/010_review_multi_produk.sql` (BARU) — WAJIB dijalankan di Dashboard:
+  `submit_product_review` kini menerima **array `product_ids`** (fallback `product_id` tunggal),
+  insert 1 baris `product_reviews` per produk dalam satu pengiriman; blok duplikat 7 hari dihapus.
+  `get_menu` (rating kartu menu) tidak perlu diubah — otomatis konsisten dari `product_reviews`.
+- `src/components/ReviewModal.tsx` — pilih menu jadi **wajib & multi-pilih** (checkbox list
+  scrollable). Setelah pesanan, semua produk yang dibeli otomatis tercentang. Submit memakai
+  `product_ids`. Layar sukses menyesuaikan jumlah. Pop-up "sudah pernah mengulas" dihapus.
+- `src/components/CartModal.tsx` — teks footer Diantar diperjelas: "Belum termasuk ongkir —
+  biaya kirim dikonfirmasi via WhatsApp sebelum pesanan diproses."
+
+### Wajib dilakukan user
+1. Jalankan `supabase/migrations/010_review_multi_produk.sql` di Supabase Dashboard SQL Editor.
+2. Uji: checkout 2–3 produk → ulasan auto-muncul semua tercentang → submit 1x →
+   rating kartu menu berubah konsisten.
+
+---
+
+## 📌 Sesi Ini — Feature Gating (Super Admin) + Panel Pengaturan Fitur
+
+**Status:** SELESAI — `npx tsc --noEmit` bersih & `npm run build` sukses.
+
+### Konsep
+- **Super admin** = email tertentu dari env `VITE_SUPER_ADMIN_EMAILS` (koma).
+  Login tetap halaman admin biasa; setelah login, email super admin otomatis
+  diarahkan ke dashboard super admin (dengan tab "Pengaturan Fitur").
+- **19 fitur** bisa dimatikan/nyalakan via panel "Pengaturan Fitur". Fitur yang
+  mati menampilkan pola visual **Blurred Content Gate**: konten di-blur + kartu
+  "Coming Soon!" + keterangan (section), atau tombol gembok yang membuka modal
+  keterangan (CTA).
+- Flag disimpan di Supabase (`feature_flags`), dibaca publik (fail-open: bila
+  gagal muat / tanpa Supabase, semua fitur AKTIF → situs normal).
+
+### Fitur yang bisa di-toggle
+1. **Section (blur penuh):** hero, tentang, menu, cara_pesan, keunggulan,
+   testimoni, galeri, kontak, faq.
+2. **Interaktif (CTA terkunci):** keranjang (tombol +, Tambah ke Keranjang,
+   CartButton disembunyikan), pesanan_khusus (banner Custom Order),
+   ulasan (tombol tulis ulasan di Testimoni & OrderSuccess), pesan_wa
+   (Navbar desktop+mobile, Hero, Cara Pesan, bubble WA Galeri).
+3. **Panel admin (blur):** panel_menu, panel_kategori, panel_pesanan,
+   panel_pesanan_khusus, panel_laporan, panel_testimoni.
+
+### File baru
+- `supabase/migrations/009_feature_flags.sql` — tabel `feature_flags` + RLS
+  (anon read, authenticated update) + seed 19 baris.
+- `src/config/featureFlags.ts` — `FeatureKey`, `FEATURE_DEFAULTS`, `semuaFiturAktif()`.
+- `src/config/superadmin.ts` — `isSuperAdmin(email)` dari env.
+- `src/context/FeatureFlagsContext.tsx` — Provider + `useFeatureFlags()` (fetch
+  + fail-open + refresh saat kembali ke tab).
+- `src/components/FeatureGate.tsx` — blur + teaser "Coming Soon!" (section).
+- `src/components/LockedCta.tsx` — tombol gembok + `FeatureTeaserModal`.
+- `src/admin/FeaturePanel.tsx` — toggle on/off + edit judul/keterangan.
+
+### File diubah
+- `src/App.tsx` — `FeatureFlagsProvider` + 9 section dibungkus `FeatureGate`.
+- `src/components/Menu.tsx`, `ProductDetailModal.tsx`, `CartButton.tsx`,
+  `Testimonials.tsx`, `OrderSuccess.tsx` — gate fitur interaktif.
+- `src/components/Navbar.tsx`, `Hero.tsx`, `HowToOrder.tsx`, `Gallery.tsx` — gate `pesan_wa`.
+- `src/admin/AdminApp.tsx` — routing pasca-login `isSuperAdmin(email)` +
+  `FeatureFlagsProvider`.
+- `src/admin/AdminDashboard.tsx` — prop `isSuperAdmin`; tab "Pengaturan Fitur"
+  (ikon Settings2) hanya super admin; 6 panel dibungkus `FeatureGate`.
+- `.env` — `VITE_SUPER_ADMIN_EMAILS` (isi email Anda).
+
+### Wajib dilakukan user
+1. Jalankan `supabase/migrations/009_feature_flags.sql` di Supabase Dashboard.
+2. Isi `VITE_SUPER_ADMIN_EMAILS` di `.env` dengan email admin Anda, lalu login
+   `/admin` → otomatis ke dashboard super admin (tab "Pengaturan Fitur").
+3. Catatan: tab "Pengaturan Fitur" sengaja TIDAK bisa dimatikan agar super
+   admin tidak terkunci. Penguatan RLS super admin (tabel `super_admins`)
+   dijelaskan sebagai komentar di migrasi 009 (opsional).
+
+---
+
+## 📌 Sesi Ini — BookingModal: Gaya Visual = CartModal + Pilih Lokasi
+
+**Status:** SELESAI — `npx tsc --noEmit` bersih & `npm run build` sukses.
+
+Perbaikan lanjutan pada form pemesanan khusus (`src/components/BookingModal.tsx`):
+
+1. **Pilih lokasi dari peta** — tombol "Pilih lokasi dari peta" di field Alamat
+   (khusus Diantar), memakai `LocationPickerModal` yang sama dengan CartModal
+   (MapLibre + lokasi saat ini + reverse-geocode Nominatim).
+2. **UI/UX disamakan dengan CartModal** — tanpa mengubah data/alur form:
+   - Shell jadi kartu **di tengah layar** (`max-w-lg`, `bg-paper-100`, palet
+     cocoa/paper/caramel), `font-heading` untuk judul & `font-section3-p` (Itim) untuk teks.
+   - Field, input (`inputCls`), toggle metode (Store/Bike), step tabs, tombol
+     primer `bg-cocoa-800`, dan layar sukses `OrderSuccess` konsisten dengan CartModal.
+   - Data yang dipertahankan: kategori, detail custom, foto, tanggal, porsi,
+     tema, nama, HP, metode, alamat, catatan + alur 2 langkah & validasi.
+
+---
+
+## 📌 Sesi Ini — Pemesanan Khusus = Konsep CartModal
+
+**Status:** SELESAI — `npx tsc --noEmit` bersih & `npm run build` sukses.
+
+Keputusan user (dikonfirmasi): tabel & panel admin **terpisah** (`custom_orders`),
+alur status/ongkir **sama persis** dengan pesanan biasa, masuk **Laporan**
+setelah admin mengisi total harga final.
+
+### Perubahan
+- `supabase/migrations/008_custom_orders.sql` (BARU) — WAJIB dijalankan di Dashboard:
+  tabel `custom_orders` (order_code `MB-C-…`, status 5 nilai, ongkir/estimasi,
+  total, review_token, idempotency_key), RLS (publik tak baca), RPC
+  `create_custom_order(payload)` idempotent (security definer).
+- `src/lib/whatsapp.ts` — `bookingOrderUrl(b, orderCode?)` menyertakan
+  `No. Pesanan` (gaya nota); baru `ongkirKonfirmasiMessageCustom`/
+  `ongkirKonfirmasiCustomUrl` (+ `OrderCustomOngkirInfo`).
+- `src/components/BookingModal.tsx` — submit kini: panggil RPC
+  `create_custom_order` (idempotency) → buka WA robust → layar `OrderSuccess`
+  (order_code) → ReviewModal otomatis dengan `reviewToken` (Pembeli terverifikasi).
+- `src/admin/customOrderTypes.ts` (BARU) — `CustomOrderRow` + `formatTanggalAcara`.
+- `src/admin/CustomPanel.tsx` (BARU) — tab "Pesanan Khusus": daftar + filter
+  status + detail (data pemesan, konsep/foto, input Total Harga Produk final,
+  ongkir/estimasi auto via `jarak.ts`, status, lock selesai/batal, Konfirmasi WA
+  custom, pagination 10, auto-refresh 15s).
+- `src/admin/AdminDashboard.tsx` — tab baru "Pesanan Khusus" (ikon CakeSlice).
+- `src/admin/LaporanPanel.tsx` — ikut muat `custom_orders`; pendapatan/jumlah
+  pesanan menyertakan custom dengan `total > 0` & status valid; produk
+  terjual/terlaris tetap pesanan biasa; rincian gabungan (pesanan + custom).
+
+### Catatan
+- `order_code` custom memakai awalan `MB-C-` agar mudah dibedakan dari pesanan biasa.
+- Wajib menjalankan migrasi 008 dulu; sebelum itu tab "Pesanan Khusus" akan
+  menampilkan error tabel belum ada.
+
+---
+
+## 📌 Sesi Ini — Nomor WhatsApp Kedua (Alternatif)
+
+**Status:** SELESAI — `npx tsc --noEmit` bersih & `npm run build` sukses.
+
+Keputusan user (dikonfirmasi): **kedua nomor tampil di bagian kontak**, semua
+pesan/CTA tetap mengarah ke nomor utama.
+
+### Perubahan
+- `.env` — tambah `VITE_WHATSAPP_NUMBER2=6283148391567` (OPSIONAL; bila kosong, nomor kedua disembunyikan).
+- `src/config/contact.ts` — baca env2 → `WHATSAPP_NUMBER2` + `CONTACT.whatsapp2`/`whatsapp2Display` (kosong saat tidak diisi).
+- `src/components/Footer.tsx` — baris kontak nomor kedua (desktop & mobile), ikon WA, tautan `https://wa.me/<nomor2>`.
+- `src/components/LocationContact.tsx` — kartu "WhatsApp Alternatif" di daftar Hubungi langsung (kondisional).
+- `scripts/check-env.mjs` — validasi format nomor kedua (warning non-blokir bila format salah).
+- Routing pesan TIDAK berubah — semua pesanan/booking tetap ke nomor utama (`buildWhatsAppUrl` default).
+
+---
+
+## 📌 Sesi Ini — Fitur Laporan Penjualan & Ongkir (Diantar)
+
+**Status:** SELESAI — `npx tsc --noEmit` bersih & `npm run build` sukses.
+
+### File baru / diubah
+- `supabase/migrations/007_laporan_dan_ongkir.sql` (BARU) — wajib dijalankan di Supabase Dashboard
+- `src/lib/whatsapp.ts` — label SUBTOTAL PRODUK utk antar + `ongkirKonfirmasiMessage/Url`
+- `src/components/CartModal.tsx` — popup info pengiriman + label footer + tombol "Pilih lokasi"
+- `src/components/LocationPickerModal.tsx` (BARU) — MapLibre + geolocation + Nominatim
+- `src/admin/AdminDashboard.tsx` — tab Pesanan & Laporan
+- `src/admin/PesananPanel.tsx` (BARU) — daftar/detail pesanan, input ongkir & estimasi, status, konfirmasi WA
+- `src/admin/LaporanPanel.tsx` (BARU) — ringkasan penjualan + filter waktu
+- `src/admin/orderTypes.ts` (BARU) — tipe & helper bersama pesanan/laporan
+
+### Ringkasan keputusan (dikonfirmasi user)
+- Popup info pengiriman muncul SEKALI saat keranjang dibuka (default Diantar) + tiap toggle "Diantar" ditekan. Tidak utk "Ambil sendiri".
+- Skema `orders` SUDAH punya `status` (CHECK: baru/diproses/selesai/batal) & `total`; `order_items` sudah simpan `product_name`, `unit_price`, `qty`. Skema BUKAN bagian repo (hanya di Dashboard).
+- Status pesanan: Baru → Menunggu Konfirmasi Ongkir → Disetujui/Proses → Selesai → Dibatalkan (tambah `menunggu_ongkir` ke CHECK constraint).
+- Pendapatan = subtotal produk saja (ongkir dipisah). Status valid = `diproses` + `selesai`.
+- Estimasi pengantaran = dari toko ke pelanggan, diisi ADMIN (bukan input pelanggan), masuk pesan konfirmasi WA.
+- Tab admin dipisah: **Pesanan** & **Laporan**.
+- Pilih lokasi: MapLibre + OSM + `navigator.geolocation` + reverse-geocode Nominatim (gratis, tanpa API key).
+
+### Alur ongkir
+Pelanggan pilih Diantar → popup info → checkout tetap → pesan WA "SUBTOTAL PRODUK … belum termasuk ongkir" → admin isi ongkir (+ estimasi) → status jadi `menunggu_ongkir` → klik **Konfirmasi ke Pelanggan** (wa.me otomatis) → pelanggan setuju → admin ubah status.
+
+---
+
+## 🧭 Sesi Ini — Estimasi Pengantaran Otomatis dari Jarak
+
+**Status:** SELESAI — `npx tsc --noEmit` bersih & `npm run build` sukses.
+
+Keputusan user (dikonfirmasi):
+- Sumber titik pelanggan: **geocode alamat di panel admin** (Nominatim) — tanpa ubah DB/RPC.
+- Rumus: jarak haversine toko→pelanggan, **25 km/jam + buffer 10 menit**, min 15 menit, dibulatkan ke kelipatan 5.
+- Data lalu lintas Google Maps: **gratis** — baseline otomatis + tombol "Lihat rute di Google Maps" (admin cek ETA/macet, lalu boleh mengedit).
+- Estimasi tetap bisa diedit admin.
+- Pesanan **Ambil di toko dibiarkan apa adanya** (fitur khusus Diantar).
+
+File:
+- `src/config/contact.ts` — tambah `LOCATION.lat/lng` (sumber koordinat toko).
+- `src/components/LocationPickerModal.tsx` — pakai `LOCATION.lat/lng`.
+- `src/lib/jarak.ts` (BARU) — `hitungJarakKm`, `jarakDariToko`, `estimasiMenit`, `formatJarakKm`, `formatEstimasiMenit`, `geocodeAlamat`, `urlRuteMaps`.
+- `src/admin/PesananPanel.tsx` — tombol "Hitung estimasi otomatis", info jarak, tautan rute Maps, catatan bila alamat tak terpetakan.
+
+---
+
+## ⚙️ Sesi Ini — Perbaikan Panel Admin
+
+**Status:** SELESAI — `npx tsc --noEmit` bersih & `npm run build` sukses.
+
+1. **Auto-refresh tanpa reload** (interval 15 detik, silent): Pesanan, Laporan, Testimoni, Moderasi. Data baru langsung muncul.
+2. **Pagination seragam** — komponen baru `src/admin/Pagination.tsx` (`Pagination` + hook `usePagination`, 10 baris/halaman, reset saat filter berubah): diterapkan ke Pesanan, Laporan, Kategori, Testimoni, Moderasi (Produk sudah punya).
+3. **Kunci pesanan final** — status `selesai`/`batal` di `PesananPanel` tidak bisa diubah: banner kuning, input ongkir/estimasi & dropdown status di-disable, tombol Simpan/Konfirmasi nonaktif.
+4. **Estimasi otomatis saat buka detail** — tombol "Hitung estimasi otomatis" dihapus; begitu detail Diantar dibuka (alamat ada, estimasi kosong, belum final), estimasi langsung dihitung & terisi, lengkap dengan info jarak + tautan rute Maps. Rate-limit Nominatim aman karena 1 permintaan per bukaan detail.
+
+File: `src/admin/Pagination.tsx` (BARU), `PesananPanel.tsx`, `LaporanPanel.tsx`, `KategoriPanel.tsx`, `TestimoniPanel.tsx`, `ModerasiPanel.tsx`.
 
 ---
 
@@ -206,6 +422,46 @@ npm run lint       # tsc --noEmit
 
 ---
 
+### ✅ Perbaikan Upload Foto di Mobile — CartModal, BookingModal, ReviewModal (SELESAI)
+
+**Masalah:** Upload foto tidak berfungsi di mode mobile (terutama iOS Safari).
+
+**Akar penyebab:**
+
+1. `<input type="file">` memakai `className="hidden"` (`display:none`) yang dipicu melalui `<label>`. Di iOS Safari, input file dengan `display:none` **tidak membuka file picker** dengan andal.
+2. Atribut `accept="image/png,image/jpeg,image/webp"` (daftar MIME spesifik) bisa membuat file picker **tidak muncul** di iPhone.
+
+**Perbaikan (hanya menyentuh bagian upload foto):**
+
+- Ganti `className="hidden"` → `className="sr-only"` (visually-hidden tapi tetap bisa diklik — **tampilan tidak berubah**).
+- Ganti `accept="image/png,image/jpeg,image/webp"` → `accept="image/*"` di CartModal & ReviewModal (BookingModal sudah `image/*`).
+
+**File yang diubah:**
+
+- `src/components/CartModal.tsx`
+- `src/components/BookingModal.tsx`
+- `src/components/ReviewModal.tsx`
+
+**Catatan:** Verifikasi validasi tipe file tetap dijaga di `uploadImage.ts` (`TIPE_DIIZINKAN`). Tidak ada perubahan lain selain bagian input file.
+
+---
+
+### ✅ ProdukPanel Form Tambah/Edit — Font Itim (SELESAI)
+
+**Permintaan user:** Di halaman admin `ProdukPanel.tsx`, bagian Form Tambah/Edit, seluruh font KECUALI H2 memakai font **Itim**.
+
+**Perubahan file:** `src/admin/ProdukPanel.tsx`
+
+- Injekt font Itim via `<style>` (`@import` + rule `.font-itim, .font-itim * { font-family: 'Itim', cursive, sans-serif !important; }`).
+- Body form (`div` berisi kolom input) diberi class `font-itim`.
+- Footer form (tempat tombol "Simpan Produk"/"Simpan Perubahan") diberi class `font-itim`.
+- **H2** ("Tambah Produk"/"Edit Produk") di header **tidak** diberi `font-itim` → tetap `font-heading` (Caprasimo) sesuai arahan.
+- Rule memakai `!important` untuk menimpa class `font-text` (Nunito Sans) pada input/label agar konsisten.
+
+**Catatan:** Hanya Form Tambah/Edit produk yang diubah. Tabel daftar produk di halaman admin **tidak** diubah fontnya.
+
+---
+
 ### ✅ Footer — Kolom MENU diselaraskan dengan Navbar (SELESAI)
 
 **Perubahan file:** `src/components/Footer.tsx`
@@ -314,3 +570,5 @@ pertanyaan untuk besok :
 5. setiap halaman di admin harus responsive baik ituu di dekstop maupun mobile, harus responsive dengan tidak ada teks yang naik dan turun, lalu tidak ada scrollbar landscape, dan tingginya atau height dan width nyaa sesuai dengan layar pada device masing masing
 
 6. Lalu kan ada beberapa data yang belum saya isi, nah buatkan itu menjadi satu bagian sajaa, jadi saya nanti tinggal mengubah ituu biar cepat dan efisien tapi tetap tepatt
+
+
