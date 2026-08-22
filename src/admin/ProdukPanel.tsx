@@ -117,19 +117,17 @@ export default function ProdukPanel() {
     if (!supabaseAdmin) return;
     if (
       !window.confirm(
-        `Hapus "${row.name}"? Kalau produk ini pernah dipesan/di-like, hapus bisa gagal — lebih aman NONAKTIFKAN saja.`,
+        `Hapus permanen "${row.name}"? Like dan ulasan produk ini ikut terhapus, sementara riwayat pesanan lama tetap tersimpan.`,
       )
     )
       return;
-    const { error } = await supabaseAdmin
-      .from("products")
-      .delete()
-      .eq("id", row.id);
+
+    setGalat(null);
+    const { error } = await supabaseAdmin.rpc("delete_product_permanently", {
+      p_product_id: row.id,
+    });
     if (error) {
-      window.alert(
-        "Gagal menghapus (kemungkinan produk sudah punya pesanan/ulasan). " +
-          "Nonaktifkan saja agar hilang dari menu tanpa merusak data.",
-      );
+      setGalat(readableError(error));
       return;
     }
     void muat();

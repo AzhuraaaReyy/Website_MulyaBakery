@@ -104,15 +104,12 @@
   }
 }
 
-::-webkit-scrollbar {
-  width: 12px;
+/* 3. Sembunyikan semua scrollbar secara visual — scroll tetap berfungsi */
+* {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
-::-webkit-scrollbar-track {
-  background: #ffe4e9;
-}
-::-webkit-scrollbar-thumb {
-  background: #ff69b4;
-  border-radius: 999px;
-  border: 3px solid #ffe4e9;
+*::-webkit-scrollbar {
+  display: none;
 }
 

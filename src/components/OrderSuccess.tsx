@@ -71,7 +71,7 @@ export default function OrderSuccess({
           Terima kasih sudah memesan!
         </h2>
 
-        <p className="mt-3 max-w-sm font-text text-sm leading-relaxed text-cocoa-700/75">
+        <p className="mt-3 max-w-sm font-text text-sm leading-relaxed text-cocoa-700/75 text-justify">
           Pesananmu sudah kami simpan. Kirim pesan WhatsApp yang sudah terbuka
           agar owner bisa langsung mengonfirmasi ketersediaan dan ongkos kirim.
         </p>
@@ -113,7 +113,7 @@ export default function OrderSuccess({
               className="mt-0.5 h-4 w-4 shrink-0 text-amber-600"
               aria-hidden
             />
-            <p className="font-text text-sm text-amber-800">
+            <p className="font-text text-sm text-amber-800 text-justify">
               Peramban memblokir jendela WhatsApp. Tekan tombol di bawah untuk
               membukanya — pesananmu sudah aman tersimpan.
             </p>
@@ -147,7 +147,7 @@ export default function OrderSuccess({
         <h3 className="mt-1 font-heading text-lg text-paper-50">
           Bagikan ulasanmu
         </h3>
-        <p className="mt-2 font-text text-sm leading-relaxed text-paper-200/85">
+        <p className="mt-2 font-text text-sm leading-relaxed text-paper-200/85 text-justify">
           Bintang yang kamu beri akan langsung tampil di kartu menu dan membantu
           pembeli lain memilih.
         </p>

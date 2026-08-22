@@ -54,7 +54,7 @@ export default function FeatureGate({
             Coming Soon!
           </span>
           <h3 className="font-heading text-xl text-cocoa-800">{info.title}</h3>
-          <p className="font-section3-p text-sm leading-relaxed text-cocoa-700/80">
+          <p className="font-section3-p text-sm leading-relaxed text-cocoa-700/80 text-justify">
             {info.description}
           </p>
         </div>

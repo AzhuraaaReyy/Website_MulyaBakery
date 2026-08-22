@@ -302,7 +302,7 @@ export default function CartModal() {
               animate={isMobile ? { y: 0 } : { x: 0 }}
               exit={isMobile ? { y: "100%" } : { x: "100%" }}
               transition={{ type: "spring", stiffness: 320, damping: 34 }}
-              className="relative flex h-[90vh] sm:h-full w-full max-w-full sm:max-w-md flex-col rounded-t-3xl bg-paper-100 shadow-cocoa-lg sm:rounded-t-none"
+              className="relative flex h-[90dvh] sm:h-full w-full max-w-full sm:max-w-md flex-col rounded-t-3xl bg-paper-100 shadow-cocoa-lg sm:rounded-t-none"
             >
               {/* Pegangan geser mobile */}
               <div
@@ -608,7 +608,7 @@ export default function CartModal() {
                               />
                             </label>
                           )}
-                          <p className="mt-1.5 font-section3-p text-[11px] leading-snug text-cocoa-700/60">
+                          <p className="mt-1.5 font-section3-p text-[11px] leading-snug text-cocoa-700/60 text-justify">
                             Foto penanda rumah — membantu kurir (GoSend / toko)
                             menemukan lokasi rumah Anda saat pengantaran.
                           </p>
@@ -640,7 +640,7 @@ export default function CartModal() {
                     )}
 
                     {kepanjangan && (
-                      <p className="mb-2.5 font-section3-p text-xs text-amber-700 leading-snug">
+                      <p className="mb-2.5 font-section3-p text-xs text-amber-700 leading-snug text-justify">
                         Catatan/alamatmu cukup panjang — sebagian mungkin
                         dipotong di WhatsApp. Pertimbangkan meringkasnya.
                       </p>
@@ -654,7 +654,7 @@ export default function CartModal() {
                             : "Total"}
                         </span>
                         {method === "antar" && (
-                          <p className="font-section3-p text-[11px] text-cocoa-700/60 leading-tight">
+                          <p className="font-section3-p text-[11px] text-cocoa-700/60 leading-tight text-justify">
                             Belum termasuk ongkir — biaya kirim dikonfirmasi via
                             WhatsApp sebelum pesanan diproses.
                           </p>
@@ -709,7 +709,7 @@ export default function CartModal() {
       <AnimatePresence>
         {infoKirimBuka && (
           <motion.div
-            className="fixed inset-0 z-[70] flex items-center justify-center p-4"
+            className="fixed inset-0 z-[70] flex items-end justify-center p-3 sm:items-center sm:p-4"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -728,34 +728,36 @@ export default function CartModal() {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 24, scale: 0.96 }}
               transition={{ type: "spring", stiffness: 320, damping: 30 }}
-              className="relative w-full max-w-sm rounded-3xl bg-paper-100 p-6 shadow-cocoa-lg ring-1 ring-cocoa-700/10"
+              className="relative flex max-h-[90dvh] w-full max-w-sm flex-col overflow-hidden rounded-t-3xl bg-paper-100 shadow-cocoa-lg ring-1 ring-cocoa-700/10 sm:rounded-3xl"
             >
-              <span className="flex h-12 w-12 items-center justify-center rounded-full bg-cocoa-800 text-paper-50 shadow-cocoa">
-                <Bike className="h-6 w-6" aria-hidden />
-              </span>
-              <h3 className="mt-3 font-heading text-lg text-cocoa-800">
-                Informasi Pengiriman
-              </h3>
-              <div className="mt-3 space-y-2.5">
-                <p className="font-section3-p text-sm leading-relaxed text-cocoa-700/90">
+              <div className="px-5 pt-5 sm:px-6 sm:pt-6">
+                <span className="flex h-12 w-12 items-center justify-center rounded-full bg-cocoa-800 text-paper-50 shadow-cocoa">
+                  <Bike className="h-6 w-6" aria-hidden />
+                </span>
+                <h3 className="mt-3 font-heading text-lg text-cocoa-800">
+                  Informasi Pengiriman
+                </h3>
+              </div>
+              <div className="min-h-0 flex-1 space-y-2.5 overflow-y-auto px-5 py-4 sm:px-6">
+                <p className="font-section3-p text-sm leading-relaxed text-cocoa-700/90 text-justify">
                   Pesanan dengan metode diantar dapat menggunakan kurir Mulya
                   Bakery atau kurir instan seperti GoSend, tergantung
                   ketersediaan kendaraan saat pesanan diproses.
                 </p>
-                <p className="font-section3-p text-sm leading-relaxed text-cocoa-700/90">
+                <p className="font-section3-p text-sm leading-relaxed text-cocoa-700/90 text-justify">
                   Biaya pengiriman akan dikonfirmasi terlebih dahulu berdasarkan
                   alamat tujuan sebelum pesanan diproses.
                 </p>
-                <p className="font-section3-p text-sm leading-relaxed text-cocoa-700/90">
+                <p className="font-section3-p text-sm leading-relaxed text-cocoa-700/90 text-justify">
                   Total pembayaran akhir akan diinformasikan melalui WhatsApp
                   setelah biaya pengiriman diketahui.
                 </p>
-                <p className="font-section3-p text-sm font-bold leading-relaxed text-cocoa-800">
+                <p className="font-section3-p text-sm font-bold leading-relaxed text-cocoa-800 text-justify">
                   Pesanan hanya akan diproses setelah total akhir dikonfirmasi
                   dan disetujui pelanggan.
                 </p>
               </div>
-              <div className="mt-5 grid grid-cols-2 gap-2.5">
+              <div className="grid shrink-0 grid-cols-2 gap-2.5 border-t border-cocoa-700/10 p-5 sm:p-6">
                 <button
                   type="button"
                   onClick={() => setInfoKirimBuka(false)}

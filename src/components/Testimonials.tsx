@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import PlaceholderImage from "./PlaceholderImage";
 import ReviewModal from "./ReviewModal";
+import SemuaUlasanModal from "./SemuaUlasanModal";
 import LockedCta from "./LockedCta";
 import { supabase } from "../lib/supabase";
 import { useFeatureFlags } from "../context/FeatureFlagsContext";
@@ -55,6 +56,7 @@ export default function Testimonials() {
   const [ulasan, setUlasan] = useState<UlasanPelayanan[]>([]);
   const [memuat, setMemuat] = useState(true);
   const [tulisTerbuka, setTulisTerbuka] = useState(false);
+  const [semuaBuka, setSemuaBuka] = useState(false);
   const [aktifIndex, setAktifIndex] = useState(0);
 
   // STATE & REF UNTUK FITUR DRAG (MOUSE & TOUCH)
@@ -71,7 +73,7 @@ export default function Testimonials() {
     }
     try {
       const { data, error } = await supabase.rpc("get_service_reviews", {
-        p_limit: 15,
+        p_limit: 10,
       });
       if (error) throw error;
 
@@ -423,6 +425,16 @@ export default function Testimonials() {
               <LockedCta feature="ulasan" />
             )}
             </div>
+
+            {/* Lihat semua ulasan (pagination server-side) */}
+            <button
+              type="button"
+              onClick={() => setSemuaBuka(true)}
+              className="mt-4 inline-flex items-center gap-1 font-card-custom text-sm font-semibold text-cocoa-700/70 transition-colors hover:text-cocoa-900"
+            >
+              Lihat semua ulasan
+              <ChevronRight className="h-4 w-4" aria-hidden />
+            </button>
           </div>
         )}
       </div>
@@ -431,6 +443,11 @@ export default function Testimonials() {
         open={tulisTerbuka}
         onClose={() => setTulisTerbuka(false)}
         onSubmitted={() => void muat(true)}
+      />
+
+      <SemuaUlasanModal
+        open={semuaBuka}
+        onClose={() => setSemuaBuka(false)}
       />
     </section>
   );

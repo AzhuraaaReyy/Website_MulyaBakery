@@ -115,36 +115,40 @@ export function FeatureTeaserModal({
             animate={{ y: 0, opacity: 1, scale: 1 }}
             exit={{ y: 32, opacity: 0, scale: 0.98 }}
             transition={{ type: "spring", stiffness: 320, damping: 32 }}
-            className="relative flex max-h-[90vh] w-full max-w-sm flex-col items-center gap-2.5 overflow-hidden rounded-3xl bg-paper-100 p-6 text-center shadow-cocoa-lg sm:max-w-md sm:p-8"
+            className="relative flex max-h-[90vh] w-full max-w-sm flex-col overflow-hidden rounded-3xl bg-paper-100 text-center shadow-cocoa-lg sm:max-w-md"
           >
             <button
               type="button"
               onClick={onClose}
               aria-label="Tutup"
-              className="absolute right-3 top-3 rounded-full p-2 text-cocoa-700/70 transition-colors hover:bg-paper-200 hover:text-cocoa-900"
+              className="absolute right-3 top-3 z-10 rounded-full p-2 text-cocoa-700/70 transition-colors hover:bg-paper-200 hover:text-cocoa-900"
             >
               <X className="h-5 w-5" />
             </button>
 
-            <span className="flex h-14 w-14 items-center justify-center rounded-full bg-caramel/20 text-cocoa-800 ring-1 ring-caramel/40">
-              <Lock className="h-7 w-7" aria-hidden />
-            </span>
-            <span className="inline-flex items-center rounded-full bg-pink-100 px-3 py-1 font-text text-[11px] font-extrabold uppercase tracking-wider text-pink-600">
-              Coming Soon!
-            </span>
-            <h3 className="font-heading text-xl text-cocoa-800 sm:text-2xl">
-              {title}
-            </h3>
-            <p className="font-section3-p text-sm leading-relaxed text-cocoa-700/80 sm:text-base">
-              {description}
-            </p>
-            <button
-              type="button"
-              onClick={onClose}
-              className="mt-2 w-full rounded-full bg-cocoa-800 px-6 py-3 font-text text-sm font-bold text-paper-50 shadow-cocoa transition-transform hover:-translate-y-0.5"
-            >
-              Mengerti
-            </button>
+            <div className="flex min-h-0 flex-1 flex-col items-center gap-2.5 overflow-y-auto p-6 sm:p-8">
+              <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-caramel/20 text-cocoa-800 ring-1 ring-caramel/40">
+                <Lock className="h-7 w-7" aria-hidden />
+              </span>
+              <span className="inline-flex shrink-0 items-center rounded-full bg-pink-100 px-3 py-1 font-text text-[11px] font-extrabold uppercase tracking-wider text-pink-600">
+                Coming Soon!
+              </span>
+              <h3 className="font-heading text-xl text-cocoa-800 sm:text-2xl">
+                {title}
+              </h3>
+              <p className="font-section3-p text-sm leading-relaxed text-cocoa-700/80 sm:text-base text-justify">
+                {description}
+              </p>
+            </div>
+            <div className="shrink-0 px-6 pb-6 sm:px-8 sm:pb-8">
+              <button
+                type="button"
+                onClick={onClose}
+                className="w-full rounded-full bg-cocoa-800 px-6 py-3 font-text text-sm font-bold text-paper-50 shadow-cocoa transition-transform hover:-translate-y-0.5"
+              >
+                Mengerti
+              </button>
+            </div>
           </motion.div>
         </motion.div>
       )}

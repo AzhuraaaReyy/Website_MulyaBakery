@@ -105,7 +105,7 @@ export default function WhyUs() {
                 <h3 className="font-heading text-lg sm:text-xl text-cocoa-800">
                   {r.title}
                 </h3>
-                <p className="mt-2.5 font-text text-sm leading-relaxed text-cocoa-700/80 font-itim">
+                <p className="mt-2.5 font-text text-sm leading-relaxed text-cocoa-700/80 font-itim text-justify">
                   {r.desc}
                 </p>
               </div>

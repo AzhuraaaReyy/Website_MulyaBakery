@@ -11,6 +11,7 @@ import {
   ReceiptText,
   CakeSlice,
   Settings2,
+  BarChart3,
 } from "lucide-react";
 import { supabaseAdmin } from "../lib/supabaseAdmin";
 import ProdukPanel from "./ProdukPanel";
@@ -36,7 +37,7 @@ const NAV: { id: Tab; label: string; Icon: typeof UtensilsCrossed }[] = [
   { id: "kategori", label: "Kategori", Icon: Tags },
   { id: "pesanan", label: "Pesanan", Icon: ReceiptText },
   { id: "custom", label: "Pesanan Khusus", Icon: CakeSlice },
-  
+  { id: "laporan", label: "Laporan", Icon: BarChart3 },
   { id: "testimoni", label: "Testimoni", Icon: MessageSquareQuote },
 ];
 

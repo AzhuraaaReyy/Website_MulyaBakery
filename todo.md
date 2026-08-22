@@ -1,7 +1,132 @@
 # TODO — Mulya Bakery Landing Page
 
 > Dibuat: (tanggal pengerjaan)
-> Status pekerjaan sesi ini: **SELESAI** — Feature Gating (19 fitur) + Panel Super Admin + Pola Blur "Coming Soon".
+> Status pekerjaan sesi ini: **SELESAI** — BookingModal (Konsep Pesanan & Data Pengiriman) Responsif Mobile.
+
+---
+
+## 📌 Sesi Ini — BookingModal "Konsep Pesanan" & "Data & Pengiriman" Responsif Mobile
+
+**Status:** KODE SELESAI — `npx tsc --noEmit` bersih & `npm run build` sukses.
+
+### Perubahan (`src/components/BookingModal.tsx`)
+1. **Step tabs (Konsep Pesanan / Data & Pengiriman):** label `text-sm` → `text-xs sm:text-sm` agar
+   "Data & Pengiriman" tidak terpotong di layar sempit; span label diberi `min-w-0 truncate` dan badge
+   nomor diberi `shrink-0` (perbaiki truncate di dalam flex — sebelumnya tanpa `min-w-0` label bisa
+   meluber keluar kolom).
+2. **Toggle metode ("Ambil di toko" / "Antar kurir"):** span diberi `min-w-0 truncate`.
+3. **Ringkasan Pesanan:** label baris diberi `shrink-0`, nilai (Jenis Pesanan / Porsi) diberi `min-w-0`
+   agar benar-benar terpotong rapi (ellipsis) di kolom sempit.
+
+### Uji manual
+Buka Pemesanan Khusus di HP (≤360px): tab & toggle tidak meluber/terpotong aneh, Ringkasan Pesanan
+rapi saat nilai panjang, modal tetap bottom-sheet & bisa digulir.
+
+---
+
+## 📌 Sesi Ini — Testimoni 10 Terbaru + "Semua Ulasan" dengan Pagination
+
+**Status:** KODE SELESAI — `npx tsc --noEmit` bersih & `npm run build` sukses.
+
+### Keputusan user (dikonfirmasi)
+1. Halaman utama testimoni hanya memuat **10 data terbaru** (sebelumnya 15) agar tidak memberatkan sistem.
+2. Pelanggan tetap bisa melihat **semua ulasan** lewat **modal "Semua Ulasan"** dengan **pagination server-side** (10/halaman).
+3. Urutan tetap **verified dulu, lalu terbaru** (tidak berubah dari perilaku sekarang).
+4. **Desain UI/UX section testimoni yang ada TIDAK diubah** — slider 3D, kartu, header, tombol "Bagikan Pengalamanmu" apa adanya.
+
+### Perubahan
+- `supabase/migrations/011_review_pagination.sql` (BARU) — WAJIB dijalankan di Dashboard SQL Editor:
+  `get_service_reviews_page(p_page default 1, p_size default 10)` → data satu halaman + kolom `total`
+  (`count(*) over ()`), filter `is_hidden=false`, urut `verified_purchase desc, created_at desc`,
+  clamp `p_size` 1–50, `security definer`, grant `anon, authenticated`.
+- `src/components/SemuaUlasanModal.tsx` (BARU) — modal daftar semua ulasan:
+  bottom-sheet di HP / tengah di desktop (`items-end sm:items-center`, `max-h-[90dvh]`,
+  `rounded-t-3xl sm:rounded-3xl`, palet cocoa/paper, font Itim); per halaman 10 data via RPC baru;
+  loading/error/empty state; baris ulasan (foto profil, nama + badge verified, bintang, quote, tanggal);
+  footer pagination "Sebelumnya / Halaman X / Y / Berikutnya" (Prev/Next nonaktif di tepi).
+- `src/components/Testimonials.tsx` — `p_limit: 15` → `10`; tombol kecil **"Lihat semua ulasan"**
+  (link teks + ChevronRight) di bawah tombol "Bagikan Pengalamanmu"; render `SemuaUlasanModal`.
+- **Responsive mobile:** footer pagination modal kini `flex-wrap` — di HP tombol "Sebelumnya" &
+  "Berikutnya" berdampingan (`flex-1`) dan label "Halaman X / Y" turun ke baris sendiri di tengah;
+  di desktop (`sm:flex-nowrap`) tetap satu baris seperti semula.
+
+### Wajib dilakukan user
+1. Jalankan `supabase/migrations/011_review_pagination.sql` di Supabase Dashboard SQL Editor.
+2. Uji: section testimoni memuat 10 ulasan; klik "Lihat semua ulasan" → modal daftar + ganti halaman.
+
+---
+
+## 📌 Sesi Ini — Kolom Ongkir Detail Pesanan Rapi (Tidak Naik-Turun)
+
+**Status:** SELESAI — `npx tsc --noEmit` bersih.
+
+- `src/admin/PesananPanel.tsx` — grid "Biaya Pengiriman (Rp)" & "Estimasi Pengantaran"
+  diubah `grid-cols-2` → `grid-cols-1 sm:grid-cols-2`. Sebelumnya selalu 2 kolom di HP
+  sehingga label yang panjangnya berbeda wrap tidak rata → input terlihat "naik turun".
+  Kini di HP bertumpuk sejajar; di desktop tetap 2 kolom (sejalan dengan `CustomPanel.tsx`).
+
+---
+
+## 📌 Sesi Ini — Justify Teks Fitur Baru + BookingModal Responsif Mobile
+
+**Status:** KODE SELESAI — `npx tsc --noEmit` bersih & `npm run build` sukses.
+
+### Keputusan user (dikonfirmasi)
+1. Justify teks (rata kanan-kiri) diterapkan **hanya pada teks fitur baru** (bukan seluruh situs).
+2. BookingModal ("Pemesanan Khusus") dibuat responsif mobile.
+
+### Perubahan — justify teks (`text-justify`)
+- `src/components/CartModal.tsx` — 4 paragraf popup "Informasi Pengiriman", catatan ongkir footer, peringatan "catatan/alamat panjang", catatan foto penanda rumah.
+- `src/components/LockedCta.tsx` — deskripsi modal "Coming Soon".
+- `src/components/FeatureGate.tsx` — deskripsi teaser "Coming Soon!".
+- `src/components/ProductDetailModal.tsx` — paragraf deskripsi produk.
+- `src/components/OrderSuccess.tsx` — paragraf penjelasan + ajakan ulasan + peringatan WA diblokir.
+- `src/components/ReviewModal.tsx` — teks layar sukses.
+- `src/components/WhyUs.tsx` — deskripsi kartu keunggulan.
+- **Catatan:** Testimonials (quote & intro) dibiarkan `text-center` (desain tengah yang disengaja) — `text-justify` tidak ditimpa agar tidak merusak desain.
+
+### Perubahan — BookingModal responsif mobile (`src/components/BookingModal.tsx`)
+- Outer modal: `items-center justify-center` → `items-end justify-center sm:items-center` (bottom-sheet di HP, keyboard tidak menutupi footer).
+- Kartu: `max-h-[85vh] … rounded-2xl sm:rounded-3xl` → `max-h-[90dvh] sm:max-h-[85vh] … rounded-t-3xl sm:rounded-3xl`.
+- Footer step 2: `flex items-center gap-2` → `flex flex-col gap-2.5 sm:flex-row sm:items-center`; tombol "← Kembali" `w-full sm:w-auto`, "Kirim via WhatsApp" `w-full flex-1` (bertumpuk di layar sempit).
+
+### Uji manual
+1. Buka Pemesanan Khusus di HP → modal menempel bawah, ketik data → tombol "Kirim via WhatsApp" selalu terlihat; footer step 2 bertumpuk rapi di layar sempit.
+2. Cek popup Info Pengiriman, modal Coming Soon (matikan fitur), deskripsi produk, layar sukses → teks rata kanan-kiri.
+
+---
+
+## 📌 Sesi Ini — Responsive Mobile Fitur Baru + Scrollbar Tersembunyi
+
+**Status:** KODE SELESAI — `npx tsc --noEmit` bersih & `npm run build` sukses.
+
+### Keputusan user (dikonfirmasi)
+1. ReviewModal di HP jadi **bottom-sheet** (`items-end` mobile, tengah di `sm:`) agar keyboard tidak menutupi tombol "Kirim Ulasan".
+2. Footer modal detail admin saat status **Selesai/Batal (terkunci)**: sembunyikan tombol
+   disabled "Konfirmasi ke Pelanggan" & "Simpan" → ganti tombol **"Tutup"** + **"Cetak Struk"** (bila selesai).
+3. **Semua scrollbar disembunyikan** (termasuk halaman utama, custom scrollbar pink lama dihapus) — scroll tetap berfungsi.
+4. Popup "Informasi Pengiriman" CartModal jadi **bottom-sheet + konten scrollable** agar tidak terpotong di layar pendek/landscape.
+
+### Perubahan
+- `src/index.css` — hapus styling `::-webkit-scrollbar` pink lama; tambah aturan global
+  `* { scrollbar-width: none; -ms-overflow-style: none; }` & `*::-webkit-scrollbar { display: none; }`.
+- `src/components/LockedCta.tsx` — konten modal "Coming Soon" dipecah jadi area scrollable
+  (`overflow-y-auto`, `min-h-0`) + footer tombol "Mengerti" tetap terlihat.
+- `src/components/ReviewModal.tsx` — outer modal `items-end justify-center sm:items-center`,
+  kartu `rounded-t-3xl sm:rounded-3xl`; baris checkbox multi-pilih `py-2` → `py-2.5` (touch target lebih besar).
+- `src/admin/PesananPanel.tsx` — saat `terkunci`: footer hanya "Tutup" + "Cetak Struk"; bila tidak terkunci tombol lama tetap.
+- `src/admin/CustomPanel.tsx` — pola sama (Tutup + Cetak Struk bila `selesai` & total > 0).
+- `src/components/CartModal.tsx` — bottom-sheet utama `h-[90vh]` → `h-[90dvh]` (tidak tertutup keyboard);
+  popup "Informasi Pengiriman": outer `items-end justify-center sm:items-center p-3 sm:p-4`,
+  kartu `flex max-h-[90dvh] flex-col overflow-hidden`, isi teks `overflow-y-auto`,
+  header/isi/tombol dipisah dengan padding sendiri (Batal + Mengerti & Lanjutkan selalu terlihat).
+
+### Uji manual
+1. Buka keranjang di HP → popup Info Pengiriman: gulir konten, tombol selalu terlihat; pilih Diantar.
+2. Tulis ulasan di HP → modal menempel bawah, ketik nama/komentar, tombol "Kirim Ulasan" tetap terjangkau.
+3. Admin `/admin` → detail pesanan status Selesai → hanya "Tutup" + "Cetak Struk"; status non-final → tombol lama.
+4. Matikan fitur section di Pengaturan Fitur → klik teaser "Coming Soon" → konten panjang bisa digulir.
+5. Pastikan tidak ada scrollbar terlihat di mana pun (halaman, modal, panel) tapi scroll tetap jalan.
 
 ---
 
@@ -17,6 +142,34 @@ Landing page UMKM roti **"Mulya Bakery"** (React 18 + Vite + TypeScript + Tailwi
 * Data menu live dari RPC `get_menu` (lihat `src/hooks/Usemenudata.ts`)
 * Struktur komponen: Navbar, Hero, About, Menu, HowToOrder, WhyUs, Testimonials,
   Gallery, LocationContact, FAQ, Footer + modal (Cart, Booking, ProductDetail, Review)
+
+---
+
+## 📌 Sesi Ini — Cetak Struk di Panel Admin
+
+**Status:** KODE SELESAI — verifikasi `npx tsc --noEmit` & `npm run build` (lihat bagian bawah).
+
+### Keputusan user (dikonfirmasi)
+- Tombol cetak hanya di **modal Detail Pesanan** & **Detail Pesanan Khusus**.
+- Format **struk thermal 80mm** (monospace, garis putus-putus, siap printer kasir).
+- Aktif **hanya saat status "Selesai"** (custom juga wajib total > 0).
+
+### Perubahan
+- `src/lib/struk.ts` (BARU) — `buatStrukHtml(data)` menyusun dokumen HTML mandiri
+  (header BRAND/CONTACT dari `config/contact.ts`, rincian, subtotal, ongkir, total,
+  data pemesan, footer); `cetakStruk(data)` membuka jendela baru lalu auto-print.
+  Semua teks user di-escape (anti-injection).
+- `src/admin/PesananPanel.tsx` — tombol **Cetak Struk** (ikon Printer) di footer
+  `FormDetailPesanan` saat status `selesai`; isi: kode, tanggal, item + subtotal,
+  ongkir (`shipping_fee`), total, data pemesan.
+- `src/admin/CustomPanel.tsx` — tombol sama di `FormDetailCustom` saat status
+  `selesai` & total > 0; isi: kode, konsep (kategori/detail/porsi/tanggal acara/tema),
+  total produk, ongkir, total.
+
+### Uji manual
+1. Buka `/admin` → tab Pesanan → detail pesanan berstatus **Selesai** → tombol "Cetak Struk".
+2. Ulangi untuk Pesanan Khusus (selesai dengan total final).
+3. Pastikan dialog cetak muncul dan struk rapi (lebar 80mm).
 
 ---
 

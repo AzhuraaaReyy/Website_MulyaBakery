@@ -177,7 +177,7 @@ export default function ProductDetailModal({
                 <h3 className="mt-1 font-heading text-2xl text-cocoa-800 sm:text-3xl">
                   {product.name}
                 </h3>
-                <p className="mt-4 font-itim leading-relaxed text-cocoa-700/85">
+                <p className="mt-4 font-itim leading-relaxed text-cocoa-700/85 text-justify">
                   {product.description}
                 </p>
 

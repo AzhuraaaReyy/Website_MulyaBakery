@@ -223,7 +223,7 @@ function IsiModal({
             ? `Terima kasih, ${produkDipilih.length} ulasanmu terkirim!`
             : "Terima kasih, ulasanmu terkirim!"}
         </h2>
-        <p className="font-section3-p max-w-sm text-sm sm:text-base leading-relaxed text-cocoa-700/80">
+        <p className="font-section3-p max-w-sm text-sm sm:text-base leading-relaxed text-cocoa-700/80 text-justify">
           {foto
             ? "Ulasan dan fotomu berhasil masuk! Ulasan akan tampil setelah ditinjau oleh tim kami."
             : "Terima kasih! Ulasanmu sudah tampil di halaman testimoni."}
@@ -301,7 +301,7 @@ function IsiModal({
                 return (
                   <label
                     key={p.id}
-                    className={`flex cursor-pointer items-center gap-2.5 rounded-lg px-2.5 py-2 transition-colors ${
+                    className={`flex cursor-pointer items-center gap-2.5 rounded-lg px-2.5 py-2.5 transition-colors ${
                       aktif
                         ? "bg-cocoa-800 text-paper-50"
                         : "text-cocoa-800 hover:bg-paper-200"
@@ -487,7 +487,7 @@ export default function ReviewModal(props: Props) {
       <AnimatePresence>
         {open && (
           <motion.div
-            className="fixed inset-0 z-[70] flex items-center justify-center p-3 sm:p-4 md:p-6"
+            className="fixed inset-0 z-[70] flex items-end justify-center p-3 sm:items-center sm:p-4 md:p-6"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -507,7 +507,7 @@ export default function ReviewModal(props: Props) {
               animate={{ y: 0, opacity: 1, scale: 1 }}
               exit={{ y: 40, opacity: 0, scale: 0.98 }}
               transition={{ type: "spring", stiffness: 320, damping: 32 }}
-              className="relative flex max-h-[90dvh] sm:max-h-[85vh] w-full max-w-full sm:max-w-lg flex-col overflow-hidden rounded-3xl bg-paper-100 shadow-cocoa-lg"
+              className="relative flex max-h-[90dvh] sm:max-h-[85vh] w-full max-w-full sm:max-w-lg flex-col overflow-hidden rounded-t-3xl bg-paper-100 shadow-cocoa-lg sm:rounded-3xl"
             >
               <IsiModal {...props} />
             </motion.div>

@@ -5,7 +5,7 @@
 
 export interface OrderItemRow {
   id: string;
-  product_id: string;
+  product_id: string | null;
   product_name: string;
   unit_price: number;
   qty: number;

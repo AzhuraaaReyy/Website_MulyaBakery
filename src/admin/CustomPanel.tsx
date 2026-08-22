@@ -7,6 +7,7 @@ import {
   Lock,
   MapPin,
   MessageCircle,
+  Printer,
   Save,
   Truck,
   X,
@@ -15,6 +16,7 @@ import { supabaseAdmin } from "../lib/supabaseAdmin";
 import { readableError } from "../lib/supabase";
 import { formatPrice } from "../data/products";
 import { ongkirKonfirmasiCustomUrl } from "../lib/whatsapp";
+import { cetakStruk } from "../lib/struk";
 import {
   geocodeAlamat,
   jarakDariToko,
@@ -383,6 +385,38 @@ function FormDetailCustom({
     window.open(url, "_blank", "noopener,noreferrer");
   };
 
+  /** Cetak struk thermal 80mm — hanya untuk pesanan selesai dengan total final. */
+  const cetak = () => {
+    if (order.status !== "selesai" || totalProdukNum <= 0) return;
+    cetakStruk({
+      orderCode: order.order_code,
+      tanggal: `${formatTanggal(order.created_at)} · ${formatJam(order.created_at)}`,
+      metode: antar ? "Diantar" : "Ambil di toko",
+      status: statusLabel(order.status),
+      customerName: order.customer_name,
+      customerPhone: order.customer_phone,
+      alamatKirim: order.address ?? undefined,
+      catatan: order.note ?? undefined,
+      estimasi: estimasi.trim() || order.delivery_estimate || undefined,
+      labelSubtotal: "Total Produk",
+      baris: [
+        { judul: "Kategori", nilai: order.category },
+        ...(order.custom_label
+          ? [{ judul: "Detail", nilai: order.custom_label }]
+          : []),
+        { judul: "Tanggal acara", nilai: formatTanggalAcara(order.event_date) },
+        ...(order.quantity
+          ? [{ judul: "Porsi/Ukuran", nilai: order.quantity }]
+          : []),
+        ...(order.theme ? [{ judul: "Tema/Ucapan", nilai: order.theme }] : []),
+      ],
+      subtotal: totalProdukNum,
+      ongkir:
+        antar && Number.isFinite(ongkirNum) && ongkirNum > 0 ? ongkirNum : undefined,
+      total,
+    });
+  };
+
   /** Hitung estimasi otomatis dari jarak toko → alamat pelanggan. */
   const hitungEstimasi = async () => {
     if (menghitung) return;
@@ -642,44 +676,79 @@ function FormDetailCustom({
         </div>
 
         <div className="font-itim border-t border-cocoa-700/10 bg-paper-50 px-5 py-4">
-          <div className="flex flex-col gap-2.5 sm:flex-row">
-            {antar && (
+          {terkunci ? (
+            <div className="flex flex-col gap-2.5 sm:flex-row">
               <button
                 type="button"
-                onClick={konfirmasi}
-                disabled={
-                  terkunci ||
-                  !Number.isFinite(totalProdukNum) ||
-                  totalProdukNum <= 0 ||
-                  !Number.isFinite(ongkirNum) ||
-                  ongkirNum <= 0
-                }
-                className="inline-flex items-center justify-center gap-2 rounded-full bg-cocoa-800 px-5 py-3 font-itim text-sm font-bold text-paper-50 shadow-cocoa transition-all hover:-translate-y-0.5 hover:bg-cocoa-900 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0 sm:flex-1"
+                onClick={onBatal}
+                className="inline-flex items-center justify-center gap-2 rounded-full bg-paper-200 px-5 py-3 font-itim text-sm font-bold text-cocoa-800 transition-colors hover:bg-paper-300 sm:flex-1"
               >
-                <MessageCircle className="h-4 w-4" />
-                Konfirmasi ke Pelanggan
+                <X className="h-4 w-4" />
+                Tutup
               </button>
-            )}
-            <button
-              type="button"
-              onClick={kirim}
-              disabled={terkunci || !totalProdukValid || !ongkirValid || simpan}
-              className="inline-flex items-center justify-center gap-2 rounded-full bg-primary-500 px-5 py-3 font-itim text-sm font-bold text-white shadow-pink transition-all hover:-translate-y-0.5 hover:bg-primary-600 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0 sm:flex-1"
-            >
-              {simpan ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                <Save className="h-4 w-4" />
+              {order.status === "selesai" && totalProdukNum > 0 && (
+                <button
+                  type="button"
+                  onClick={cetak}
+                  className="inline-flex items-center justify-center gap-2 rounded-full bg-cocoa-800 px-5 py-3 font-itim text-sm font-bold text-paper-50 shadow-cocoa transition-all hover:-translate-y-0.5 hover:bg-cocoa-900 sm:flex-1"
+                >
+                  <Printer className="h-4 w-4" />
+                  Cetak Struk
+                </button>
               )}
-              Simpan
-            </button>
-          </div>
-          {antar && (
-            <p className="mt-2 flex items-center justify-center gap-1 text-center font-itim text-[11px] text-cocoa-700/60">
-              <Truck className="h-3.5 w-3.5" aria-hidden />
-              Ongkir diisi manual oleh admin dari tarif kurir aktual; sistem
-              menghitung total.
-            </p>
+            </div>
+          ) : (
+            <>
+              <div className="flex flex-col gap-2.5 sm:flex-row">
+                {order.status === "selesai" && totalProdukNum > 0 && (
+                  <button
+                    type="button"
+                    onClick={cetak}
+                    className="inline-flex items-center justify-center gap-2 rounded-full bg-cocoa-800 px-5 py-3 font-itim text-sm font-bold text-paper-50 shadow-cocoa transition-all hover:-translate-y-0.5 hover:bg-cocoa-900 sm:flex-1"
+                  >
+                    <Printer className="h-4 w-4" />
+                    Cetak Struk
+                  </button>
+                )}
+                {antar && (
+                  <button
+                    type="button"
+                    onClick={konfirmasi}
+                    disabled={
+                      terkunci ||
+                      !Number.isFinite(totalProdukNum) ||
+                      totalProdukNum <= 0 ||
+                      !Number.isFinite(ongkirNum) ||
+                      ongkirNum <= 0
+                    }
+                    className="inline-flex items-center justify-center gap-2 rounded-full bg-cocoa-800 px-5 py-3 font-itim text-sm font-bold text-paper-50 shadow-cocoa transition-all hover:-translate-y-0.5 hover:bg-cocoa-900 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0 sm:flex-1"
+                  >
+                    <MessageCircle className="h-4 w-4" />
+                    Konfirmasi ke Pelanggan
+                  </button>
+                )}
+                <button
+                  type="button"
+                  onClick={kirim}
+                  disabled={terkunci || !totalProdukValid || !ongkirValid || simpan}
+                  className="inline-flex items-center justify-center gap-2 rounded-full bg-primary-500 px-5 py-3 font-itim text-sm font-bold text-white shadow-pink transition-all hover:-translate-y-0.5 hover:bg-primary-600 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0 sm:flex-1"
+                >
+                  {simpan ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Save className="h-4 w-4" />
+                  )}
+                  Simpan
+                </button>
+              </div>
+              {antar && (
+                <p className="mt-2 flex items-center justify-center gap-1 text-center font-itim text-[11px] text-cocoa-700/60">
+                  <Truck className="h-3.5 w-3.5" aria-hidden />
+                  Ongkir diisi manual oleh admin dari tarif kurir aktual; sistem
+                  menghitung total.
+                </p>
+              )}
+            </>
           )}
         </div>
       </div>

@@ -300,7 +300,7 @@ export default function BookingModal({
       <AnimatePresence>
         {open && (
           <motion.div
-            className="fixed inset-0 z-[70] flex items-center justify-center p-3 sm:p-4 md:p-6"
+            className="fixed inset-0 z-[70] flex items-end justify-center p-3 sm:items-center sm:p-4 md:p-6"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -322,7 +322,7 @@ export default function BookingModal({
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.97, y: 8 }}
               transition={{ type: "spring", stiffness: 320, damping: 30 }}
-              className="relative flex max-h-[85vh] w-full max-w-lg flex-col overflow-hidden rounded-2xl sm:rounded-3xl bg-paper-100 shadow-cocoa-lg ring-1 ring-cocoa-700/10"
+              className="relative flex max-h-[90dvh] sm:max-h-[85vh] w-full max-w-lg flex-col overflow-hidden rounded-t-3xl sm:rounded-3xl bg-paper-100 shadow-cocoa-lg ring-1 ring-cocoa-700/10"
             >
 
               {/* Header */}
@@ -380,14 +380,14 @@ export default function BookingModal({
                             if (t.n === "01") setStep(1);
                             else goToStep2();
                           }}
-                          className={`flex items-center justify-center gap-1.5 rounded-xl py-2 font-section3-p text-sm font-bold transition-all ${
+                          className={`flex items-center justify-center gap-1.5 rounded-xl px-1 py-2 font-section3-p text-xs sm:text-sm font-bold transition-all ${
                             t.aktif
                               ? "bg-cocoa-800 text-paper-50 shadow-cocoa"
                               : "text-cocoa-700/70 hover:text-cocoa-900"
                           }`}
                         >
                           <span
-                            className={`text-[10px] font-bold leading-none px-1.5 py-0.5 rounded-md ${
+                            className={`shrink-0 text-[10px] font-bold leading-none px-1.5 py-0.5 rounded-md ${
                               t.aktif
                                 ? "bg-paper-50/20 text-paper-50"
                                 : "bg-paper-50 text-cocoa-700/60"
@@ -395,7 +395,7 @@ export default function BookingModal({
                           >
                             {t.n}
                           </span>
-                          <span className="truncate">{t.label}</span>
+                          <span className="min-w-0 truncate">{t.label}</span>
                         </button>
                       ))}
                     </div>
@@ -618,7 +618,7 @@ export default function BookingModal({
                                   className="h-4 w-4 shrink-0"
                                   aria-hidden
                                 />
-                                <span className="truncate">Ambil di toko</span>
+                                <span className="min-w-0 truncate">Ambil di toko</span>
                               </button>
                               <button
                                 type="button"
@@ -631,7 +631,7 @@ export default function BookingModal({
                                 }`}
                               >
                                 <Bike className="h-4 w-4 shrink-0" aria-hidden />
-                                <span className="truncate">Antar kurir</span>
+                                <span className="min-w-0 truncate">Antar kurir</span>
                               </button>
                             </div>
                           </div>
@@ -702,10 +702,10 @@ export default function BookingModal({
                             </div>
                             <div className="mt-2.5 space-y-1.5">
                               <div className="flex items-center justify-between gap-3">
-                                <span className="font-section3-p text-xs text-cocoa-700/70">
+                                <span className="shrink-0 font-section3-p text-xs text-cocoa-700/70">
                                   Jenis Pesanan:
                                 </span>
-                                <span className="truncate font-section3-p text-xs font-bold text-cocoa-800 text-right max-w-[180px]">
+                                <span className="min-w-0 truncate font-section3-p text-xs font-bold text-cocoa-800 text-right max-w-[180px]">
                                   {finalType || "-"}
                                 </span>
                               </div>
@@ -719,10 +719,10 @@ export default function BookingModal({
                               </div>
                               {qty && (
                                 <div className="flex items-center justify-between gap-3">
-                                  <span className="font-section3-p text-xs text-cocoa-700/70">
+                                  <span className="shrink-0 font-section3-p text-xs text-cocoa-700/70">
                                     Porsi / Ukuran:
                                   </span>
-                                  <span className="truncate font-section3-p text-xs font-bold text-cocoa-800 text-right max-w-[180px]">
+                                  <span className="min-w-0 truncate font-section3-p text-xs font-bold text-cocoa-800 text-right max-w-[180px]">
                                     {qty}
                                   </span>
                                 </div>
@@ -761,11 +761,11 @@ export default function BookingModal({
                       </button>
                     ) : (
                       <>
-                        <div className="flex items-center gap-2">
+                        <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center">
                           <button
                             type="button"
                             onClick={() => setStep(1)}
-                            className="rounded-full px-4 py-3 font-section3-p text-sm font-bold text-cocoa-800 ring-1 ring-cocoa-700/20 transition-colors hover:bg-paper-200"
+                            className="w-full rounded-full px-4 py-3 font-section3-p text-sm font-bold text-cocoa-800 ring-1 ring-cocoa-700/20 transition-colors hover:bg-paper-200 sm:w-auto"
                           >
                             ← Kembali
                           </button>
@@ -773,7 +773,7 @@ export default function BookingModal({
                             type="button"
                             onClick={kirim}
                             disabled={!canSubmit}
-                            className="inline-flex flex-1 items-center justify-center gap-2 rounded-full bg-cocoa-800 px-5 py-3 font-section3-p text-base font-bold text-paper-50 shadow-cocoa transition-all hover:-translate-y-0.5 hover:bg-cocoa-900 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0 active:scale-[0.99]"
+                            className="inline-flex w-full flex-1 items-center justify-center gap-2 rounded-full bg-cocoa-800 px-5 py-3 font-section3-p text-base font-bold text-paper-50 shadow-cocoa transition-all hover:-translate-y-0.5 hover:bg-cocoa-900 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0 active:scale-[0.99]"
                           >
                             {mengirim ? (
                               <>

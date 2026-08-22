@@ -81,6 +81,8 @@ export function readableError(err: unknown): string {
     "keranjang kosong",
     "produk tidak ditemukan",
     "produk tidak tersedia",
+    "produk masih terhubung",
+    "hanya admin yang boleh",
     "metode tidak valid",
     "jumlah item tidak wajar",
   ];
